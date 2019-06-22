@@ -1,0 +1,28 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFrameworks>net45;netstandard1.0;netstandard2.0</TargetFrameworks>
+    <LangVersion>latest</LangVersion>
+    <Version>0.0.1</Version>
+    <Company>Tyrrrz</Company>
+    <Authors>$(Company)</Authors>
+    <Copyright>Copyright (C) Alexey Golub</Copyright>
+    <Description>Lightweight read-only HTML parser</Description>
+    <PackageTags>html parser net core</PackageTags>
+    <PackageProjectUrl>https://github.com/Tyrrrz/LtGt</PackageProjectUrl>
+    <PackageReleaseNotes>https://github.com/Tyrrrz/LtGt/blob/master/Changelog.md</PackageReleaseNotes>
+    <PackageIconUrl>https://raw.githubusercontent.com/Tyrrrz/LtGt/master/favicon.png</PackageIconUrl>
+    <PackageLicenseExpression>MIT</PackageLicenseExpression>
+    <RepositoryUrl>https://github.com/Tyrrrz/LtGt</RepositoryUrl>
+    <RepositoryType>git</RepositoryType>
+    <PackageRequireLicenseAcceptance>True</PackageRequireLicenseAcceptance>
+    <GeneratePackageOnBuild>True</GeneratePackageOnBuild>
+    <DocumentationFile>bin\$(Configuration)\$(TargetFramework)\$(AssemblyName).xml</DocumentationFile>
+
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Sprache" Version="2.2.0" />
+  </ItemGroup>
+
+</Project>
