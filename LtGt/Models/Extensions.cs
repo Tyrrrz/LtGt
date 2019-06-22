@@ -38,6 +38,23 @@ namespace LtGt.Models
         public static string GetClassName(this HtmlElement element) => element.GetAttribute("class")?.Value;
 
         /// <summary>
+        /// Gets the individual classes in the 'class' attribute.
+        /// </summary>
+        public static IReadOnlyList<string> GetClassList(this HtmlElement element) =>
+            element.GetClassName()?.Split(new[] {' '}, StringSplitOptions.RemoveEmptyEntries) ?? new string[0];
+
+        /// <summary>
+        /// Gets whether the value of the 'class' attribute is matched by the given class name.
+        /// </summary>
+        public static bool MatchesClassName(this HtmlElement element, string className)
+        {
+            var elementClassList = element.GetClassList();
+            var targetClassList = className.Split(new[] {' '}, StringSplitOptions.RemoveEmptyEntries);
+
+            return targetClassList.All(c => elementClassList.Contains(c, StringComparer.Ordinal));
+        }
+
+        /// <summary>
         /// Gets the value of the 'href' attribute or null if not defined.
         /// </summary>
         public static string GetHref(this HtmlElement element) => element.GetAttribute("href")?.Value;
@@ -100,7 +117,7 @@ namespace LtGt.Models
         /// Class name comparison is case sensitive.
         /// </summary>
         public static IEnumerable<HtmlElement> GetElementsByClassName(this HtmlContainer container, string className) =>
-            container.GetChildElementsRecursively().Where(e => string.Equals(e.GetClassName(), className, StringComparison.Ordinal));
+            container.GetChildElementsRecursively().Where(e => e.MatchesClassName(className));
 
         /// <summary>
         /// Gets an element that has given class name or null if not found.

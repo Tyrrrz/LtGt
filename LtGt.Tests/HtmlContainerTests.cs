@@ -73,7 +73,7 @@ namespace LtGt.Tests
             Assert.Multiple(() =>
             {
                 Assert.That(elements, Has.Exactly(2).Items);
-                Assert.That(elements.Select(e => e.GetClassName()), Has.All.EqualTo("content-child"), "Class");
+                Assert.That(elements.Select(e => e.MatchesClassName("content-child")), Has.All.True, "Class");
                 Assert.That(elements.Select(e => e.Name), Has.All.EqualTo("div"), "Name");
             });
         }
@@ -91,7 +91,7 @@ namespace LtGt.Tests
             Assert.Multiple(() =>
             {
                 Assert.That(element, Is.Not.Null);
-                Assert.That(element.GetClassName(), Is.EqualTo("content-child"), "Class");
+                Assert.That(element.MatchesClassName("content-child"), "Class");
                 Assert.That(element.Name, Is.EqualTo("div"), "Name");
             });
         }
