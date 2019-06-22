@@ -1,4 +1,4 @@
-﻿using System;
+﻿using System.Collections.Generic;
 using System.Linq;
 using LtGt.Models;
 using NUnit.Framework;
@@ -8,105 +8,202 @@ namespace LtGt.Tests
     [TestFixture]
     public class HtmlContainerTests
     {
-        [Test]
-        public void GetElementById_Test()
+        private static IEnumerable<TestCaseData> GetTestCases_GetElementById()
         {
-            // Arrange
-            var document = HtmlParser.Default.ParseDocument(TestData.GetTestDocumentHtml());
+            yield return new TestCaseData(
+                new HtmlElement("div",
+                    new HtmlElement("p", new HtmlAttribute("id", "test1")),
+                    new HtmlElement("p", new HtmlAttribute("id", "test2"))),
+                "test1",
+                new HtmlElement("p", new HtmlAttribute("id", "test1"))
+            );
 
-            // Act
-            var element = document.GetElementById("content");
-
-            // Assert
-            Assert.Multiple(() =>
-            {
-                Assert.That(element, Is.Not.Null);
-                Assert.That(element.GetId, Is.EqualTo("content"), "Id");
-                Assert.That(element.Name, Is.EqualTo("div"), "Name");
-            });
+            yield return new TestCaseData(
+                new HtmlElement("div"),
+                "test1",
+                null
+            );
         }
 
         [Test]
-        public void GetElementsByTagName_Test()
+        [TestCaseSource(nameof(GetTestCases_GetElementById))]
+        public void GetElementById_Test(HtmlContainer container, string id, HtmlElement expectedElement)
         {
-            // Arrange
-            var document = HtmlParser.Default.ParseDocument(TestData.GetTestDocumentHtml());
-
             // Act
-            var elements = document.GetElementsByTagName("div").ToArray();
+            var element = container.GetElementById(id);
 
             // Assert
-            Assert.Multiple(() =>
-            {
-                Assert.That(elements, Has.Exactly(3).Items);
-                Assert.That(elements.Select(e => e.Name), Has.All.EqualTo("div"), "Name");
-            });
+            Assert.That(element, Is.EqualTo(expectedElement));
+        }
+
+        private static IEnumerable<TestCaseData> GetTestCases_GetElementsByTagName()
+        {
+            yield return new TestCaseData(
+                new HtmlElement("div",
+                    new HtmlElement("a"),
+                    new HtmlElement("p"),
+                    new HtmlElement("p")),
+                "p",
+                new[]
+                {
+                    new HtmlElement("p"),
+                    new HtmlElement("p")
+                }
+            );
+
+            yield return new TestCaseData(
+                new HtmlElement("div"),
+                "p",
+                new HtmlElement[0]
+            );
         }
 
         [Test]
-        public void GetElementByTagName_Test()
+        [TestCaseSource(nameof(GetTestCases_GetElementsByTagName))]
+        public void GetElementsByTagName_Test(HtmlContainer container, string tagName, IReadOnlyList<HtmlElement> expectedElements)
         {
-            // Arrange
-            var document = HtmlParser.Default.ParseDocument(TestData.GetTestDocumentHtml());
-
             // Act
-            var element = document.GetElementByTagName("div");
+            var elements = container.GetElementsByTagName(tagName).ToArray();
 
             // Assert
-            Assert.Multiple(() =>
-            {
-                Assert.That(element, Is.Not.Null);
-                Assert.That(element.Name, Is.EqualTo("div"), "Name");
-            });
+            Assert.That(elements, Is.EqualTo(expectedElements));
+        }
+
+        private static IEnumerable<TestCaseData> GetTestCases_GetElementByTagName()
+        {
+            yield return new TestCaseData(
+                new HtmlElement("div",
+                    new HtmlElement("a"),
+                    new HtmlElement("p"),
+                    new HtmlElement("p")),
+                "p",
+                new HtmlElement("p")
+            );
+
+            yield return new TestCaseData(
+                new HtmlElement("div"),
+                "p",
+                null
+            );
         }
 
         [Test]
-        public void GetElementsByClassName_Test()
+        [TestCaseSource(nameof(GetTestCases_GetElementByTagName))]
+        public void GetElementByTagName_Test(HtmlContainer container, string tagName, HtmlElement expectedElement)
         {
-            // Arrange
-            var document = HtmlParser.Default.ParseDocument(TestData.GetTestDocumentHtml());
-
             // Act
-            var elements = document.GetElementsByClassName("content-child").ToArray();
+            var element = container.GetElementByTagName(tagName);
 
             // Assert
-            Assert.Multiple(() =>
-            {
-                Assert.That(elements, Has.Exactly(2).Items);
-                Assert.That(elements.Select(e => e.MatchesClassName("content-child")), Has.All.True, "Class");
-                Assert.That(elements.Select(e => e.Name), Has.All.EqualTo("div"), "Name");
-            });
+            Assert.That(element, Is.EqualTo(expectedElement));
+        }
+
+        private static IEnumerable<TestCaseData> GetTestCases_GetElementsByClassName()
+        {
+            yield return new TestCaseData(
+                new HtmlElement("div",
+                    new HtmlElement("a", new HtmlAttribute("class", "test1")),
+                    new HtmlElement("p", new HtmlAttribute("class", "test2")),
+                    new HtmlElement("p", new HtmlAttribute("class", "test2 test3"))),
+                "test2",
+                new[]
+                {
+                    new HtmlElement("p", new HtmlAttribute("class", "test2")),
+                    new HtmlElement("p", new HtmlAttribute("class", "test2 test3"))
+                }
+            );
+
+            yield return new TestCaseData(
+                new HtmlElement("div"),
+                "test2",
+                new HtmlElement[0]
+            );
         }
 
         [Test]
-        public void GetElementByClassName_Test()
+        [TestCaseSource(nameof(GetTestCases_GetElementsByClassName))]
+        public void GetElementsByClassName_Test(HtmlContainer container, string className, IReadOnlyList<HtmlElement> expectedElements)
         {
-            // Arrange
-            var document = HtmlParser.Default.ParseDocument(TestData.GetTestDocumentHtml());
-
             // Act
-            var element = document.GetElementByClassName("content-child");
+            var elements = container.GetElementsByClassName(className).ToArray();
 
             // Assert
-            Assert.Multiple(() =>
-            {
-                Assert.That(element, Is.Not.Null);
-                Assert.That(element.MatchesClassName("content-child"), "Class");
-                Assert.That(element.Name, Is.EqualTo("div"), "Name");
-            });
+            Assert.That(elements, Is.EqualTo(expectedElements));
+        }
+
+        private static IEnumerable<TestCaseData> GetTestCases_GetElementByClassName()
+        {
+            yield return new TestCaseData(
+                new HtmlElement("div",
+                    new HtmlElement("a", new HtmlAttribute("class", "test1")),
+                    new HtmlElement("p", new HtmlAttribute("class", "test2")),
+                    new HtmlElement("p", new HtmlAttribute("class", "test2 test3"))),
+                "test2",
+                new HtmlElement("p", new HtmlAttribute("class", "test2"))
+            );
+
+            yield return new TestCaseData(
+                new HtmlElement("div",
+                    new HtmlElement("a", new HtmlAttribute("class", "test1")),
+                    new HtmlElement("p", new HtmlAttribute("class", "test2")),
+                    new HtmlElement("p", new HtmlAttribute("class", "test2 test3"))),
+                "test3",
+                new HtmlElement("p", new HtmlAttribute("class", "test2 test3"))
+            );
+
+            yield return new TestCaseData(
+                new HtmlElement("div"),
+                "test2",
+                null
+            );
         }
 
         [Test]
-        public void GetInnerText_Test()
+        [TestCaseSource(nameof(GetTestCases_GetElementByClassName))]
+        public void GetElementByClassName_Test(HtmlContainer container, string className, HtmlElement expectedElement)
         {
-            // Arrange
-            var document = HtmlParser.Default.ParseDocument(TestData.GetTestDocumentHtml());
-
             // Act
-            var innerText = document.GetElementById("content").GetInnerText();
+            var element = container.GetElementByClassName(className);
 
             // Assert
-            Assert.That(innerText, Is.EqualTo($"Text 1{Environment.NewLine}Text 2"));
+            Assert.That(element, Is.EqualTo(expectedElement));
+        }
+
+        private static IEnumerable<TestCaseData> GetTestCases_GetInnerText()
+        {
+            yield return new TestCaseData(
+                new HtmlElement("div", new HtmlText("test")),
+                "test"
+            );
+
+            yield return new TestCaseData(
+                new HtmlElement("div",
+                    new HtmlElement("a", new HtmlText("test1")),
+                    new HtmlElement("p", new HtmlText("test2")),
+                    new HtmlElement("div", new HtmlElement("a", new HtmlText("test3")))),
+                "test1test2test3"
+            );
+
+            yield return new TestCaseData(
+                new HtmlElement("div", new HtmlElement("span"), new HtmlElement("img")),
+                ""
+            );
+
+            yield return new TestCaseData(
+                new HtmlElement("div"),
+                ""
+            );
+        }
+
+        [Test]
+        [TestCaseSource(nameof(GetTestCases_GetInnerText))]
+        public void GetInnerText_Test(HtmlContainer container, string expectedInnerText)
+        {
+            // Act
+            var innerText = container.GetInnerText();
+
+            // Assert
+            Assert.That(innerText, Is.EqualTo(expectedInnerText));
         }
     }
 }

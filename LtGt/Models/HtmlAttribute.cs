@@ -1,11 +1,12 @@
-﻿using LtGt.Internal;
+﻿using System;
+using LtGt.Internal;
 
 namespace LtGt.Models
 {
     /// <summary>
     /// Represents an attribute node in HTML syntax tree.
     /// </summary>
-    public class HtmlAttribute : HtmlNode
+    public class HtmlAttribute : HtmlNode, IEquatable<HtmlAttribute>
     {
         /// <summary>
         /// Name of this attribute node.
@@ -32,6 +33,35 @@ namespace LtGt.Models
         public HtmlAttribute(string name)
             : this(name, null)
         {
+        }
+
+        /// <inheritdoc />
+        public bool Equals(HtmlAttribute other)
+        {
+            if (ReferenceEquals(null, other)) return false;
+            if (ReferenceEquals(this, other)) return true;
+
+            return string.Equals(Name, other.Name) &&
+                   string.Equals(Value, other.Value);
+        }
+
+        /// <inheritdoc />
+        public override bool Equals(object obj)
+        {
+            if (ReferenceEquals(null, obj)) return false;
+            if (ReferenceEquals(this, obj)) return true;
+            if (obj.GetType() != GetType()) return false;
+
+            return Equals((HtmlAttribute) obj);
+        }
+
+        /// <inheritdoc />
+        public override int GetHashCode()
+        {
+            unchecked
+            {
+                return ((Name?.GetHashCode() ?? 0) * 397) ^ (Value?.GetHashCode() ?? 0);
+            }
         }
 
         /// <inheritdoc />

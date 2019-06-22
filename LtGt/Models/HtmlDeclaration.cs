@@ -1,11 +1,12 @@
-﻿using LtGt.Internal;
+﻿using System;
+using LtGt.Internal;
 
 namespace LtGt.Models
 {
     /// <summary>
     /// Represents a declaration node in HTML syntax tree.
     /// </summary>
-    public class HtmlDeclaration : HtmlNode
+    public class HtmlDeclaration : HtmlNode, IEquatable<HtmlDeclaration>
     {
         /// <summary>
         /// Name of this declaration node.
@@ -24,6 +25,35 @@ namespace LtGt.Models
         {
             Name = name;
             Content = content;
+        }
+
+        /// <inheritdoc />
+        public bool Equals(HtmlDeclaration other)
+        {
+            if (ReferenceEquals(null, other)) return false;
+            if (ReferenceEquals(this, other)) return true;
+
+            return string.Equals(Name, other.Name) &&
+                   string.Equals(Content, other.Content);
+        }
+
+        /// <inheritdoc />
+        public override bool Equals(object obj)
+        {
+            if (ReferenceEquals(null, obj)) return false;
+            if (ReferenceEquals(this, obj)) return true;
+            if (obj.GetType() != GetType()) return false;
+
+            return Equals((HtmlDeclaration) obj);
+        }
+
+        /// <inheritdoc />
+        public override int GetHashCode()
+        {
+            unchecked
+            {
+                return ((Name?.GetHashCode() ?? 0) * 397) ^ (Content?.GetHashCode() ?? 0);
+            }
         }
 
         /// <inheritdoc />

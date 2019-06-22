@@ -14,5 +14,13 @@ namespace LtGt.Models
             : base(children)
         {
         }
+
+        /// <summary>
+        /// Initializes an instance of <see cref="HtmlDocument"/>.
+        /// </summary>
+        public HtmlDocument(params HtmlNode[] children)
+            : this((IReadOnlyList<HtmlNode>) children)
+        {
+        }
     }
 }

@@ -1,4 +1,5 @@
-﻿using LtGt.Models;
+﻿using System.Collections.Generic;
+using LtGt.Models;
 using NUnit.Framework;
 
 namespace LtGt.Tests
@@ -6,51 +7,80 @@ namespace LtGt.Tests
     [TestFixture]
     public class HtmlDocumentTests
     {
-        [Test]
-        public void GetHead_Test()
+        private static IEnumerable<TestCaseData> GetTestCases_GetHead()
         {
-            // Arrange
-            var document = HtmlParser.Default.ParseDocument(TestData.GetTestDocumentHtml());
+            yield return new TestCaseData(
+                new HtmlDocument(new HtmlElement("html", new HtmlElement("head"))),
+                new HtmlElement("head")
+            );
 
-            // Act
-            var head = document.GetHead();
-
-            // Assert
-            Assert.Multiple(() =>
-            {
-                Assert.That(head, Is.Not.Null);
-                Assert.That(head.Name, Is.EqualTo("head"), "Name");
-            });
+            yield return new TestCaseData(
+                new HtmlDocument(new HtmlElement("html")),
+                null
+            );
         }
 
         [Test]
-        public void GetBody_Test()
+        [TestCaseSource(nameof(GetTestCases_GetHead))]
+        public void GetHead_Test(HtmlDocument document, HtmlElement expectedElement)
         {
-            // Arrange
-            var document = HtmlParser.Default.ParseDocument(TestData.GetTestDocumentHtml());
-
             // Act
-            var body = document.GetBody();
+            var element = document.GetHead();
 
             // Assert
-            Assert.Multiple(() =>
-            {
-                Assert.That(body, Is.Not.Null);
-                Assert.That(body.Name, Is.EqualTo("body"), "Name");
-            });
+            Assert.That(element, Is.EqualTo(expectedElement));
+        }
+
+        private static IEnumerable<TestCaseData> GetTestCases_GetBody()
+        {
+            yield return new TestCaseData(
+                new HtmlDocument(new HtmlElement("html", new HtmlElement("body"))),
+                new HtmlElement("body")
+            );
+
+            yield return new TestCaseData(
+                new HtmlDocument(new HtmlElement("html")),
+                null
+            );
         }
 
         [Test]
-        public void GetTitle_Test()
+        [TestCaseSource(nameof(GetTestCases_GetBody))]
+        public void GetBody_Test(HtmlDocument document, HtmlElement expectedElement)
         {
-            // Arrange
-            var document = HtmlParser.Default.ParseDocument(TestData.GetTestDocumentHtml());
+            // Act
+            var element = document.GetBody();
 
+            // Assert
+            Assert.That(element, Is.EqualTo(expectedElement));
+        }
+
+        private static IEnumerable<TestCaseData> GetTestCases_GetTitle()
+        {
+            yield return new TestCaseData(
+                new HtmlDocument(
+                    new HtmlElement("html",
+                        new HtmlElement("head",
+                            new HtmlElement("title",
+                                new HtmlText("test"))))),
+                "test"
+            );
+
+            yield return new TestCaseData(
+                new HtmlDocument(new HtmlElement("html")),
+                null
+            );
+        }
+
+        [Test]
+        [TestCaseSource(nameof(GetTestCases_GetTitle))]
+        public void GetTitle_Test(HtmlDocument document, string expectedTitle)
+        {
             // Act
             var title = document.GetTitle();
 
             // Assert
-            Assert.That(title, Is.EqualTo("Test document"));
+            Assert.That(title, Is.EqualTo(expectedTitle));
         }
     }
 }
