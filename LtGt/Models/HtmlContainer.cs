@@ -10,7 +10,7 @@ namespace LtGt.Models
     public abstract class HtmlContainer : HtmlNode, IEquatable<HtmlContainer>
     {
         /// <summary>
-        /// Children inside of this container node.
+        /// Direct children of this container node.
         /// </summary>
         public IReadOnlyList<HtmlNode> Children { get; }
 

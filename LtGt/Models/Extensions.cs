@@ -22,7 +22,7 @@ namespace LtGt.Models
 
         /// <summary>
         /// Gets an attribute with a given name or null if not defined.
-        /// Name comparison is not case sensitive.
+        /// Attribute name comparison is not case sensitive.
         /// </summary>
         public static HtmlAttribute GetAttribute(this HtmlElement element, string name) =>
             element.GetAttributes().FirstOrDefault(a => string.Equals(a.Name, name, StringComparison.OrdinalIgnoreCase));
@@ -45,6 +45,7 @@ namespace LtGt.Models
 
         /// <summary>
         /// Gets whether the value of the 'class' attribute is matched by the given class name.
+        /// Element class name comparison is case sensitive.
         /// </summary>
         public static bool MatchesClassName(this HtmlElement element, string className)
         {
@@ -93,35 +94,35 @@ namespace LtGt.Models
 
         /// <summary>
         /// Gets an element that has given ID or null if not found.
-        /// ID comparison is case sensitive.
+        /// Element ID comparison is case sensitive.
         /// </summary>
         public static HtmlElement GetElementById(this HtmlContainer container, string id) =>
             container.GetChildElementsRecursively().FirstOrDefault(e => string.Equals(e.GetId(), id, StringComparison.Ordinal));
 
         /// <summary>
         /// Gets elements that have given tag name.
-        /// Tag name comparison is case sensitive.
+        /// Element tag name comparison is not case sensitive.
         /// </summary>
         public static IEnumerable<HtmlElement> GetElementsByTagName(this HtmlContainer container, string tagName) =>
-            container.GetChildElementsRecursively().Where(e => string.Equals(e.Name, tagName, StringComparison.Ordinal));
+            container.GetChildElementsRecursively().Where(e => string.Equals(e.Name, tagName, StringComparison.OrdinalIgnoreCase));
 
         /// <summary>
         /// Gets an element that has given tag name or null if not found.
-        /// Tag name comparison is case sensitive.
+        /// Element tag name comparison is not case sensitive.
         /// </summary>
         public static HtmlElement GetElementByTagName(this HtmlContainer container, string tagName) =>
             container.GetElementsByTagName(tagName).FirstOrDefault();
 
         /// <summary>
-        /// Gets elements that have given class name.
-        /// Class name comparison is case sensitive.
+        /// Gets elements that match given class name.
+        /// Element class name comparison is case sensitive.
         /// </summary>
         public static IEnumerable<HtmlElement> GetElementsByClassName(this HtmlContainer container, string className) =>
             container.GetChildElementsRecursively().Where(e => e.MatchesClassName(className));
 
         /// <summary>
-        /// Gets an element that has given class name or null if not found.
-        /// Class name comparison is case sensitive.
+        /// Gets an element that matches given class name or null if not found.
+        /// Element class name comparison is case sensitive.
         /// </summary>
         public static HtmlElement GetElementByClassName(this HtmlContainer container, string className) =>
             container.GetElementsByClassName(className).FirstOrDefault();
