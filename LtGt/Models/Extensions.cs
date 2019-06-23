@@ -59,9 +59,9 @@ namespace LtGt.Models
         }
 
         /// <summary>
-        /// Gets the individual classes in the 'class' attribute.
+        /// Gets the individual class names in the 'class' attribute separated by whitespace.
         /// </summary>
-        public static IReadOnlyList<string> GetClassList(this HtmlElement element)
+        public static IReadOnlyList<string> GetClassNames(this HtmlElement element)
         {
             element.GuardNotNull(nameof(element));
 
@@ -77,7 +77,7 @@ namespace LtGt.Models
             element.GuardNotNull(nameof(element));
             className.GuardNotNull(nameof(className));
 
-            var elementClassList = element.GetClassList();
+            var elementClassList = element.GetClassNames();
             var targetClassList = className.Split(new[] {' '}, StringSplitOptions.RemoveEmptyEntries);
 
             return targetClassList.All(c => elementClassList.Contains(c, StringComparer.Ordinal));

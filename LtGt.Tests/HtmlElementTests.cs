@@ -127,7 +127,7 @@ namespace LtGt.Tests
             Assert.That(className, Is.EqualTo(expectedClassName));
         }
 
-        private static IEnumerable<TestCaseData> GetTestCases_GetClassList()
+        private static IEnumerable<TestCaseData> GetTestCases_GetClassNames()
         {
             yield return new TestCaseData(
                 new HtmlElement("div", new HtmlAttribute("class", "test")),
@@ -146,14 +146,14 @@ namespace LtGt.Tests
         }
 
         [Test]
-        [TestCaseSource(nameof(GetTestCases_GetClassList))]
-        public void GetClassList_Test(HtmlElement element, IReadOnlyList<string> expectedClassList)
+        [TestCaseSource(nameof(GetTestCases_GetClassNames))]
+        public void GetClassNames_Test(HtmlElement element, IReadOnlyList<string> expectedClassList)
         {
             // Act
-            var classList = element.GetClassList();
+            var classNames = element.GetClassNames();
 
             // Assert
-            Assert.That(classList, Is.EqualTo(expectedClassList));
+            Assert.That(classNames, Is.EqualTo(expectedClassList));
         }
 
         private static IEnumerable<TestCaseData> GetTestCases_MatchesClassName()
