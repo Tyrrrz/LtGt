@@ -35,5 +35,46 @@ namespace LtGt.Tests
                 Assert.That(document.GetChildElementsRecursively(), Has.Exactly(expectedChildElementCount).Items, "Child elements");
             });
         }
+
+        private static IEnumerable<TestCaseData> GetTestCases_ParseNode()
+        {
+            yield return new TestCaseData(
+                // language=html
+                "<div class=\"test-class\">test text</div>",
+                new HtmlElement("div", new HtmlAttribute("class", "test-class"),
+                    new HtmlText("test text"))
+            );
+
+            yield return new TestCaseData(
+                // language=html
+                "test",
+                new HtmlText("test")
+            );
+
+            yield return new TestCaseData(
+                // language=html
+                "<div>&lt;test&gt;</div>",
+                new HtmlElement("div",
+                    new HtmlText("<test>"))
+            );
+
+            yield return new TestCaseData(
+                // language=html
+                "<div title=\"&lt;test title&gt;\">test text</div>",
+                new HtmlElement("div", new HtmlAttribute("title", "<test title>"),
+                    new HtmlText("test text"))
+            );
+        }
+
+        [Test]
+        [TestCaseSource(nameof(GetTestCases_ParseNode))]
+        public void ParseNode_Test(string source, HtmlNode expectedNode)
+        {
+            // Act
+            var node = HtmlParser.Default.ParseNode(source);
+
+            // Assert
+            Assert.That(node, Is.EqualTo(expectedNode));
+        }
     }
 }

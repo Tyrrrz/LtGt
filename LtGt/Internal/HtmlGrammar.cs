@@ -1,4 +1,5 @@
 ﻿using System.Linq;
+using System.Net;
 using LtGt.Models;
 using Sprache;
 
@@ -15,7 +16,7 @@ namespace LtGt.Internal
 
         public static readonly Parser<HtmlComment> HtmlComment =
             from open in Parse.String("<!--")
-            from content in Parse.AnyChar.Except(Parse.String("-->")).AtLeastOnce().Text().Token()
+            from content in Parse.AnyChar.Except(Parse.String("-->")).AtLeastOnce().Text().Select(WebUtility.HtmlDecode).Token()
             from close in Parse.String("-->")
             select new HtmlComment(content);
 
@@ -23,14 +24,14 @@ namespace LtGt.Internal
             from name in Parse.LetterOrDigit.Or(Parse.Char('-')).AtLeastOnce().Text()
             from eq in Parse.Char('=').Token()
             from quoteOpen in Parse.Char('"').Or(Parse.Char('\''))
-            from value in Parse.CharExcept(quoteOpen).Many().Text()
+            from value in Parse.CharExcept(quoteOpen).Many().Text().Select(WebUtility.HtmlDecode)
             from quoteClose in Parse.Char(quoteOpen)
             select new HtmlAttribute(name, value);
 
         private static readonly Parser<HtmlAttribute> HtmlAttributeWithUnquotedValue =
             from name in Parse.LetterOrDigit.Or(Parse.Char('-')).AtLeastOnce().Text()
             from eq in Parse.Char('=').Token()
-            from value in Parse.LetterOrDigit.Many().Text()
+            from value in Parse.LetterOrDigit.Many().Text().Select(WebUtility.HtmlDecode)
             select new HtmlAttribute(name, value);
 
         private static readonly Parser<HtmlAttribute> HtmlAttributeWithoutValue =
@@ -60,12 +61,13 @@ namespace LtGt.Internal
 
         public static readonly Parser<HtmlElement> HtmlElement = HtmlElementSelfClosing.Or(HtmlElementWithChildren);
 
-        public static readonly Parser<HtmlText> HtmlText = Parse.CharExcept('<').AtLeastOnce().Text().Select(t => new HtmlText(t));
+        public static readonly Parser<HtmlText> HtmlText =
+            Parse.CharExcept('<').AtLeastOnce().Text().Select(WebUtility.HtmlDecode).Select(t => new HtmlText(t));
 
         private static readonly Parser<HtmlNode> HtmlElementChild = HtmlElement.Or<HtmlNode>(HtmlText).Or(HtmlComment);
 
         public static readonly Parser<HtmlDocument> HtmlDocument =
-            from declarations in HtmlDeclaration.Token().Many()
+            from declarations in HtmlDeclaration.Token().AtLeastOnce()
             from children in HtmlElementChild.Token().Many()
             select new HtmlDocument(declarations.Concat(children).ToArray());
 
