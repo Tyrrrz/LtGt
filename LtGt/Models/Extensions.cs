@@ -196,27 +196,59 @@ namespace LtGt.Models
             return container.GetElementsByClassName(className).FirstOrDefault();
         }
 
+        private static string GetTextRepresentation(this HtmlElement element, bool isFirstNode)
+        {
+            if (string.Equals(element.Name, "script", StringComparison.OrdinalIgnoreCase) ||
+                string.Equals(element.Name, "style", StringComparison.OrdinalIgnoreCase) ||
+                string.Equals(element.Name, "select", StringComparison.OrdinalIgnoreCase) ||
+                string.Equals(element.Name, "canvas", StringComparison.OrdinalIgnoreCase) ||
+                string.Equals(element.Name, "video", StringComparison.OrdinalIgnoreCase) ||
+                string.Equals(element.Name, "iframe", StringComparison.OrdinalIgnoreCase))
+                return "";
+
+            if (string.Equals(element.Name, "br", StringComparison.OrdinalIgnoreCase))
+                return Environment.NewLine;
+
+            var shouldPrependNewLine =
+                !isFirstNode &&
+                (string.Equals(element.Name, "p", StringComparison.OrdinalIgnoreCase) ||
+                 string.Equals(element.Name, "caption", StringComparison.OrdinalIgnoreCase) ||
+                 string.Equals(element.Name, "div", StringComparison.OrdinalIgnoreCase) ||
+                 string.Equals(element.Name, "li", StringComparison.OrdinalIgnoreCase));
+
+            if (shouldPrependNewLine)
+                return Environment.NewLine + element.GetTextRepresentation();
+
+            return element.GetTextRepresentation();
+        }
+
+        private static string GetTextRepresentation(this HtmlContainer container)
+        {
+            var buffer = new StringBuilder();
+
+            foreach (var child in container.Children)
+            {
+                if (child is HtmlText childText)
+                {
+                    buffer.Append(childText.Content);
+                }
+                else if (child is HtmlElement childElement)
+                {
+                    buffer.Append(childElement.GetTextRepresentation(buffer.Length == 0));
+                }
+            }
+
+            return buffer.ToString();
+        }
+
         /// <summary>
-        /// Gets inner text.
+        /// Gets the child nodes formatted as text.
         /// </summary>
         public static string GetInnerText(this HtmlContainer container)
         {
             container.GuardNotNull(nameof(container));
 
-            var buffer = new StringBuilder();
-
-            foreach (var childNode in container.GetChildNodesRecursively())
-            {
-                // Text node
-                if (childNode is HtmlText childText)
-                    buffer.Append(childText.Content);
-
-                // Break row node
-                if (childNode is HtmlElement childElement && string.Equals(childElement.Name, "br", StringComparison.OrdinalIgnoreCase))
-                    buffer.AppendLine();
-            }
-
-            return buffer.ToString();
+            return container.GetTextRepresentation();
         }
     }
 

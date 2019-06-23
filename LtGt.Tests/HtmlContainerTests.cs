@@ -180,7 +180,30 @@ namespace LtGt.Tests
             yield return new TestCaseData(
                 new HtmlElement("div",
                     new HtmlText("test1"),
+                    new HtmlText("test2")),
+                "test1test2"
+            );
+
+            yield return new TestCaseData(
+                new HtmlElement("div",
+                    new HtmlText("test1"),
+                    new HtmlText("test2"),
+                    new HtmlElement("br")),
+                $"test1test2{Environment.NewLine}"
+            );
+
+            yield return new TestCaseData(
+                new HtmlElement("div",
+                    new HtmlText("test1"),
                     new HtmlElement("br"),
+                    new HtmlText("test2")),
+                $"test1{Environment.NewLine}test2"
+            );
+
+            yield return new TestCaseData(
+                new HtmlElement("div",
+                    new HtmlText("test1"),
+                    new HtmlElement("div"),
                     new HtmlText("test2")),
                 $"test1{Environment.NewLine}test2"
             );
@@ -190,7 +213,7 @@ namespace LtGt.Tests
                     new HtmlElement("a", new HtmlText("test1")),
                     new HtmlElement("p", new HtmlText("test2")),
                     new HtmlElement("div", new HtmlElement("a", new HtmlText("test3")))),
-                "test1test2test3"
+                $"test1{Environment.NewLine}test2{Environment.NewLine}test3"
             );
 
             yield return new TestCaseData(
