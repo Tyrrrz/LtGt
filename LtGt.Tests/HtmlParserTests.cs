@@ -41,7 +41,8 @@ namespace LtGt.Tests
             yield return new TestCaseData(
                 // language=html
                 "<div class=\"test-class\">test text</div>",
-                new HtmlElement("div", new HtmlAttribute("class", "test-class"),
+                new HtmlElement("div",
+                    new HtmlAttribute("class", "test-class"),
                     new HtmlText("test text"))
             );
 
@@ -61,8 +62,54 @@ namespace LtGt.Tests
             yield return new TestCaseData(
                 // language=html
                 "<div title=\"&lt;test title&gt;\">test text</div>",
-                new HtmlElement("div", new HtmlAttribute("title", "<test title>"),
+                new HtmlElement("div",
+                    new HtmlAttribute("title", "<test title>"),
                     new HtmlText("test text"))
+            );
+
+            yield return new TestCaseData(
+                // language=html
+                "<div >test</div>",
+                new HtmlElement("div",
+                    new HtmlText("test"))
+            );
+
+            yield return new TestCaseData(
+                // language=html
+                "<div attr1=\"val1\"  attr2=val2 attr3='val3' attr4>test</div>",
+                new HtmlElement("div",
+                    new HtmlAttribute("attr1", "val1"),
+                    new HtmlAttribute("attr2", "val2"),
+                    new HtmlAttribute("attr3", "val3"),
+                    new HtmlAttribute("attr4"),
+                    new HtmlText("test"))
+            );
+
+            yield return new TestCaseData(
+                // language=html
+                "<div></div>",
+                new HtmlElement("div")
+            );
+
+            yield return new TestCaseData(
+                // language=html
+                "<div />",
+                new HtmlElement("div")
+            );
+
+            yield return new TestCaseData(
+                // language=html
+                "<div>",
+                new HtmlElement("div")
+            );
+
+            yield return new TestCaseData(
+                // language=html
+                "<div>test1<br>test2</div>",
+                new HtmlElement("div",
+                    new HtmlText("test1"),
+                    new HtmlElement("br"),
+                    new HtmlText("test2"))
             );
         }
 
