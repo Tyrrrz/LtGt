@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using LtGt.Models;
 using NUnit.Framework;
@@ -174,6 +175,14 @@ namespace LtGt.Tests
             yield return new TestCaseData(
                 new HtmlElement("div", new HtmlText("test")),
                 "test"
+            );
+
+            yield return new TestCaseData(
+                new HtmlElement("div",
+                    new HtmlText("test1"),
+                    new HtmlElement("br"),
+                    new HtmlText("test2")),
+                $"test1{Environment.NewLine}test2"
             );
 
             yield return new TestCaseData(

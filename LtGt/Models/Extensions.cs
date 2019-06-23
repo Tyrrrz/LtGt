@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Text;
 using LtGt.Internal;
 
 namespace LtGt.Models
@@ -202,11 +203,20 @@ namespace LtGt.Models
         {
             container.GuardNotNull(nameof(container));
 
-            var textNodes = container.GetChildNodesRecursively().OfType<HtmlText>().ToArray();
+            var buffer = new StringBuilder();
 
-            return textNodes.Length == 1
-                ? textNodes.Single().Content.Trim()
-                : textNodes.Select(n => n.Content).Concatenate().Trim();
+            foreach (var childNode in container.GetChildNodesRecursively())
+            {
+                // Text node
+                if (childNode is HtmlText childText)
+                    buffer.Append(childText.Content);
+
+                // Break row node
+                if (childNode is HtmlElement childElement && string.Equals(childElement.Name, "br", StringComparison.OrdinalIgnoreCase))
+                    buffer.AppendLine();
+            }
+
+            return buffer.ToString();
         }
     }
 
