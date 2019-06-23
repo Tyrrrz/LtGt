@@ -157,6 +157,9 @@ namespace LtGt.Models
             container.GuardNotNull(nameof(container));
             tagName.GuardNotNull(nameof(tagName));
 
+            if (string.Equals(tagName, "*", StringComparison.OrdinalIgnoreCase))
+                return container.GetChildElementsRecursively();
+
             return container.GetChildElementsRecursively().Where(e => string.Equals(e.Name, tagName, StringComparison.OrdinalIgnoreCase));
         }
 
