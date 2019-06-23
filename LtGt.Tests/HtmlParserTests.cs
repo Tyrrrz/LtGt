@@ -69,6 +69,13 @@ namespace LtGt.Tests
 
             yield return new TestCaseData(
                 // language=html
+                "<div><![CDATA[<test>]]></div>",
+                new HtmlElement("div",
+                    new HtmlText("<test>"))
+            );
+
+            yield return new TestCaseData(
+                // language=html
                 "<div >test</div>",
                 new HtmlElement("div",
                     new HtmlText("test"))

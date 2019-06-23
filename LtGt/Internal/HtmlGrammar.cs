@@ -84,8 +84,17 @@ namespace LtGt.Internal
 
         // Text
 
-        public static readonly Parser<HtmlText> HtmlText =
+        private static readonly Parser<HtmlText> CDataHtmlText =
+            from open in Parse.String("<![CDATA[")
+            from content in Parse.AnyChar.Except(Parse.String("]]>")).Many().Text()
+            from close in Parse.String("]]>")
+            select new HtmlText(content);
+
+        public static readonly Parser<HtmlText> RegularHtmlText =
             Parse.CharExcept('<').AtLeastOnce().Text().Select(WebUtility.HtmlDecode).Select(t => new HtmlText(t));
+
+
+        public static readonly Parser<HtmlText> HtmlText = CDataHtmlText.Or(RegularHtmlText);
 
         // Document
 
