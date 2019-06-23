@@ -23,8 +23,8 @@ namespace LtGt.Models
         /// </summary>
         public HtmlDeclaration(string name, string content)
         {
-            Name = name;
-            Content = content;
+            Name = name.GuardNotNull(nameof(name));
+            Content = content.GuardNotNull(nameof(content));
         }
 
         /// <inheritdoc />

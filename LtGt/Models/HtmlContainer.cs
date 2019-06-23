@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using LtGt.Internal;
 
 namespace LtGt.Models
 {
@@ -19,7 +20,7 @@ namespace LtGt.Models
         /// </summary>
         protected HtmlContainer(IReadOnlyList<HtmlNode> children)
         {
-            Children = children;
+            Children = children.GuardNotNull(nameof(children));
         }
 
         /// <inheritdoc />

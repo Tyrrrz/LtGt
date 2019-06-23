@@ -1,4 +1,5 @@
 ﻿using System;
+using LtGt.Internal;
 
 namespace LtGt.Models
 {
@@ -17,7 +18,7 @@ namespace LtGt.Models
         /// </summary>
         public HtmlComment(string content)
         {
-            Content = content;
+            Content = content.GuardNotNull(nameof(content));
         }
 
         /// <inheritdoc />

@@ -1,4 +1,5 @@
 ﻿using System.IO;
+using LtGt.Internal;
 using LtGt.Models;
 
 namespace LtGt
@@ -13,7 +14,11 @@ namespace LtGt
         /// </summary>
         public static HtmlDocument LoadDocument(this IHtmlParser parser, TextReader reader)
         {
+            parser.GuardNotNull(nameof(parser));
+            reader.GuardNotNull(nameof(reader));
+
             var source = reader.ReadToEnd();
+
             return parser.ParseDocument(source);
         }
 
@@ -22,7 +27,11 @@ namespace LtGt
         /// </summary>
         public static HtmlNode LoadNode(this IHtmlParser parser, TextReader reader)
         {
+            parser.GuardNotNull(nameof(parser));
+            reader.GuardNotNull(nameof(reader));
+
             var source = reader.ReadToEnd();
+
             return parser.ParseNode(source);
         }
 
@@ -32,6 +41,9 @@ namespace LtGt
         /// </summary>
         public static HtmlDocument LoadDocument(this IHtmlParser parser, string filePath)
         {
+            parser.GuardNotNull(nameof(parser));
+            filePath.GuardNotNull(nameof(filePath));
+
             using (var reader = File.OpenText(filePath))
                 return parser.LoadDocument(reader);
         }
@@ -41,6 +53,9 @@ namespace LtGt
         /// </summary>
         public static HtmlNode LoadNode(this IHtmlParser parser, string filePath)
         {
+            parser.GuardNotNull(nameof(parser));
+            filePath.GuardNotNull(nameof(filePath));
+
             using (var reader = File.OpenText(filePath))
                 return parser.LoadNode(reader);
         }

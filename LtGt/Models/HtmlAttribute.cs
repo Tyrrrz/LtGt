@@ -23,8 +23,8 @@ namespace LtGt.Models
         /// </summary>
         public HtmlAttribute(string name, string value)
         {
-            Name = name;
-            Value = value;
+            Name = name.GuardNotNull(nameof(name));
+            Value = value; // value can be null
         }
 
         /// <summary>
