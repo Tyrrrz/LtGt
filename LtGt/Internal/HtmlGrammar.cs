@@ -10,7 +10,7 @@ namespace LtGt.Internal
         private static Parser<T> TokenLeft<T>(this Parser<T> parser) => i =>
         {
             while (char.IsWhiteSpace(i.Current))
-                i.Advance();
+                i = i.Advance();
 
             return parser(i);
         };
