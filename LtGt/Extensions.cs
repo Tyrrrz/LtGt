@@ -10,7 +10,7 @@ namespace LtGt
     public static class Extensions
     {
         /// <summary>
-        /// Parses an HTML document from source code provided by <see cref="TextReader"/>.
+        /// Parses an HTML document from <see cref="TextReader"/>.
         /// </summary>
         public static HtmlDocument LoadDocument(this IHtmlParser parser, TextReader reader)
         {
@@ -23,7 +23,7 @@ namespace LtGt
         }
 
         /// <summary>
-        /// Parses an HTML node from source code provided by <see cref="TextReader"/>.
+        /// Parses an HTML node from <see cref="TextReader"/>.
         /// </summary>
         public static HtmlNode LoadNode(this IHtmlParser parser, TextReader reader)
         {
@@ -35,9 +35,22 @@ namespace LtGt
             return parser.ParseNode(source);
         }
 
+        /// <summary>
+        /// Renders an HTML node to <see cref="TextWriter"/>.
+        /// </summary>
+        public static void SaveNode(this IHtmlRenderer renderer, HtmlNode node, TextWriter writer)
+        {
+            renderer.GuardNotNull(nameof(renderer));
+            node.GuardNotNull(nameof(node));
+            writer.GuardNotNull(nameof(writer));
+
+            var source = renderer.RenderNode(node);
+            writer.Write(source);
+        }
+
 #if !NETSTANDARD1_0
         /// <summary>
-        /// Parses an HTML document from source file.
+        /// Parses an HTML document from a file.
         /// </summary>
         public static HtmlDocument LoadDocument(this IHtmlParser parser, string filePath)
         {
@@ -49,7 +62,7 @@ namespace LtGt
         }
 
         /// <summary>
-        /// Parses an HTML node from source file.
+        /// Parses an HTML node from a file.
         /// </summary>
         public static HtmlNode LoadNode(this IHtmlParser parser, string filePath)
         {
@@ -58,6 +71,19 @@ namespace LtGt
 
             using (var reader = File.OpenText(filePath))
                 return parser.LoadNode(reader);
+        }
+
+        /// <summary>
+        /// Renders an HTML node to a file.
+        /// </summary>
+        public static void SaveNode(this IHtmlRenderer renderer, HtmlNode node, string filePath)
+        {
+            renderer.GuardNotNull(nameof(renderer));
+            node.GuardNotNull(nameof(node));
+            filePath.GuardNotNull(nameof(filePath));
+
+            using (var writer = File.CreateText(filePath))
+                renderer.SaveNode(node, writer);
         }
 #endif
     }
