@@ -57,6 +57,6 @@ namespace LtGt.Models
         }
 
         /// <inheritdoc />
-        public override string ToString() => !Content.IsNullOrWhiteSpace() ? $"Name: {Content}" : Name;
+        public override string ToString() => $"<!{Name} {Content}>";
     }
 }
