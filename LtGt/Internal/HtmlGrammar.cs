@@ -62,6 +62,17 @@ namespace LtGt.Internal
 
         private static readonly Parser<string> HtmlElementName = Parse.LetterOrDigit.AtLeastOnce().Text();
 
+        private static readonly Parser<HtmlElement> RawTextHtmlElement =
+            from ltOpen in Parse.Char('<')
+            from nameOpen in Parse.IgnoreCase("script").Or(Parse.IgnoreCase("style")).Text()
+            from attributes in HtmlAttribute.Token().Many()
+            from gtOpen in Parse.Char('>').TokenLeft()
+            from text in Parse.AnyChar.Except(Parse.String($"</{nameOpen}")).Many().Text().Select(t => t.Trim())
+            from ltClose in Parse.String("</")
+            from nameClose in Parse.String(nameOpen)
+            from gtClose in Parse.Char('>').TokenLeft()
+            select new HtmlElement(nameOpen, attributes.Concat<HtmlNode>(new[] { new HtmlText(text) }).ToArray());
+
         private static readonly Parser<HtmlElement> HtmlElementWithChildren =
             from ltOpen in Parse.Char('<')
             from nameOpen in HtmlElementName
@@ -80,7 +91,7 @@ namespace LtGt.Internal
             from close in Parse.String("/>").Or(Parse.String(">")).TokenLeft()
             select new HtmlElement(name, attributes.ToArray<HtmlNode>());
 
-        public static readonly Parser<HtmlElement> HtmlElement = HtmlElementWithChildren.Or(SelfClosingHtmlElement);
+        public static readonly Parser<HtmlElement> HtmlElement = RawTextHtmlElement.Or(HtmlElementWithChildren).Or(SelfClosingHtmlElement);
 
         // Text
 

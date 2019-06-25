@@ -76,6 +76,20 @@ namespace LtGt.Tests
 
             yield return new TestCaseData(
                 // language=html
+                "<script>if (a < 5) console.log(a);</script>",
+                new HtmlElement("script",
+                    new HtmlText("if (a < 5) console.log(a);"))
+            );
+
+            yield return new TestCaseData(
+                // language=html
+                "<style>div { display: inline-block; }</style>",
+                new HtmlElement("style",
+                    new HtmlText("div { display: inline-block; }"))
+            );
+
+            yield return new TestCaseData(
+                // language=html
                 "<div >test</div>",
                 new HtmlElement("div",
                     new HtmlText("test"))
