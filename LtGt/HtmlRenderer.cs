@@ -9,7 +9,7 @@ namespace LtGt
     /// <summary>
     /// HTML renderer.
     /// </summary>
-    public class HtmlRenderer : IHtmlRenderer
+    public partial class HtmlRenderer : IHtmlRenderer
     {
         private void RenderAttribute(HtmlAttribute attribute, StringBuilder buffer)
         {
@@ -95,5 +95,13 @@ namespace LtGt
 
             return buffer.ToString();
         }
+    }
+
+    public partial class HtmlRenderer
+    {
+        /// <summary>
+        /// Default instance of <see cref="HtmlRenderer"/>.
+        /// </summary>
+        public static IHtmlRenderer Default { get; } = new HtmlRenderer();
     }
 }

@@ -28,13 +28,9 @@ namespace LtGt.Tests
         [TestCaseSource(nameof(GetTestCases_RenderNode))]
         public void RenderNode_Test(HtmlNode node)
         {
-            // Arrange
-            var renderer = new HtmlRenderer();
-            var parser = new HtmlParser();
-
             // Act
-            var html = renderer.RenderNode(node);
-            var roundTripNode = parser.ParseNode(html);
+            var html = HtmlRenderer.Default.RenderNode(node);
+            var roundTripNode = HtmlParser.Default.ParseNode(html);
 
             // Assert
             // TODO: the error message from this is useless, need to make a custom assert
