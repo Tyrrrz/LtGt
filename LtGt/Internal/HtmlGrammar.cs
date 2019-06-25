@@ -20,7 +20,7 @@ namespace LtGt.Internal
         public static readonly Parser<HtmlDeclaration> HtmlDeclaration =
             from open in Parse.String("<!")
             from name in Parse.LetterOrDigit.AtLeastOnce().Text()
-            from value in Parse.CharExcept('>').Many().Text()
+            from value in Parse.CharExcept('>').Many().Text().Select(t => t.Trim())
             from close in Parse.Char('>')
             select new HtmlDeclaration(name, value);
 
@@ -28,7 +28,7 @@ namespace LtGt.Internal
 
         public static readonly Parser<HtmlComment> HtmlComment =
             from open in Parse.String("<!--")
-            from content in Parse.AnyChar.Except(Parse.String("-->")).Many().Text().Select(WebUtility.HtmlDecode).Token()
+            from content in Parse.AnyChar.Except(Parse.String("-->")).Many().Text().Select(WebUtility.HtmlDecode).Select(t => t.Trim())
             from close in Parse.String("-->")
             select new HtmlComment(content);
 
