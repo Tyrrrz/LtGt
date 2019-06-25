@@ -91,7 +91,7 @@ namespace LtGt.Internal
             select new HtmlText(content);
 
         public static readonly Parser<HtmlText> RegularHtmlText =
-            Parse.CharExcept('<').AtLeastOnce().Text().Select(WebUtility.HtmlDecode).Select(t => new HtmlText(t));
+            Parse.CharExcept('<').AtLeastOnce().Text().Select(WebUtility.HtmlDecode).Select(t => t.Trim()).Select(t => new HtmlText(t));
 
 
         public static readonly Parser<HtmlText> HtmlText = CDataHtmlText.Or(RegularHtmlText);
