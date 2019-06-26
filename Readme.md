@@ -28,7 +28,7 @@ LtGt is a minimalistic library for working with HTML. It can be used to parse HT
 To parse an HTML document, you may create a new instance of `HtmlParser` or use a singleton `HtmlParser.Default`.
 
 ```c#
-const string html = @"<doctype html>
+const string html = @"<!doctype html>
 <html>
   <head>
     <title>Document</title>
@@ -43,7 +43,7 @@ var document = HtmlParser.Default.ParseDocument(html);
 
 ### Parse a fragment
 
-Besides parsing a full document, you can also parse any other node.
+Besides parsing a full document, you can also parse any other type of node.
 
 ```c#
 const string html = "<div id=\"some-element\"><a href=\"https://example.com\">Link</a></div>";
@@ -55,7 +55,7 @@ var element = (HtmlElement) node; // we assume we're dealing with an element
 
 ### Find specific element
 
-There are many extension methods that should help work with DOM more easily.
+There are many extension methods that should make working with DOM simple.
 
 ```c#
 var elem1 = document.GetElementById("menu-bar");
@@ -77,6 +77,8 @@ var element = new HtmlElement("div",
     new HtmlText("Hello world"));
 
 var html = HtmlRenderer.Default.RenderNode(element);
+
+// <div id="main">Hello world</div>
 ```
 
 ## Libraries used
