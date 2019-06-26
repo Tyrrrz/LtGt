@@ -33,7 +33,6 @@ namespace LtGt.Tests
             var roundTripNode = HtmlParser.Default.ParseNode(html);
 
             // Assert
-            // TODO: the error message from this is useless, need to make a custom assert
             Assert.That(roundTripNode, Is.EqualTo(node));
         }
     }
