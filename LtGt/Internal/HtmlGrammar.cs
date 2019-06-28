@@ -88,7 +88,7 @@ namespace LtGt.Internal
 
         private static readonly Parser<HtmlElement> RawTextHtmlElement =
             from ltOpen in Parse.Char('<')
-            from nameOpen in Parse.IgnoreCase("script").Or(Parse.IgnoreCase("style")).Text()
+            from nameOpen in HtmlElementName.Where(IsRawTextElement)
             from attributes in HtmlAttribute.Token().Many()
             from gtOpen in Parse.Char('>').TokenLeft()
             from text in Parse.AnyChar.Except(Parse.String($"</{nameOpen}")).Many().Text().Select(t => t.Trim())
