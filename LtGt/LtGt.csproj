@@ -3,11 +3,11 @@
   <PropertyGroup>
     <TargetFrameworks>net45;netstandard1.0;netstandard2.0</TargetFrameworks>
     <LangVersion>latest</LangVersion>
-    <Version>0.0.1</Version>
+    <Version>0.0.2</Version>
     <Company>Tyrrrz</Company>
     <Authors>$(Company)</Authors>
     <Copyright>Copyright (C) Alexey Golub</Copyright>
-    <Description>Lightweight read-only HTML parser</Description>
+    <Description>Lightweight HTML processor</Description>
     <PackageTags>html parser net core</PackageTags>
     <PackageProjectUrl>https://github.com/Tyrrrz/LtGt</PackageProjectUrl>
     <PackageReleaseNotes>https://github.com/Tyrrrz/LtGt/blob/master/Changelog.md</PackageReleaseNotes>
@@ -15,10 +15,9 @@
     <PackageLicenseExpression>MIT</PackageLicenseExpression>
     <RepositoryUrl>https://github.com/Tyrrrz/LtGt</RepositoryUrl>
     <RepositoryType>git</RepositoryType>
-    <PackageRequireLicenseAcceptance>True</PackageRequireLicenseAcceptance>
-    <GeneratePackageOnBuild>False</GeneratePackageOnBuild>
+    <PackageRequireLicenseAcceptance>False</PackageRequireLicenseAcceptance>
+    <GeneratePackageOnBuild>True</GeneratePackageOnBuild>
     <DocumentationFile>bin\$(Configuration)\$(TargetFramework)\$(AssemblyName).xml</DocumentationFile>
-
   </PropertyGroup>
 
   <ItemGroup>
