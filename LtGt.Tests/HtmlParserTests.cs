@@ -11,8 +11,7 @@ namespace LtGt.Tests
         {
             yield return new TestCaseData(
                 // language=html
-                @"
-<!doctype html>
+                @"<!doctype html>
 <html>
     <head>
         <title>Test document</title>
@@ -113,6 +112,14 @@ namespace LtGt.Tests
             yield return new TestCaseData(
                 // language=html
                 "<div></div>",
+                new HtmlElement("div")
+            );
+
+            yield return new TestCaseData(
+                // language=html
+                @"<div>
+
+                  </div>",
                 new HtmlElement("div")
             );
 

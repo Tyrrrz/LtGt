@@ -106,10 +106,24 @@ namespace LtGt.Internal
             from attributes in HtmlAttribute.Token().Many()
             from gtOpen in Parse.Char('>').TokenLeft()
             from text in Parse.AnyChar.Except(Parse.String($"</{nameOpen}")).Many().Text().Select(t => t.Trim())
-            from ltClose in Parse.String("</")
+            from ltClose in Parse.String("</").TokenLeft()
             from nameClose in Parse.String(nameOpen)
             from gtClose in Parse.Char('>').TokenLeft()
             select new HtmlElement(nameOpen, attributes.ToArray(), new[] {new HtmlText(text)});
+
+        private static readonly Parser<HtmlElement> VoidHtmlElement =
+            from open in Parse.Char('<')
+            from name in HtmlElementName.Where(IsVoidElement)
+            from attributes in HtmlAttribute.Token().Many()
+            from close in Parse.Char('>').TokenLeft()
+            select new HtmlElement(name, attributes.ToArray());
+
+        private static readonly Parser<HtmlElement> SelfClosingHtmlElement =
+            from open in Parse.Char('<')
+            from name in HtmlElementName
+            from attributes in HtmlAttribute.Token().Many()
+            from close in Parse.String("/>").TokenLeft()
+            select new HtmlElement(name, attributes.ToArray());
 
         private static readonly Parser<HtmlElement> NormalHtmlElement =
             from ltOpen in Parse.Char('<')
@@ -117,20 +131,13 @@ namespace LtGt.Internal
             from attributes in HtmlAttribute.Token().Many()
             from gtOpen in Parse.Char('>').TokenLeft()
             from children in ElementChildHtmlNode.Token().Many()
-            from ltClose in Parse.String("</")
+            from ltClose in Parse.String("</").TokenLeft()
             from nameClose in Parse.String(nameOpen)
             from gtClose in Parse.Char('>').TokenLeft()
             select new HtmlElement(nameOpen, attributes.ToArray(), children.ToArray());
 
-        private static readonly Parser<HtmlElement> SelfClosingHtmlElement =
-            from open in Parse.Char('<')
-            from name in HtmlElementName
-            from attributes in HtmlAttribute.Token().Many()
-            from close in Parse.String("/>").Or(Parse.String(">")).TokenLeft()
-            select new HtmlElement(name, attributes.ToArray());
-
         public static readonly Parser<HtmlElement> HtmlElement =
-            RawTextHtmlElement.Or(NormalHtmlElement).Or(SelfClosingHtmlElement);
+            RawTextHtmlElement.Or(VoidHtmlElement).Or(SelfClosingHtmlElement).Or(NormalHtmlElement);
 
         // Document
 
