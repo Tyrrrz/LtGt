@@ -84,7 +84,6 @@ var html = HtmlRenderer.Default.RenderNode(element);
 
 - [Sprache](https://github.com/Sprache/Sprache)
 - [NUnit](https://github.com/nunit/nunit)
-- [Tyrrrz.Extensions](https://github.com/Tyrrrz/Extensions)
 
 ## Donate
 
