@@ -31,49 +31,50 @@ namespace LtGt.Internal
             return this;
         }
 
-        private HtmlStringBuilder Append(HtmlComment comment) =>
-            Append("<!-- ").Append(comment.Content).Append(" -->");
-
         private HtmlStringBuilder Append(HtmlDeclaration declaration) =>
             Append("<!").Append(declaration.Name).Append(' ').Append(declaration.Content).Append('>');
-
-        private HtmlStringBuilder Append(HtmlText text) =>
-            HtmlGrammar.IsRawTextElement(_parentElements.Peek().Name)
-                ? Append(text.Content)
-                : Append(WebUtility.HtmlEncode(text.Content));
 
         private HtmlStringBuilder Append(HtmlAttribute attribute) =>
             attribute.Value != null
                 ? Append(attribute.Name).Append('=').Append('"').Append(WebUtility.HtmlEncode(attribute.Value)).Append('"')
                 : Append(attribute.Name);
 
+        private HtmlStringBuilder Append(HtmlComment comment) =>
+            Append("<!-- ").Append(comment.Content).Append(" -->");
+
+        private HtmlStringBuilder Append(HtmlText text) =>
+            HtmlGrammar.IsRawTextElement(_parentElements.Peek().Name)
+                ? Append(text.Content)
+                : Append(WebUtility.HtmlEncode(text.Content));
+
         private HtmlStringBuilder Append(HtmlElement element)
         {
             Append('<').Append(element.Name);
 
-            foreach (var attribute in element.GetAttributes())
+            foreach (var attribute in element.Attributes)
                 Append(' ').Append(attribute);
 
             Append('>');
 
-            var nonAttributeChildren = element.Children.Except(element.GetAttributes()).ToArray();
-            if (nonAttributeChildren.Any() && !HtmlGrammar.IsVoidElement(element.Name))
-            {
-                _parentElements.Push(element);
+            if (HtmlGrammar.IsVoidElement(element.Name) && !element.Children.Any())
+                return this;
 
-                foreach (var node in nonAttributeChildren)
-                    AppendLine().Append(node);
+            _parentElements.Push(element);
 
-                _parentElements.Pop();
+            foreach (var child in element.Children)
+                AppendLine().Append(child);
 
-                AppendLine().Append("</").Append(element.Name).Append('>');
-            }
+            _parentElements.Pop();
+
+            AppendLine().Append("</").Append(element.Name).Append('>');
 
             return this;
         }
 
         private HtmlStringBuilder Append(HtmlDocument document)
         {
+            Append(document.Declaration).AppendLine();
+
             foreach (var child in document.Children)
                 Append(child).AppendLine();
 
@@ -85,14 +86,8 @@ namespace LtGt.Internal
             if (node is HtmlComment comment)
                 return Append(comment);
 
-            if (node is HtmlDeclaration declaration)
-                return Append(declaration);
-
             if (node is HtmlText text)
                 return Append(text);
-
-            if (node is HtmlAttribute attribute)
-                return Append(attribute);
 
             if (node is HtmlElement element)
                 return Append(element);

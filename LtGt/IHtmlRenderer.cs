@@ -3,7 +3,7 @@
 namespace LtGt
 {
     /// <summary>
-    /// Provides an interface to render an abstract syntax tree into HTML.
+    /// Provides an interface to render HTML from its object model representation.
     /// </summary>
     public interface IHtmlRenderer
     {

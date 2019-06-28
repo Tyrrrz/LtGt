@@ -4,9 +4,9 @@ using LtGt.Internal;
 namespace LtGt.Models
 {
     /// <summary>
-    /// Represents a declaration node in HTML syntax tree.
+    /// Represents a declaration entity in HTML document object model.
     /// </summary>
-    public class HtmlDeclaration : HtmlNode, IEquatable<HtmlDeclaration>
+    public partial class HtmlDeclaration : HtmlEntity, IEquatable<HtmlDeclaration>
     {
         /// <summary>
         /// Name of this declaration node.
@@ -48,15 +48,17 @@ namespace LtGt.Models
         }
 
         /// <inheritdoc />
-        public override int GetHashCode()
-        {
-            unchecked
-            {
-                return ((Name?.GetHashCode() ?? 0) * 397) ^ (Content?.GetHashCode() ?? 0);
-            }
-        }
+        public override int GetHashCode() => HashCodeBuilder.Combine(Name, Content);
 
         /// <inheritdoc />
         public override string ToString() => $"<!{Name} {Content}>";
+    }
+
+    public partial class HtmlDeclaration
+    {
+        /// <summary>
+        /// HTML document type declaration.
+        /// </summary>
+        public static HtmlDeclaration DoctypeHtml { get; } = new HtmlDeclaration("doctype", "html");
     }
 }

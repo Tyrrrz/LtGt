@@ -48,14 +48,6 @@ namespace LtGt.Internal
             from close in Parse.Char('>')
             select new HtmlDeclaration(name, value);
 
-        // Comment
-
-        public static readonly Parser<HtmlComment> HtmlComment =
-            from open in Parse.String("<!--")
-            from content in Parse.AnyChar.Except(Parse.String("-->")).Many().Text().Select(WebUtility.HtmlDecode).Select(t => t.Trim())
-            from close in Parse.String("-->")
-            select new HtmlComment(content);
-
         // Attribute
 
         private static readonly Parser<string> HtmlAttributeName =
@@ -82,6 +74,28 @@ namespace LtGt.Internal
         public static readonly Parser<HtmlAttribute> HtmlAttribute =
             QuotedHtmlAttribute.Or(UnquotedHtmlAttribute).Or(ValuelessHtmlAttribute);
 
+        // Comment
+
+        public static readonly Parser<HtmlComment> HtmlComment =
+            from open in Parse.String("<!--")
+            from content in Parse.AnyChar.Except(Parse.String("-->")).Many().Text().Select(WebUtility.HtmlDecode).Select(t => t.Trim())
+            from close in Parse.String("-->")
+            select new HtmlComment(content);
+
+        // Text
+
+        private static readonly Parser<HtmlText> CDataHtmlText =
+            from open in Parse.String("<![CDATA[")
+            from content in Parse.AnyChar.Except(Parse.String("]]>")).Many().Text().Select(t => t.Trim())
+            from close in Parse.String("]]>")
+            select new HtmlText(content);
+
+        public static readonly Parser<HtmlText> NormalHtmlText =
+            Parse.CharExcept('<').AtLeastOnce().Text().Select(WebUtility.HtmlDecode).Select(t => t.Trim()).Select(t => new HtmlText(t));
+
+
+        public static readonly Parser<HtmlText> HtmlText = CDataHtmlText.Or(NormalHtmlText);
+
         // Element
 
         private static readonly Parser<string> HtmlElementName = Parse.LetterOrDigit.AtLeastOnce().Text();
@@ -95,9 +109,9 @@ namespace LtGt.Internal
             from ltClose in Parse.String("</")
             from nameClose in Parse.String(nameOpen)
             from gtClose in Parse.Char('>').TokenLeft()
-            select new HtmlElement(nameOpen, attributes.Concat<HtmlNode>(new[] { new HtmlText(text) }).ToArray());
+            select new HtmlElement(nameOpen, attributes.ToArray(), new[] {new HtmlText(text)});
 
-        private static readonly Parser<HtmlElement> HtmlElementWithChildren =
+        private static readonly Parser<HtmlElement> NormalHtmlElement =
             from ltOpen in Parse.Char('<')
             from nameOpen in HtmlElementName
             from attributes in HtmlAttribute.Token().Many()
@@ -106,42 +120,29 @@ namespace LtGt.Internal
             from ltClose in Parse.String("</")
             from nameClose in Parse.String(nameOpen)
             from gtClose in Parse.Char('>').TokenLeft()
-            select new HtmlElement(nameOpen, attributes.Concat(children).ToArray());
+            select new HtmlElement(nameOpen, attributes.ToArray(), children.ToArray());
 
         private static readonly Parser<HtmlElement> SelfClosingHtmlElement =
             from open in Parse.Char('<')
             from name in HtmlElementName
             from attributes in HtmlAttribute.Token().Many()
             from close in Parse.String("/>").Or(Parse.String(">")).TokenLeft()
-            select new HtmlElement(name, attributes.ToArray<HtmlNode>());
+            select new HtmlElement(name, attributes.ToArray());
 
-        public static readonly Parser<HtmlElement> HtmlElement = RawTextHtmlElement.Or(HtmlElementWithChildren).Or(SelfClosingHtmlElement);
-
-        // Text
-
-        private static readonly Parser<HtmlText> CDataHtmlText =
-            from open in Parse.String("<![CDATA[")
-            from content in Parse.AnyChar.Except(Parse.String("]]>")).Many().Text()
-            from close in Parse.String("]]>")
-            select new HtmlText(content);
-
-        public static readonly Parser<HtmlText> RegularHtmlText =
-            Parse.CharExcept('<').AtLeastOnce().Text().Select(WebUtility.HtmlDecode).Select(t => t.Trim()).Select(t => new HtmlText(t));
-
-
-        public static readonly Parser<HtmlText> HtmlText = CDataHtmlText.Or(RegularHtmlText);
+        public static readonly Parser<HtmlElement> HtmlElement =
+            RawTextHtmlElement.Or(NormalHtmlElement).Or(SelfClosingHtmlElement);
 
         // Document
 
         public static readonly Parser<HtmlDocument> HtmlDocument =
-            from declarations in HtmlDeclaration.Token().AtLeastOnce()
-            from children in HtmlNode.Token().Many()
-            select new HtmlDocument(declarations.Concat(children).ToArray());
+            from declaration in HtmlDeclaration.Token()
+            from children in ElementChildHtmlNode.Token().Many()
+            select new HtmlDocument(declaration, children.ToArray());
 
         // Node
 
-        private static readonly Parser<HtmlNode> ElementChildHtmlNode = HtmlElement.Or<HtmlNode>(HtmlText).Or(HtmlComment);
+        private static readonly Parser<HtmlNode> ElementChildHtmlNode = HtmlElement.Or<HtmlNode>(HtmlComment).Or(HtmlText);
 
-        public static readonly Parser<HtmlNode> HtmlNode = HtmlDocument.Or(ElementChildHtmlNode).Or(HtmlDeclaration);
+        public static readonly Parser<HtmlNode> HtmlNode = HtmlDocument.Or(ElementChildHtmlNode);
     }
 }

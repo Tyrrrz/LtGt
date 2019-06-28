@@ -28,13 +28,10 @@ namespace LtGt.Tests
                     new HtmlDeclaration("doctype", "html"),
                     new HtmlElement("html",
                         new HtmlElement("head",
-                            new HtmlElement("title",
-                                new HtmlText("Test document")),
-                            new HtmlElement("meta",
-                                new HtmlAttribute("charset", "utf-8"))),
+                            new HtmlElement("title", new HtmlText("Test document")),
+                            new HtmlElement("meta", new HtmlAttribute("charset", "utf-8"))),
                         new HtmlElement("body",
-                            new HtmlElement("div",
-                                new HtmlAttribute("id", "content"),
+                            new HtmlElement("div", new HtmlAttribute("id", "content"),
                                 new HtmlText("Test")))))
             );
         }
@@ -55,8 +52,7 @@ namespace LtGt.Tests
             yield return new TestCaseData(
                 // language=html
                 "<div class=\"test-class\">test text</div>",
-                new HtmlElement("div",
-                    new HtmlAttribute("class", "test-class"),
+                new HtmlElement("div", new HtmlAttribute("class", "test-class"),
                     new HtmlText("test text"))
             );
 
@@ -69,44 +65,38 @@ namespace LtGt.Tests
             yield return new TestCaseData(
                 // language=html
                 "<div>&lt;test&gt;</div>",
-                new HtmlElement("div",
-                    new HtmlText("<test>"))
+                new HtmlElement("div", new HtmlText("<test>"))
             );
 
             yield return new TestCaseData(
                 // language=html
                 "<div title=\"&lt;test title&gt;\">test text</div>",
-                new HtmlElement("div",
-                    new HtmlAttribute("title", "<test title>"),
+                new HtmlElement("div", new HtmlAttribute("title", "<test title>"),
                     new HtmlText("test text"))
             );
 
             yield return new TestCaseData(
                 // language=html
                 "<div><![CDATA[<test>]]></div>",
-                new HtmlElement("div",
-                    new HtmlText("<test>"))
+                new HtmlElement("div", new HtmlText("<test>"))
             );
 
             yield return new TestCaseData(
                 // language=html
                 "<script>if (a < 5) console.log(a);</script>",
-                new HtmlElement("script",
-                    new HtmlText("if (a < 5) console.log(a);"))
+                new HtmlElement("script", new HtmlText("if (a < 5) console.log(a);"))
             );
 
             yield return new TestCaseData(
                 // language=html
                 "<style>div { display: inline-block; }</style>",
-                new HtmlElement("style",
-                    new HtmlText("div { display: inline-block; }"))
+                new HtmlElement("style", new HtmlText("div { display: inline-block; }"))
             );
 
             yield return new TestCaseData(
                 // language=html
                 "<div >test</div>",
-                new HtmlElement("div",
-                    new HtmlText("test"))
+                new HtmlElement("div", new HtmlText("test"))
             );
 
             yield return new TestCaseData(

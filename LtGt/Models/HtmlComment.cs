@@ -4,7 +4,7 @@ using LtGt.Internal;
 namespace LtGt.Models
 {
     /// <summary>
-    /// Represents a comment node in HTML syntax tree.
+    /// Represents a comment node in HTML document object model.
     /// </summary>
     public class HtmlComment : HtmlNode, IEquatable<HtmlComment>
     {
@@ -41,7 +41,7 @@ namespace LtGt.Models
         }
 
         /// <inheritdoc />
-        public override int GetHashCode() => Content?.GetHashCode() ?? 0;
+        public override int GetHashCode() => HashCodeBuilder.Combine(Content);
 
         /// <inheritdoc />
         public override string ToString() => $"<!-- {Content} -->";

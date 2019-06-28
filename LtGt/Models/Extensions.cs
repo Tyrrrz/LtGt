@@ -17,16 +17,6 @@ namespace LtGt.Models
     public static partial class Extensions
     {
         /// <summary>
-        /// Gets all defined attributes.
-        /// </summary>
-        public static IEnumerable<HtmlAttribute> GetAttributes(this HtmlElement element)
-        {
-            element.GuardNotNull(nameof(element));
-
-            return element.Children.OfType<HtmlAttribute>();
-        }
-
-        /// <summary>
         /// Gets an attribute with a given name or null if not defined.
         /// Attribute name comparison is not case sensitive.
         /// </summary>
@@ -35,7 +25,7 @@ namespace LtGt.Models
             element.GuardNotNull(nameof(element));
             name.GuardNotNull(nameof(name));
 
-            return element.GetAttributes().FirstOrDefault(a => string.Equals(a.Name, name, StringComparison.OrdinalIgnoreCase));
+            return element.Attributes.FirstOrDefault(a => string.Equals(a.Name, name, StringComparison.OrdinalIgnoreCase));
         }
 
         /// <summary>

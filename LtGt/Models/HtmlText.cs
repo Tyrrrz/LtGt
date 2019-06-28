@@ -4,7 +4,7 @@ using LtGt.Internal;
 namespace LtGt.Models
 {
     /// <summary>
-    /// Represents a text node in HTML syntax tree.
+    /// Represents a text node in HTML document object model.
     /// </summary>
     public class HtmlText : HtmlNode, IEquatable<HtmlText>
     {
@@ -41,7 +41,7 @@ namespace LtGt.Models
         }
 
         /// <inheritdoc />
-        public override int GetHashCode() => Content?.GetHashCode() ?? 0;
+        public override int GetHashCode() => HashCodeBuilder.Combine(Content);
 
         /// <inheritdoc />
         public override string ToString() => Content;

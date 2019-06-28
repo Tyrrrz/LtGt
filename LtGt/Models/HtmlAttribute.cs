@@ -4,9 +4,9 @@ using LtGt.Internal;
 namespace LtGt.Models
 {
     /// <summary>
-    /// Represents an attribute node in HTML syntax tree.
+    /// Represents an attribute entity in HTML document object model.
     /// </summary>
-    public class HtmlAttribute : HtmlNode, IEquatable<HtmlAttribute>
+    public class HtmlAttribute : HtmlEntity, IEquatable<HtmlAttribute>
     {
         /// <summary>
         /// Name of this attribute node.
@@ -56,13 +56,7 @@ namespace LtGt.Models
         }
 
         /// <inheritdoc />
-        public override int GetHashCode()
-        {
-            unchecked
-            {
-                return ((Name?.GetHashCode() ?? 0) * 397) ^ (Value?.GetHashCode() ?? 0);
-            }
-        }
+        public override int GetHashCode() => HashCodeBuilder.Combine(Name, Value);
 
         /// <inheritdoc />
         public override string ToString() => !Value.IsNullOrWhiteSpace() ? $"{Name}=\"{Value}\"" : Name;

@@ -1,14 +1,12 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
+﻿using System.Collections.Generic;
 using LtGt.Internal;
 
 namespace LtGt.Models
 {
     /// <summary>
-    /// Represents an abstract container node in HTML syntax tree.
+    /// Represents an abstract container node in HTML document object model.
     /// </summary>
-    public abstract class HtmlContainer : HtmlNode, IEquatable<HtmlContainer>
+    public abstract class HtmlContainer : HtmlNode
     {
         /// <summary>
         /// Direct children of this container node.
@@ -22,30 +20,5 @@ namespace LtGt.Models
         {
             Children = children.GuardNotNull(nameof(children));
         }
-
-        /// <inheritdoc />
-        public bool Equals(HtmlContainer other)
-        {
-            if (ReferenceEquals(null, other)) return false;
-            if (ReferenceEquals(this, other)) return true;
-
-            if (ReferenceEquals(Children, other.Children))
-                return true;
-
-            return Children.SequenceEqual(other.Children);
-        }
-
-        /// <inheritdoc />
-        public override bool Equals(object obj)
-        {
-            if (ReferenceEquals(null, obj)) return false;
-            if (ReferenceEquals(this, obj)) return true;
-            if (obj.GetType() != GetType()) return false;
-
-            return Equals((HtmlContainer) obj);
-        }
-
-        /// <inheritdoc />
-        public override int GetHashCode() => Children?.GetHashCode() ?? 0;
     }
 }

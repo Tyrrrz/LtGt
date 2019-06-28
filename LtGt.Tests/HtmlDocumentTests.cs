@@ -10,12 +10,12 @@ namespace LtGt.Tests
         private static IEnumerable<TestCaseData> GetTestCases_GetHead()
         {
             yield return new TestCaseData(
-                new HtmlDocument(new HtmlElement("html", new HtmlElement("head"))),
+                new HtmlDocument(HtmlDeclaration.DoctypeHtml, new HtmlElement("html", new HtmlElement("head"))),
                 new HtmlElement("head")
             );
 
             yield return new TestCaseData(
-                new HtmlDocument(new HtmlElement("html")),
+                new HtmlDocument(HtmlDeclaration.DoctypeHtml, new HtmlElement("html")),
                 null
             );
         }
@@ -34,12 +34,12 @@ namespace LtGt.Tests
         private static IEnumerable<TestCaseData> GetTestCases_GetBody()
         {
             yield return new TestCaseData(
-                new HtmlDocument(new HtmlElement("html", new HtmlElement("body"))),
+                new HtmlDocument(HtmlDeclaration.DoctypeHtml, new HtmlElement("html", new HtmlElement("body"))),
                 new HtmlElement("body")
             );
 
             yield return new TestCaseData(
-                new HtmlDocument(new HtmlElement("html")),
+                new HtmlDocument(HtmlDeclaration.DoctypeHtml, new HtmlElement("html")),
                 null
             );
         }
@@ -58,16 +58,15 @@ namespace LtGt.Tests
         private static IEnumerable<TestCaseData> GetTestCases_GetTitle()
         {
             yield return new TestCaseData(
-                new HtmlDocument(
+                new HtmlDocument(HtmlDeclaration.DoctypeHtml,
                     new HtmlElement("html",
                         new HtmlElement("head",
-                            new HtmlElement("title",
-                                new HtmlText("test"))))),
+                            new HtmlElement("title", new HtmlText("test"))))),
                 "test"
             );
 
             yield return new TestCaseData(
-                new HtmlDocument(new HtmlElement("html")),
+                new HtmlDocument(HtmlDeclaration.DoctypeHtml, new HtmlElement("html")),
                 null
             );
         }

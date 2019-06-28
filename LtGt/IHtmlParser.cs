@@ -3,7 +3,7 @@
 namespace LtGt
 {
     /// <summary>
-    /// Provides an interface to parse HTML into an abstract syntax tree.
+    /// Provides an interface to parse HTML into an object model representation.
     /// </summary>
     public interface IHtmlParser
     {

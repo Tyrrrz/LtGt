@@ -1,9 +1,9 @@
 ﻿namespace LtGt.Models
 {
     /// <summary>
-    /// Represents an abstract node in HTML syntax tree.
+    /// Represents an abstract node in HTML document object model.
     /// </summary>
-    public abstract class HtmlNode
+    public abstract class HtmlNode : HtmlEntity
     {
     }
 }

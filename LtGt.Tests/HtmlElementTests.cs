@@ -1,5 +1,4 @@
 ﻿using System.Collections.Generic;
-using System.Linq;
 using LtGt.Models;
 using NUnit.Framework;
 
@@ -8,36 +7,6 @@ namespace LtGt.Tests
     [TestFixture]
     public class HtmlElementTests
     {
-        private static IEnumerable<TestCaseData> GetTestCases_GetAttributes()
-        {
-            yield return new TestCaseData(
-                new HtmlElement("div",
-                    new HtmlAttribute("attr1"),
-                    new HtmlAttribute("attr2", "val2")),
-                new[]
-                {
-                    new HtmlAttribute("attr1"),
-                    new HtmlAttribute("attr2", "val2")
-                }
-            );
-
-            yield return new TestCaseData(
-                new HtmlElement("div"),
-                new HtmlAttribute[0]
-            );
-        }
-
-        [Test]
-        [TestCaseSource(nameof(GetTestCases_GetAttributes))]
-        public void GetAttributes_Test(HtmlElement element, IReadOnlyList<HtmlAttribute> expectedAttributes)
-        {
-            // Act
-            var attributes = element.GetAttributes().ToArray();
-
-            // Assert
-            Assert.That(attributes, Is.EqualTo(expectedAttributes));
-        }
-
         private static IEnumerable<TestCaseData> GetTestCases_GetAttribute()
         {
             yield return new TestCaseData(
