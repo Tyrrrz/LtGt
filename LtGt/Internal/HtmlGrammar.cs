@@ -1,11 +1,35 @@
-﻿using System.Linq;
+﻿using System;
+using System.Linq;
 using System.Net;
 using LtGt.Models;
 using Sprache;
 
 namespace LtGt.Internal
 {
-    internal static class HtmlGrammar
+    internal static partial class HtmlGrammar
+    {
+        public static bool IsVoidElement(string elementName) =>
+            string.Equals(elementName, "area", StringComparison.OrdinalIgnoreCase) ||
+            string.Equals(elementName, "base", StringComparison.OrdinalIgnoreCase) ||
+            string.Equals(elementName, "br", StringComparison.OrdinalIgnoreCase) ||
+            string.Equals(elementName, "col", StringComparison.OrdinalIgnoreCase) ||
+            string.Equals(elementName, "embed", StringComparison.OrdinalIgnoreCase) ||
+            string.Equals(elementName, "hr", StringComparison.OrdinalIgnoreCase) ||
+            string.Equals(elementName, "img", StringComparison.OrdinalIgnoreCase) ||
+            string.Equals(elementName, "input", StringComparison.OrdinalIgnoreCase) ||
+            string.Equals(elementName, "link", StringComparison.OrdinalIgnoreCase) ||
+            string.Equals(elementName, "meta", StringComparison.OrdinalIgnoreCase) ||
+            string.Equals(elementName, "param", StringComparison.OrdinalIgnoreCase) ||
+            string.Equals(elementName, "source", StringComparison.OrdinalIgnoreCase) ||
+            string.Equals(elementName, "track", StringComparison.OrdinalIgnoreCase) ||
+            string.Equals(elementName, "wbr", StringComparison.OrdinalIgnoreCase);
+
+        public static bool IsRawTextElement(string elementName) =>
+            string.Equals(elementName, "script", StringComparison.OrdinalIgnoreCase) ||
+            string.Equals(elementName, "style", StringComparison.OrdinalIgnoreCase);
+    }
+
+    internal static partial class HtmlGrammar
     {
         private static Parser<T> TokenLeft<T>(this Parser<T> parser) => i =>
         {
