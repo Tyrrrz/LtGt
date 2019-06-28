@@ -77,7 +77,6 @@ var element = new HtmlElement("div",
     new HtmlText("Hello world"));
 
 var html = HtmlRenderer.Default.RenderNode(element);
-
 // <div id="main">Hello world</div>
 ```
 
