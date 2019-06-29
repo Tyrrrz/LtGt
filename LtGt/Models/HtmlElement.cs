@@ -125,6 +125,18 @@ namespace LtGt.Models
         public override int GetHashCode() => HashCodeBuilder.Combine(Name, Attributes, Children);
 
         /// <inheritdoc />
-        public override string ToString() => $"<{Name}>";
+        public override string ToString()
+        {
+            if (Attributes.Any() && Children.Any())
+                return $"<{Name} ...>...</{Name}>";
+
+            if (Attributes.Any())
+                return $"<{Name} .../>";
+
+            if (Children.Any())
+                return $"<{Name}>...</{Name}>";
+
+            return $"<{Name} />";
+        }
     }
 }
