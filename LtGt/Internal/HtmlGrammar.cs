@@ -80,12 +80,22 @@ namespace LtGt.Internal
 
         /* Comment */
 
+        // <?xml version="1.0"?>
+        public static readonly Parser<HtmlComment> XmlDirectiveHtmlComment =
+            from open in Parse.String("<?")
+            from content in Parse.AnyChar.Except(Parse.String("?>")).Many().Text().Select(t => t.Trim())
+            from close in Parse.String("?>")
+            select new HtmlComment(content);
+
         // <!-- content -->
-        public static readonly Parser<HtmlComment> HtmlComment =
+        public static readonly Parser<HtmlComment> NormalHtmlComment =
             from open in Parse.String("<!--")
-            from content in Parse.AnyChar.Except(Parse.String("-->")).Many().Text().Select(WebUtility.HtmlDecode).Select(t => t.Trim())
+            from content in Parse.AnyChar.Except(Parse.String("-->")).Many().Text().Select(t => t.Trim())
             from close in Parse.String("-->")
             select new HtmlComment(content);
+
+        public static readonly Parser<HtmlComment> HtmlComment =
+            XmlDirectiveHtmlComment.Or(NormalHtmlComment).Named("Comment");
 
         /* Text */
 
@@ -135,15 +145,14 @@ namespace LtGt.Internal
 
         // <div>...</div>
         private static readonly Parser<HtmlElement> NormalHtmlElement =
-            from ltOpen in Parse.Char('<')
-            from nameOpen in HtmlElementName
+            from openLt in Parse.Char('<')
+            from name in HtmlElementName
             from attributes in HtmlAttribute.Token().Many()
-            from gtOpen in Parse.Char('>').TokenLeft()
+            from openGt in Parse.Char('>').TokenLeft()
             from children in ElementChildHtmlNode.Token().Many()
-            from ltClose in Parse.String("</").TokenLeft()
-            from nameClose in Parse.String(nameOpen)
-            from gtClose in Parse.Char('>').TokenLeft()
-            select new HtmlElement(nameOpen, attributes.ToArray(), children.ToArray());
+            from closeLt in Parse.String($"</{name}").TokenLeft()
+            from closeGt in Parse.Char('>').TokenLeft()
+            select new HtmlElement(name, attributes.ToArray(), children.ToArray());
 
         public static readonly Parser<HtmlElement> HtmlElement =
             RawTextHtmlElement.Or(VoidHtmlElement).Or(SelfClosingHtmlElement).Or(NormalHtmlElement).Named("Element");
@@ -151,7 +160,7 @@ namespace LtGt.Internal
         /* Document */
 
         public static readonly Parser<HtmlDocument> HtmlDocument =
-            from declaration in HtmlDeclaration.Token()
+            from declaration in HtmlDeclaration.Token().Named("Declaration")
             from children in ElementChildHtmlNode.Token().Many()
             select new HtmlDocument(declaration, children.ToArray());
 
