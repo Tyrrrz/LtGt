@@ -133,7 +133,14 @@ namespace LtGt.Tests
                 // language=html
                 "<div>",
                 new HtmlElement("div")
-            );
+            ).Ignore("Out of scope for now");
+
+            yield return new TestCaseData(
+                // language=html
+                "<div><div></div>",
+                new HtmlElement("div",
+                    new HtmlElement("div"))
+            ).Ignore("Out of scope for now");
 
             yield return new TestCaseData(
                 // language=html
