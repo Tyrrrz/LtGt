@@ -20,8 +20,10 @@ namespace LtGt.Tests
             );
 
             yield return new TestCaseData(
-                new HtmlElement("div"),
-                "test1",
+                new HtmlElement("div",
+                    new HtmlElement("p", new HtmlAttribute("id", "test1")),
+                    new HtmlElement("p", new HtmlAttribute("id", "test2"))),
+                "test3",
                 null
             );
         }
@@ -42,7 +44,25 @@ namespace LtGt.Tests
             yield return new TestCaseData(
                 new HtmlElement("div",
                     new HtmlElement("a"),
+                    new HtmlElement("span",
+                        new HtmlElement("p")),
+                    new HtmlElement("p")),
+                "*",
+                new[]
+                {
+                    new HtmlElement("a"),
+                    new HtmlElement("span",
+                        new HtmlElement("p")),
                     new HtmlElement("p"),
+                    new HtmlElement("p")
+                }
+            );
+
+            yield return new TestCaseData(
+                new HtmlElement("div",
+                    new HtmlElement("a"),
+                    new HtmlElement("span",
+                        new HtmlElement("p")),
                     new HtmlElement("p")),
                 "p",
                 new[]
@@ -53,8 +73,12 @@ namespace LtGt.Tests
             );
 
             yield return new TestCaseData(
-                new HtmlElement("div"),
-                "p",
+                new HtmlElement("div",
+                    new HtmlElement("a"),
+                    new HtmlElement("span",
+                        new HtmlElement("p")),
+                    new HtmlElement("p")),
+                "br",
                 new HtmlElement[0]
             );
         }
@@ -75,15 +99,30 @@ namespace LtGt.Tests
             yield return new TestCaseData(
                 new HtmlElement("div",
                     new HtmlElement("a"),
-                    new HtmlElement("p"),
+                    new HtmlElement("span",
+                        new HtmlElement("p")),
+                    new HtmlElement("p")),
+                "*",
+                new HtmlElement("a")
+            );
+
+            yield return new TestCaseData(
+                new HtmlElement("div",
+                    new HtmlElement("a"),
+                    new HtmlElement("span",
+                        new HtmlElement("p")),
                     new HtmlElement("p")),
                 "p",
                 new HtmlElement("p")
             );
 
             yield return new TestCaseData(
-                new HtmlElement("div"),
-                "p",
+                new HtmlElement("div",
+                    new HtmlElement("a"),
+                    new HtmlElement("span",
+                        new HtmlElement("p")),
+                    new HtmlElement("p")),
+                "br",
                 null
             );
         }
@@ -104,7 +143,8 @@ namespace LtGt.Tests
             yield return new TestCaseData(
                 new HtmlElement("div",
                     new HtmlElement("a", new HtmlAttribute("class", "test1")),
-                    new HtmlElement("p", new HtmlAttribute("class", "test2")),
+                    new HtmlElement("span",
+                        new HtmlElement("p", new HtmlAttribute("class", "test2"))),
                     new HtmlElement("p", new HtmlAttribute("class", "test2 test3"))),
                 "test2",
                 new[]
@@ -115,8 +155,38 @@ namespace LtGt.Tests
             );
 
             yield return new TestCaseData(
-                new HtmlElement("div"),
-                "test2",
+                new HtmlElement("div",
+                    new HtmlElement("a", new HtmlAttribute("class", "test1")),
+                    new HtmlElement("span",
+                        new HtmlElement("p", new HtmlAttribute("class", "test2"))),
+                    new HtmlElement("p", new HtmlAttribute("class", "test2 test3"))),
+                "test3",
+                new[]
+                {
+                    new HtmlElement("p", new HtmlAttribute("class", "test2 test3"))
+                }
+            );
+
+            yield return new TestCaseData(
+                new HtmlElement("div",
+                    new HtmlElement("a", new HtmlAttribute("class", "test1")),
+                    new HtmlElement("span",
+                        new HtmlElement("p", new HtmlAttribute("class", "test2"))),
+                    new HtmlElement("p", new HtmlAttribute("class", "test2 test3"))),
+                "test2 test3",
+                new[]
+                {
+                    new HtmlElement("p", new HtmlAttribute("class", "test2 test3"))
+                }
+            );
+
+            yield return new TestCaseData(
+                new HtmlElement("div",
+                    new HtmlElement("a", new HtmlAttribute("class", "test1")),
+                    new HtmlElement("span",
+                        new HtmlElement("p", new HtmlAttribute("class", "test2"))),
+                    new HtmlElement("p", new HtmlAttribute("class", "test2 test3"))),
+                "test4",
                 new HtmlElement[0]
             );
         }
@@ -137,7 +207,8 @@ namespace LtGt.Tests
             yield return new TestCaseData(
                 new HtmlElement("div",
                     new HtmlElement("a", new HtmlAttribute("class", "test1")),
-                    new HtmlElement("p", new HtmlAttribute("class", "test2")),
+                    new HtmlElement("span",
+                        new HtmlElement("p", new HtmlAttribute("class", "test2"))),
                     new HtmlElement("p", new HtmlAttribute("class", "test2 test3"))),
                 "test2",
                 new HtmlElement("p", new HtmlAttribute("class", "test2"))
@@ -146,15 +217,30 @@ namespace LtGt.Tests
             yield return new TestCaseData(
                 new HtmlElement("div",
                     new HtmlElement("a", new HtmlAttribute("class", "test1")),
-                    new HtmlElement("p", new HtmlAttribute("class", "test2")),
+                    new HtmlElement("span",
+                        new HtmlElement("p", new HtmlAttribute("class", "test2"))),
                     new HtmlElement("p", new HtmlAttribute("class", "test2 test3"))),
                 "test3",
                 new HtmlElement("p", new HtmlAttribute("class", "test2 test3"))
             );
 
             yield return new TestCaseData(
-                new HtmlElement("div"),
-                "test2",
+                new HtmlElement("div",
+                    new HtmlElement("a", new HtmlAttribute("class", "test1")),
+                    new HtmlElement("span",
+                        new HtmlElement("p", new HtmlAttribute("class", "test2"))),
+                    new HtmlElement("p", new HtmlAttribute("class", "test2 test3"))),
+                "test2 test3",
+                new HtmlElement("p", new HtmlAttribute("class", "test2 test3"))
+            );
+
+            yield return new TestCaseData(
+                new HtmlElement("div",
+                    new HtmlElement("a", new HtmlAttribute("class", "test1")),
+                    new HtmlElement("span",
+                        new HtmlElement("p", new HtmlAttribute("class", "test2"))),
+                    new HtmlElement("p", new HtmlAttribute("class", "test2 test3"))),
+                "test4",
                 null
             );
         }
