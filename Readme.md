@@ -17,8 +17,9 @@ LtGt is a minimalistic library for working with HTML. It can be used to parse HT
 ## Features
 
 - Parse and render HTML5-compliant code
-- Traverse object tree using convenient methods
-- Convert HTML DOM to a Linq2Xml representation
+- Traverse nodes using LINQ
+- Find elements using methods like `GetElementById()`, `GetElementsByTagName()`, etc
+- Convert DOM to a Linq2Xml representation
 - Easily extensible with custom workflows
 - Targets .NET Framework 4.5+ and .NET Standard 1.0+
 
@@ -49,9 +50,11 @@ Besides parsing a full document, you can also parse any other type of node.
 ```c#
 const string html = "<div id=\"some-element\"><a href=\"https://example.com\">Link</a></div>";
 
-var node = HtmlParser.Default.ParseNode(html);
+// Parse an element node
+var element = HtmlParser.Default.ParseElement(html);
 
-var element = (HtmlElement) node; // we assume we're dealing with an element
+// Parse any node
+var node = HtmlParser.Default.ParseNode(html);
 ```
 
 ### Find specific element

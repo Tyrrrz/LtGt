@@ -18,6 +18,14 @@ namespace LtGt
         }
 
         /// <inheritdoc />
+        public HtmlElement ParseElement(string source)
+        {
+            source.GuardNotNull(nameof(source));
+
+            return HtmlGrammar.HtmlElement.Parse(source);
+        }
+
+        /// <inheritdoc />
         public HtmlNode ParseNode(string source)
         {
             source.GuardNotNull(nameof(source));

@@ -46,6 +46,27 @@ namespace LtGt.Tests
             Assert.That(document, Is.EqualTo(expectedDocument));
         }
 
+        private static IEnumerable<TestCaseData> GetTestCases_ParseElement()
+        {
+            yield return new TestCaseData(
+                // language=html
+                "<div id=\"main\">test</div>",
+                new HtmlElement("div", new HtmlAttribute("id", "main"),
+                    new HtmlText("test"))
+            );
+        }
+
+        [Test]
+        [TestCaseSource(nameof(GetTestCases_ParseElement))]
+        public void ParseElement_Test(string source, HtmlElement expectedElement)
+        {
+            // Act
+            var element = HtmlParser.Default.ParseElement(source);
+
+            // Assert
+            Assert.That(element, Is.EqualTo(expectedElement));
+        }
+
         private static IEnumerable<TestCaseData> GetTestCases_ParseNode()
         {
             yield return new TestCaseData(

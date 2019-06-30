@@ -23,19 +23,6 @@ namespace LtGt
         }
 
         /// <summary>
-        /// Parses an HTML node from <see cref="TextReader"/>.
-        /// </summary>
-        public static HtmlNode LoadNode(this IHtmlParser parser, TextReader reader)
-        {
-            parser.GuardNotNull(nameof(parser));
-            reader.GuardNotNull(nameof(reader));
-
-            var source = reader.ReadToEnd();
-
-            return parser.ParseNode(source);
-        }
-
-        /// <summary>
         /// Renders an HTML node to <see cref="TextWriter"/>.
         /// </summary>
         public static void SaveNode(this IHtmlRenderer renderer, HtmlNode node, TextWriter writer)
@@ -59,18 +46,6 @@ namespace LtGt
 
             using (var reader = File.OpenText(filePath))
                 return parser.LoadDocument(reader);
-        }
-
-        /// <summary>
-        /// Parses an HTML node from a file.
-        /// </summary>
-        public static HtmlNode LoadNode(this IHtmlParser parser, string filePath)
-        {
-            parser.GuardNotNull(nameof(parser));
-            filePath.GuardNotNull(nameof(filePath));
-
-            using (var reader = File.OpenText(filePath))
-                return parser.LoadNode(reader);
         }
 
         /// <summary>

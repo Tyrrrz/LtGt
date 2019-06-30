@@ -13,6 +13,11 @@ namespace LtGt
         HtmlDocument ParseDocument(string source);
 
         /// <summary>
+        /// Parses an HTML element from input.
+        /// </summary>
+        HtmlElement ParseElement(string source);
+
+        /// <summary>
         /// Parses an HTML node from input.
         /// </summary>
         HtmlNode ParseNode(string source);
