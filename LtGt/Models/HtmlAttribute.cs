@@ -56,7 +56,7 @@ namespace LtGt.Models
         }
 
         /// <inheritdoc />
-        public override int GetHashCode() => HashCodeBuilder.Combine(Name, Value);
+        public override int GetHashCode() => HashCode.Combine(Name, Value);
 
         /// <inheritdoc />
         public override string ToString() => !Value.IsNullOrWhiteSpace() ? $"{Name}=\"{Value}\"" : Name;

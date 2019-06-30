@@ -52,6 +52,6 @@ namespace LtGt.Models
         }
 
         /// <inheritdoc />
-        public override int GetHashCode() => HashCodeBuilder.Combine(Declaration, Children);
+        public override int GetHashCode() => HashCode.Combine(Declaration, Children);
     }
 }

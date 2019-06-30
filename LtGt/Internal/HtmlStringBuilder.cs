@@ -98,6 +98,6 @@ namespace LtGt.Internal
             throw new ArgumentException($"Unknown node type [{node.GetType().Name}].", nameof(node));
         }
 
-        public override string ToString() => _internalBuilder.ToString();
+        public override string ToString() => _internalBuilder.ToString().Trim();
     }
 }

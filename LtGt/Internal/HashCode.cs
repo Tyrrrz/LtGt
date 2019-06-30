@@ -1,6 +1,6 @@
 ﻿namespace LtGt.Internal
 {
-    internal static class HashCodeBuilder
+    internal static class HashCode
     {
         public static int Combine(params object[] objects)
         {

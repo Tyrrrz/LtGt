@@ -48,7 +48,7 @@ namespace LtGt.Models
         }
 
         /// <inheritdoc />
-        public override int GetHashCode() => HashCodeBuilder.Combine(Name, Content);
+        public override int GetHashCode() => HashCode.Combine(Name, Content);
 
         /// <inheritdoc />
         public override string ToString() => $"<!{Name} {Content}>";

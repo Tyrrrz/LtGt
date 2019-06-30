@@ -122,7 +122,7 @@ namespace LtGt.Models
         }
 
         /// <inheritdoc />
-        public override int GetHashCode() => HashCodeBuilder.Combine(Name, Attributes, Children);
+        public override int GetHashCode() => HashCode.Combine(Name, Attributes, Children);
 
         /// <inheritdoc />
         public override string ToString()
