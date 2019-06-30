@@ -53,5 +53,14 @@ namespace LtGt.Models
 
         /// <inheritdoc />
         public override int GetHashCode() => HashCode.Combine(Declaration, Children);
+
+        /// <inheritdoc />
+        public override string ToString()
+        {
+            if (Children.Any())
+                return $"{Declaration} ...";
+
+            return $"{Declaration}";
+        }
     }
 }
