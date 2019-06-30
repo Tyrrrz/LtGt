@@ -10,11 +10,6 @@ namespace LtGt.Tests
         private static IEnumerable<TestCaseData> GetTestCases_ToXNode()
         {
             yield return new TestCaseData(
-                new HtmlAttribute("test1", "test2"),
-                new XAttribute("test1", "test2")
-            );
-
-            yield return new TestCaseData(
                 new HtmlComment("test"),
                 new XComment("test")
             );
