@@ -22,6 +22,6 @@ namespace LtGt
         /// <summary>
         /// Default instance of <see cref="HtmlRenderer"/>.
         /// </summary>
-        public static IHtmlRenderer Default { get; } = new HtmlRenderer();
+        public static HtmlRenderer Default { get; } = new HtmlRenderer();
     }
 }

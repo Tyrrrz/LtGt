@@ -39,6 +39,6 @@ namespace LtGt
         /// <summary>
         /// Default instance of <see cref="HtmlParser"/>.
         /// </summary>
-        public static IHtmlParser Default { get; } = new HtmlParser();
+        public static HtmlParser Default { get; } = new HtmlParser();
     }
 }
