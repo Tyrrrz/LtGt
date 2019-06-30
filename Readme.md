@@ -17,8 +17,9 @@ LtGt is a minimalistic library for working with HTML. It can be used to parse HT
 ## Features
 
 - Parse and render HTML5-compliant code
-- Convenient methods for working with DOM
-- Extensible object model
+- Traverse object tree using convenient methods
+- Convert HTML DOM to a Linq2Xml representation
+- Easily extensible with custom workflows
 - Targets .NET Framework 4.5+ and .NET Standard 1.0+
 
 ## Usage
@@ -55,16 +56,28 @@ var element = (HtmlElement) node; // we assume we're dealing with an element
 
 ### Find specific element
 
-There are many extension methods that should make working with DOM simple.
+There are many extension methods that should help you locate elements you want to find.
 
 ```c#
-var elem1 = document.GetElementById("menu-bar");
-var elem2 = document.GetElementByTagName("div");
-var elem3 = document.GetElementByClassName("floating-button floating-button--enabled");
+var element1 = document.GetElementById("menu-bar");
+var element2 = document.GetElementByTagName("div");
+var element3 = document.GetElementByClassName("floating-button floating-button--enabled");
 
-var elem1Data = elem1.GetAttribute("data")?.Value;
-var elem2Id = elem2.GetId();
-var elem2Text = elem3.GetInnerText();
+var element1Data = element1.GetAttribute("data")?.Value;
+var element2Id = element2.GetId();
+var element2Text = element3.GetInnerText();
+```
+
+### Convert to Linq2Xml
+
+It's possible to convert LtGt's objects to `System.Xml.Linq` objects (`XNode`, `XElement`, etc). This can be useful if you need to convert HTML to XML or if you want to use XPath to select nodes.
+
+```c#
+var htmlDocument = HtmlParser.Default.ParseDocument(html);
+
+var xmlDocument = htmlDocument.ToXDocument();
+
+var elements = xmlDocument.XPathSelectElements("//input[@type=\"submit\"]");
 ```
 
 ### Render nodes
@@ -76,8 +89,7 @@ var element = new HtmlElement("div",
     new HtmlAttribute("id", "main"),
     new HtmlText("Hello world"));
 
-var html = HtmlRenderer.Default.RenderNode(element);
-// <div id="main">Hello world</div>
+var html = HtmlRenderer.Default.RenderNode(element); // <div id="main">Hello world</div>
 ```
 
 ## Libraries used
