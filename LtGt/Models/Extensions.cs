@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.Xml.Linq;
 using LtGt.Internal;
 
 namespace LtGt.Models
@@ -13,9 +14,64 @@ namespace LtGt.Models
     {
     }
 
+    // HtmlAttribute
+    public static partial class Extensions
+    {
+        /// <summary>
+        /// Converts <see cref="HtmlAttribute"/> to <see cref="XAttribute"/>.
+        /// </summary>
+        public static XAttribute ToXAttribute(this HtmlAttribute attribute)
+        {
+            attribute.GuardNotNull(nameof(attribute));
+
+            return new XAttribute(attribute.Name, attribute.Value ?? "");
+        }
+    }
+
+    // HtmlComment
+    public static partial class Extensions
+    {
+        /// <summary>
+        /// Converts <see cref="HtmlComment"/> to <see cref="XComment"/>.
+        /// </summary>
+        public static XComment ToXComment(this HtmlComment comment)
+        {
+            comment.GuardNotNull(nameof(comment));
+
+            return new XComment(comment.Content);
+        }
+    }
+
+    // HtmlText
+    public static partial class Extensions
+    {
+        /// <summary>
+        /// Converts <see cref="HtmlText"/> to <see cref="XText"/>.
+        /// </summary>
+        public static XText ToXText(this HtmlText text)
+        {
+            text.GuardNotNull(nameof(text));
+
+            return new XText(text.Content);
+        }
+    }
+
     // HtmlElement
     public static partial class Extensions
     {
+        /// <summary>
+        /// Converts <see cref="HtmlElement"/> to <see cref="XElement"/>.
+        /// </summary>
+        public static XElement ToXElement(this HtmlElement element)
+        {
+            element.GuardNotNull(nameof(element));
+
+            var attributes = element.Attributes.Select(a => a.ToXAttribute()).ToArray<object>();
+            var children = element.Children.Select(c => c.ToXNode()).ToArray<object>();
+
+            return new XElement(element.Name, attributes.Concat(children).ToArray());
+        }
+
         /// <summary>
         /// Gets an attribute with a given name or null if not defined.
         /// Attribute name comparison is not case sensitive.
@@ -249,6 +305,18 @@ namespace LtGt.Models
     public static partial class Extensions
     {
         /// <summary>
+        /// Converts <see cref="HtmlDocument"/> to <see cref="XDocument"/>.
+        /// </summary>
+        public static XDocument ToXDocument(this HtmlDocument document)
+        {
+            document.GuardNotNull(nameof(document));
+
+            var children = document.Children.Select(c => c.ToXNode()).ToArray<object>();
+
+            return new XDocument(children);
+        }
+
+        /// <summary>
         /// Gets the 'head' element or null if not found.
         /// </summary>
         public static HtmlElement GetHead(this HtmlDocument document)
@@ -276,6 +344,32 @@ namespace LtGt.Models
             document.GuardNotNull(nameof(document));
 
             return document.GetHead()?.GetElementByTagName("title")?.GetInnerText();
+        }
+    }
+
+    // HtmlNode
+    public static partial class Extensions
+    {
+        /// <summary>
+        /// Converts <see cref="HtmlNode"/> to <see cref="XNode"/>.
+        /// </summary>
+        public static XNode ToXNode(this HtmlNode node)
+        {
+            node.GuardNotNull(nameof(node));
+
+            if (node is HtmlComment comment)
+                return comment.ToXComment();
+
+            if (node is HtmlText text)
+                return text.ToXText();
+
+            if (node is HtmlElement element)
+                return element.ToXElement();
+
+            if (node is HtmlDocument document)
+                return document.ToXDocument();
+
+            throw new ArgumentException($"Unknown node type [{node.GetType().Name}].", nameof(node));
         }
     }
 }

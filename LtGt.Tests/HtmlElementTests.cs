@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.Xml.Linq;
 using LtGt.Models;
 using NUnit.Framework;
 
@@ -7,6 +8,39 @@ namespace LtGt.Tests
     [TestFixture]
     public class HtmlElementTests
     {
+        private static IEnumerable<TestCaseData> GetTestCases_ToXElement()
+        {
+            yield return new TestCaseData(
+                new HtmlElement("div"),
+                new XElement("div")
+            );
+
+            yield return new TestCaseData(
+                new HtmlElement("div", new HtmlAttribute("id", "test")),
+                new XElement("div", new XAttribute("id", "test"))
+            );
+
+            yield return new TestCaseData(
+                new HtmlElement("div", new HtmlAttribute("id", "test1"),
+                    new HtmlElement("p", new HtmlText("test2")),
+                    new HtmlText("test3")),
+                new XElement("div", new XAttribute("id", "test1"),
+                    new XElement("p", new XText("test2")),
+                    new XText("test3"))
+            );
+        }
+
+        [Test]
+        [TestCaseSource(nameof(GetTestCases_ToXElement))]
+        public void ToXElement_Test(HtmlElement htmlElement, XElement expectedXElement)
+        {
+            // Act
+            var xElement = htmlElement.ToXElement();
+
+            // Assert
+            Assert.That(xElement, Is.EqualTo(expectedXElement).Using<XNode>(XNode.EqualityComparer));
+        }
+
         private static IEnumerable<TestCaseData> GetTestCases_GetAttribute()
         {
             yield return new TestCaseData(

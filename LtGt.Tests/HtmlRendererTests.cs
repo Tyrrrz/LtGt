@@ -10,8 +10,7 @@ namespace LtGt.Tests
         private static IEnumerable<TestCaseData> GetTestCases_RenderNode()
         {
             yield return new TestCaseData(
-                new HtmlDocument(
-                    new HtmlDeclaration("doctype", "html"),
+                new HtmlDocument(HtmlDeclaration.DoctypeHtml,
                     new HtmlElement("html",
                         new HtmlElement("head",
                             new HtmlElement("title", new HtmlText("Test document")),
