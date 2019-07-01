@@ -32,7 +32,7 @@ namespace LtGt.Internal
         }
 
         private HtmlStringBuilder Append(HtmlDeclaration declaration) =>
-            Append("<!").Append(declaration.Name).Append(' ').Append(declaration.Content).Append('>');
+            Append("<!").Append(declaration.Name).Append(' ').Append(declaration.Value).Append('>');
 
         private HtmlStringBuilder Append(HtmlAttribute attribute) =>
             attribute.Value != null
@@ -40,12 +40,12 @@ namespace LtGt.Internal
                 : Append(attribute.Name);
 
         private HtmlStringBuilder Append(HtmlComment comment) =>
-            Append("<!-- ").Append(comment.Content).Append(" -->");
+            Append("<!-- ").Append(comment.Value).Append(" -->");
 
         private HtmlStringBuilder Append(HtmlText text) =>
             HtmlGrammar.IsRawTextElement(_parentElements.Peek().Name)
-                ? Append(text.Content)
-                : Append(WebUtility.HtmlEncode(text.Content));
+                ? Append(text.Value)
+                : Append(WebUtility.HtmlEncode(text.Value));
 
         private HtmlStringBuilder Append(HtmlElement element)
         {

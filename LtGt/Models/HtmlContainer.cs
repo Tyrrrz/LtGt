@@ -10,7 +10,7 @@ namespace LtGt.Models
     public abstract class HtmlContainer : HtmlNode
     {
         /// <summary>
-        /// Direct children of this container node.
+        /// Direct children of this <see cref="HtmlContainer"/>.
         /// </summary>
         public IReadOnlyList<HtmlNode> Children { get; }
 
@@ -21,6 +21,7 @@ namespace LtGt.Models
         {
             Children = children.GuardNotNull(nameof(children));
 
+            // Update contextual information on children
             for (var i = 0; i < Children.Count; i++)
             {
                 Children[i].Parent = this;

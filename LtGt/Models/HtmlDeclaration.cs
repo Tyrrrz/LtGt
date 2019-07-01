@@ -1,57 +1,33 @@
-﻿using System;
-using LtGt.Internal;
+﻿using LtGt.Internal;
 
 namespace LtGt.Models
 {
     /// <summary>
     /// Represents a declaration entity in HTML document object model.
     /// </summary>
-    public partial class HtmlDeclaration : HtmlEntity, IEquatable<HtmlDeclaration>
+    public partial class HtmlDeclaration : HtmlEntity
     {
         /// <summary>
-        /// Name of this declaration node.
+        /// Name of this <see cref="HtmlDeclaration"/>.
         /// </summary>
         public string Name { get; }
 
         /// <summary>
-        /// Content of this declaration node.
+        /// Value of this <see cref="HtmlDeclaration"/>.
         /// </summary>
-        public string Content { get; }
+        public string Value { get; }
 
         /// <summary>
         /// Initializes an instance of <see cref="HtmlDeclaration"/>.
         /// </summary>
-        public HtmlDeclaration(string name, string content)
+        public HtmlDeclaration(string name, string value)
         {
             Name = name.GuardNotNull(nameof(name));
-            Content = content.GuardNotNull(nameof(content));
+            Value = value.GuardNotNull(nameof(value));
         }
 
         /// <inheritdoc />
-        public bool Equals(HtmlDeclaration other)
-        {
-            if (ReferenceEquals(null, other)) return false;
-            if (ReferenceEquals(this, other)) return true;
-
-            return string.Equals(Name, other.Name) &&
-                   string.Equals(Content, other.Content);
-        }
-
-        /// <inheritdoc />
-        public override bool Equals(object obj)
-        {
-            if (ReferenceEquals(null, obj)) return false;
-            if (ReferenceEquals(this, obj)) return true;
-            if (obj.GetType() != GetType()) return false;
-
-            return Equals((HtmlDeclaration) obj);
-        }
-
-        /// <inheritdoc />
-        public override int GetHashCode() => HashCode.Combine(Name, Content);
-
-        /// <inheritdoc />
-        public override string ToString() => $"<!{Name} {Content}>";
+        public override string ToString() => $"<!{Name} {Value}>";
     }
 
     public partial class HtmlDeclaration

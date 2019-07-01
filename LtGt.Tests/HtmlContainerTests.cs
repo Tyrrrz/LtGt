@@ -36,7 +36,7 @@ namespace LtGt.Tests
             var element = container.GetElementById(id);
 
             // Assert
-            Assert.That(element, Is.EqualTo(expectedElement));
+            Assert.That(element, Is.EqualTo(expectedElement).Using(HtmlEntity.EqualityComparer));
         }
 
         private static IEnumerable<TestCaseData> GetTestCases_GetElementsByTagName()
@@ -91,7 +91,7 @@ namespace LtGt.Tests
             var elements = container.GetElementsByTagName(tagName).ToArray();
 
             // Assert
-            Assert.That(elements, Is.EqualTo(expectedElements));
+            Assert.That(elements, Is.EqualTo(expectedElements).Using(HtmlEntity.EqualityComparer));
         }
 
         private static IEnumerable<TestCaseData> GetTestCases_GetElementByTagName()
@@ -112,7 +112,7 @@ namespace LtGt.Tests
             var element = container.GetElementByTagName(tagName);
 
             // Assert
-            Assert.That(element, Is.EqualTo(expectedElement));
+            Assert.That(element, Is.EqualTo(expectedElement).Using(HtmlEntity.EqualityComparer));
         }
 
         private static IEnumerable<TestCaseData> GetTestCases_GetElementsByClassName()
@@ -176,7 +176,7 @@ namespace LtGt.Tests
             var elements = container.GetElementsByClassName(className).ToArray();
 
             // Assert
-            Assert.That(elements, Is.EqualTo(expectedElements));
+            Assert.That(elements, Is.EqualTo(expectedElements).Using(HtmlEntity.EqualityComparer));
         }
 
         private static IEnumerable<TestCaseData> GetTestCases_GetElementByClassName()
@@ -197,7 +197,7 @@ namespace LtGt.Tests
             var element = container.GetElementByClassName(className);
 
             // Assert
-            Assert.That(element, Is.EqualTo(expectedElement));
+            Assert.That(element, Is.EqualTo(expectedElement).Using(HtmlEntity.EqualityComparer));
         }
 
         private static IEnumerable<TestCaseData> GetTestCases_GetElementsBySelector()
@@ -738,7 +738,7 @@ namespace LtGt.Tests
             var elements = container.GetElementsBySelector(selector).ToArray();
 
             // Assert
-            Assert.That(elements, Is.EqualTo(expectedElements));
+            Assert.That(elements, Is.EqualTo(expectedElements).Using(HtmlEntity.EqualityComparer));
         }
 
         private static IEnumerable<TestCaseData> GetTestCases_GetElementBySelector()
@@ -759,7 +759,7 @@ namespace LtGt.Tests
             var element = container.GetElementBySelector(selector);
 
             // Assert
-            Assert.That(element, Is.EqualTo(expectedElement));
+            Assert.That(element, Is.EqualTo(expectedElement).Using(HtmlEntity.EqualityComparer));
         }
 
         private static IEnumerable<TestCaseData> GetTestCases_GetInnerText()
@@ -827,7 +827,7 @@ namespace LtGt.Tests
             var innerText = container.GetInnerText();
 
             // Assert
-            Assert.That(innerText, Is.EqualTo(expectedInnerText));
+            Assert.That(innerText, Is.EqualTo(expectedInnerText).Using(HtmlEntity.EqualityComparer));
         }
     }
 }

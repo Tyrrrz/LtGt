@@ -74,7 +74,7 @@ namespace LtGt.Tests
             var attribute = element.GetAttribute(attributeName);
 
             // Assert
-            Assert.That(attribute, Is.EqualTo(expectedAttribute));
+            Assert.That(attribute, Is.EqualTo(expectedAttribute).Using(HtmlEntity.EqualityComparer));
         }
 
         private static IEnumerable<TestCaseData> GetTestCases_GetId()

@@ -43,7 +43,7 @@ namespace LtGt.Tests
             var document = HtmlParser.Default.ParseDocument(source);
 
             // Assert
-            Assert.That(document, Is.EqualTo(expectedDocument));
+            Assert.That(document, Is.EqualTo(expectedDocument).Using(HtmlEntity.EqualityComparer));
         }
 
         private static IEnumerable<TestCaseData> GetTestCases_ParseElement()
@@ -64,7 +64,7 @@ namespace LtGt.Tests
             var element = HtmlParser.Default.ParseElement(source);
 
             // Assert
-            Assert.That(element, Is.EqualTo(expectedElement));
+            Assert.That(element, Is.EqualTo(expectedElement).Using(HtmlEntity.EqualityComparer));
         }
 
         private static IEnumerable<TestCaseData> GetTestCases_ParseNode()
@@ -181,7 +181,7 @@ namespace LtGt.Tests
             var node = HtmlParser.Default.ParseNode(source);
 
             // Assert
-            Assert.That(node, Is.EqualTo(expectedNode));
+            Assert.That(node, Is.EqualTo(expectedNode).Using(HtmlEntity.EqualityComparer));
         }
     }
 }

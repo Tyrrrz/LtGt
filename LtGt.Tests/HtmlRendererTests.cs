@@ -34,7 +34,7 @@ namespace LtGt.Tests
             var roundTripNode = HtmlParser.Default.ParseNode(html);
 
             // Assert
-            Assert.That(roundTripNode, Is.EqualTo(node));
+            Assert.That(roundTripNode, Is.EqualTo(node).Using(HtmlEntity.EqualityComparer));
         }
     }
 }

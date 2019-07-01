@@ -1,5 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
 using LtGt.Internal;
 
@@ -8,15 +7,15 @@ namespace LtGt.Models
     /// <summary>
     /// Represents an element node in HTML document object model.
     /// </summary>
-    public class HtmlElement : HtmlContainer, IEquatable<HtmlElement>
+    public class HtmlElement : HtmlContainer
     {
         /// <summary>
-        /// Tag name of this element node.
+        /// Tag name of this <see cref="HtmlElement"/>.
         /// </summary>
         public string Name { get; }
 
         /// <summary>
-        /// Attributes assigned to this element node.
+        /// Attributes of this <see cref="HtmlElement"/>.
         /// </summary>
         public IReadOnlyList<HtmlAttribute> Attributes { get; }
 
@@ -28,6 +27,10 @@ namespace LtGt.Models
         {
             Name = name.GuardNotNull(nameof(name));
             Attributes = attributes.GuardNotNull(nameof(attributes));
+
+            // Update contextual information on attributes
+            foreach (var attribute in Attributes)
+                attribute.Parent = this;
         }
 
         /// <summary>
@@ -99,30 +102,6 @@ namespace LtGt.Models
             : this(name, new HtmlAttribute[0])
         {
         }
-
-        /// <inheritdoc />
-        public bool Equals(HtmlElement other)
-        {
-            if (ReferenceEquals(null, other)) return false;
-            if (ReferenceEquals(this, other)) return true;
-
-            return string.Equals(Name, other.Name) &&
-                   Attributes.SequenceEqual(other.Attributes) &&
-                   Children.SequenceEqual(other.Children);
-        }
-
-        /// <inheritdoc />
-        public override bool Equals(object obj)
-        {
-            if (ReferenceEquals(null, obj)) return false;
-            if (ReferenceEquals(this, obj)) return true;
-            if (obj.GetType() != GetType()) return false;
-
-            return Equals((HtmlElement) obj);
-        }
-
-        /// <inheritdoc />
-        public override int GetHashCode() => HashCode.Combine(Name, Attributes, Children);
 
         /// <inheritdoc />
         public override string ToString()

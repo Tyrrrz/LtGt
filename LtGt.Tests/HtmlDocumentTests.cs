@@ -64,7 +64,7 @@ namespace LtGt.Tests
             var element = document.GetHead();
 
             // Assert
-            Assert.That(element, Is.EqualTo(expectedElement));
+            Assert.That(element, Is.EqualTo(expectedElement).Using(HtmlEntity.EqualityComparer));
         }
 
         private static IEnumerable<TestCaseData> GetTestCases_GetBody()
@@ -88,7 +88,7 @@ namespace LtGt.Tests
             var element = document.GetBody();
 
             // Assert
-            Assert.That(element, Is.EqualTo(expectedElement));
+            Assert.That(element, Is.EqualTo(expectedElement).Using(HtmlEntity.EqualityComparer));
         }
 
         private static IEnumerable<TestCaseData> GetTestCases_GetTitle()

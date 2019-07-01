@@ -1,5 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
 using LtGt.Internal;
 
@@ -8,10 +7,10 @@ namespace LtGt.Models
     /// <summary>
     /// Represents a document node in HTML document object model.
     /// </summary>
-    public class HtmlDocument : HtmlContainer, IEquatable<HtmlDocument>
+    public class HtmlDocument : HtmlContainer
     {
         /// <summary>
-        /// HTML declaration of this document.
+        /// Declaration of this <see cref="HtmlDocument"/>.
         /// </summary>
         public HtmlDeclaration Declaration { get; }
 
@@ -31,28 +30,6 @@ namespace LtGt.Models
             : this(declaration, (IReadOnlyList<HtmlNode>) children)
         {
         }
-
-        /// <inheritdoc />
-        public bool Equals(HtmlDocument other)
-        {
-            if (ReferenceEquals(null, other)) return false;
-            if (ReferenceEquals(this, other)) return true;
-
-            return Declaration.Equals(other.Declaration) && Children.SequenceEqual(other.Children);
-        }
-
-        /// <inheritdoc />
-        public override bool Equals(object obj)
-        {
-            if (ReferenceEquals(null, obj)) return false;
-            if (ReferenceEquals(this, obj)) return true;
-            if (obj.GetType() != GetType()) return false;
-
-            return Equals((HtmlDocument) obj);
-        }
-
-        /// <inheritdoc />
-        public override int GetHashCode() => HashCode.Combine(Declaration, Children);
 
         /// <inheritdoc />
         public override string ToString()

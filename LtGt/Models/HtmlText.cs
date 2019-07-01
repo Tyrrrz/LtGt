@@ -1,49 +1,26 @@
-﻿using System;
-using LtGt.Internal;
+﻿using LtGt.Internal;
 
 namespace LtGt.Models
 {
     /// <summary>
     /// Represents a text node in HTML document object model.
     /// </summary>
-    public class HtmlText : HtmlNode, IEquatable<HtmlText>
+    public class HtmlText : HtmlNode
     {
         /// <summary>
-        /// Content of this text node.
+        /// Text content of this <see cref="HtmlText"/>.
         /// </summary>
-        public string Content { get; }
+        public string Value { get; }
 
         /// <summary>
         /// Initializes an instance of <see cref="HtmlText"/>.
         /// </summary>
-        public HtmlText(string content)
+        public HtmlText(string value)
         {
-            Content = content.GuardNotNull(nameof(content));
+            Value = value.GuardNotNull(nameof(value));
         }
 
         /// <inheritdoc />
-        public bool Equals(HtmlText other)
-        {
-            if (ReferenceEquals(null, other)) return false;
-            if (ReferenceEquals(this, other)) return true;
-
-            return string.Equals(Content, other.Content);
-        }
-
-        /// <inheritdoc />
-        public override bool Equals(object obj)
-        {
-            if (ReferenceEquals(null, obj)) return false;
-            if (ReferenceEquals(this, obj)) return true;
-            if (obj.GetType() != GetType()) return false;
-
-            return Equals((HtmlText) obj);
-        }
-
-        /// <inheritdoc />
-        public override int GetHashCode() => HashCode.Combine(Content);
-
-        /// <inheritdoc />
-        public override string ToString() => Content;
+        public override string ToString() => Value;
     }
 }
