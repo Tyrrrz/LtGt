@@ -265,11 +265,12 @@ namespace LtGt.Models
             if (string.Equals(selector, "*", StringComparison.OrdinalIgnoreCase))
                 return container.GetDescendantElements();
 
-            var parsedSelector = SelectorGrammar.Selector.TryParse(selector).Value;
-            if (parsedSelector != null)
-                return container.GetDescendantElements().Where(e => parsedSelector.Matches(e));
+            var selectorParseResult = SelectorGrammar.Selector.TryParse(selector);
 
-            return new HtmlElement[0];
+            if (!selectorParseResult.WasSuccessful)
+                return Enumerable.Empty<HtmlElement>();
+
+            return container.GetDescendantElements().Where(e => selectorParseResult.Value.Matches(e));
         }
 
         /// <summary>
