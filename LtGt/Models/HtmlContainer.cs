@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.Linq;
 using LtGt.Internal;
 
 namespace LtGt.Models
@@ -19,6 +20,14 @@ namespace LtGt.Models
         protected HtmlContainer(IReadOnlyList<HtmlNode> children)
         {
             Children = children.GuardNotNull(nameof(children));
+
+            for (var i = 0; i < Children.Count; i++)
+            {
+                Children[i].Parent = this;
+                Children[i].Index = i;
+                Children[i].Previous = Children.ElementAtOrDefault(i - 1);
+                Children[i].Next = Children.ElementAtOrDefault(i + 1);
+            }
         }
     }
 }

@@ -127,15 +127,16 @@ namespace LtGt.Internal
             from closeGt in Parse.Char('>').TokenLeft()
             select new HtmlElement(name, attributes.ToArray(), new[] {new HtmlText(text)});
 
-        // <meta> / <br>
+        // <meta> / <meta/> / <br> / <br/>
         private static readonly Parser<HtmlElement> VoidHtmlElement =
             from open in Parse.Char('<')
             from name in HtmlElementName.Where(IsVoidElement)
             from attributes in HtmlAttribute.Token().Many()
-            from close in Parse.Char('>').TokenLeft()
+            from slash in Parse.Char('/').Optional().TokenLeft()
+            from close in Parse.Char('>')
             select new HtmlElement(name, attributes.ToArray());
 
-        // <input />
+        // <div/>
         private static readonly Parser<HtmlElement> SelfClosingHtmlElement =
             from open in Parse.Char('<')
             from name in HtmlElementName

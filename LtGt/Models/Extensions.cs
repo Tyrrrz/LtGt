@@ -4,6 +4,8 @@ using System.Linq;
 using System.Text;
 using System.Xml.Linq;
 using LtGt.Internal;
+using LtGt.Internal.Selectors;
+using Sprache;
 
 namespace LtGt.Models
 {
@@ -153,10 +155,17 @@ namespace LtGt.Models
     // HtmlContainer
     public static partial class Extensions
     {
+        public static IEnumerable<HtmlElement> GetChildElements(this HtmlContainer container)
+        {
+            container.GuardNotNull(nameof(container));
+
+            return container.Children.OfType<HtmlElement>();
+        }
+
         /// <summary>
         /// Gets all child nodes as they appear in document order.
         /// </summary>
-        public static IEnumerable<HtmlNode> GetChildNodesRecursively(this HtmlContainer container)
+        public static IEnumerable<HtmlNode> GetDescendants(this HtmlContainer container)
         {
             container.GuardNotNull(nameof(container));
 
@@ -166,7 +175,7 @@ namespace LtGt.Models
 
                 if (child is HtmlContainer containerChild)
                 {
-                    foreach (var recursiveChild in containerChild.GetChildNodesRecursively())
+                    foreach (var recursiveChild in containerChild.GetDescendants())
                         yield return recursiveChild;
                 }
             }
@@ -175,11 +184,11 @@ namespace LtGt.Models
         /// <summary>
         /// Gets all child element nodes as they appear in document order.
         /// </summary>
-        public static IEnumerable<HtmlElement> GetChildElementsRecursively(this HtmlContainer container)
+        public static IEnumerable<HtmlElement> GetDescendantElements(this HtmlContainer container)
         {
             container.GuardNotNull(nameof(container));
 
-            return container.GetChildNodesRecursively().OfType<HtmlElement>();
+            return container.GetDescendants().OfType<HtmlElement>();
         }
 
         /// <summary>
@@ -191,7 +200,7 @@ namespace LtGt.Models
             container.GuardNotNull(nameof(container));
             id.GuardNotNull(nameof(id));
 
-            return container.GetChildElementsRecursively().FirstOrDefault(e => string.Equals(e.GetId(), id, StringComparison.Ordinal));
+            return container.GetDescendantElements().FirstOrDefault(e => string.Equals(e.GetId(), id, StringComparison.Ordinal));
         }
 
         /// <summary>
@@ -204,9 +213,9 @@ namespace LtGt.Models
             tagName.GuardNotNull(nameof(tagName));
 
             if (string.Equals(tagName, "*", StringComparison.OrdinalIgnoreCase))
-                return container.GetChildElementsRecursively();
+                return container.GetDescendantElements();
 
-            return container.GetChildElementsRecursively().Where(e => string.Equals(e.Name, tagName, StringComparison.OrdinalIgnoreCase));
+            return container.GetDescendantElements().Where(e => string.Equals(e.Name, tagName, StringComparison.OrdinalIgnoreCase));
         }
 
         /// <summary>
@@ -230,7 +239,7 @@ namespace LtGt.Models
             container.GuardNotNull(nameof(container));
             className.GuardNotNull(nameof(className));
 
-            return container.GetChildElementsRecursively().Where(e => e.MatchesClassName(className));
+            return container.GetDescendantElements().Where(e => e.MatchesClassName(className));
         }
 
         /// <summary>
@@ -243,6 +252,35 @@ namespace LtGt.Models
             className.GuardNotNull(nameof(className));
 
             return container.GetElementsByClassName(className).FirstOrDefault();
+        }
+
+        /// <summary>
+        /// Gets elements that match given CSS selector.
+        /// </summary>
+        public static IEnumerable<HtmlElement> GetElementsBySelector(this HtmlContainer container, string selector)
+        {
+            container.GuardNotNull(nameof(container));
+            selector.GuardNotNull(nameof(selector));
+
+            if (string.Equals(selector, "*", StringComparison.OrdinalIgnoreCase))
+                return container.GetDescendantElements();
+
+            var parsedSelector = SelectorGrammar.Selector.TryParse(selector).Value;
+            if (parsedSelector != null)
+                return container.GetDescendantElements().Where(e => parsedSelector.Matches(e));
+
+            return new HtmlElement[0];
+        }
+
+        /// <summary>
+        /// Gets an element that matches given CSS selector or null if not found.
+        /// </summary>
+        public static HtmlElement GetElementBySelector(this HtmlContainer container, string selector)
+        {
+            container.GuardNotNull(nameof(container));
+            selector.GuardNotNull(nameof(selector));
+
+            return container.GetElementsBySelector(selector).FirstOrDefault();
         }
 
         private static string GetTextRepresentation(this HtmlElement element, bool isFirstNode)
@@ -370,6 +408,104 @@ namespace LtGt.Models
                 return document.ToXDocument();
 
             throw new ArgumentException($"Unknown node type [{node.GetType().Name}].", nameof(node));
+        }
+
+        /// <summary>
+        /// Gets all parents of this node.
+        /// </summary>
+        public static IEnumerable<HtmlContainer> GetParents(this HtmlNode node)
+        {
+            node.GuardNotNull(nameof(node));
+
+            while (node.Parent != null)
+            {
+                yield return node.Parent;
+                node = node.Parent;
+            }
+        }
+
+        /// <summary>
+        /// Gets all element parents of this node.
+        /// </summary>
+        public static IEnumerable<HtmlElement> GetParentElements(this HtmlNode node)
+        {
+            node.GuardNotNull(nameof(node));
+
+            return node.GetParents().OfType<HtmlElement>();
+        }
+
+        /// <summary>
+        /// Gets the parent of this node as en element or null if there is no parent or it's not an element.
+        /// </summary>
+        public static HtmlElement GetParentElement(this HtmlNode node)
+        {
+            node.GuardNotNull(nameof(node));
+
+            return node.Parent as HtmlElement;
+        }
+
+        public static IEnumerable<HtmlElement> GetNextElements(this HtmlNode node)
+        {
+            node.GuardNotNull(nameof(node));
+
+            while (true)
+            {
+                if (node.Next == null)
+                    yield break;
+
+                if (node.Next is HtmlElement nextElement)
+                    yield return nextElement;
+
+                node = node.Next;
+            }
+        }
+
+        public static HtmlElement GetNextElement(this HtmlNode node)
+        {
+            node.GuardNotNull(nameof(node));
+
+            return node.GetNextElements().FirstOrDefault();
+        }
+
+        public static IEnumerable<HtmlElement> GetPreviousElements(this HtmlNode node)
+        {
+            node.GuardNotNull(nameof(node));
+
+            while (true)
+            {
+                if (node.Previous == null)
+                    yield break;
+
+                if (node.Previous is HtmlElement previousElement)
+                    yield return previousElement;
+
+                node = node.Previous;
+            }
+        }
+
+        public static HtmlElement GetPreviousElement(this HtmlNode node)
+        {
+            node.GuardNotNull(nameof(node));
+
+            return node.GetPreviousElements().FirstOrDefault();
+        }
+
+        public static IEnumerable<HtmlNode> GetSiblings(this HtmlNode node)
+        {
+            node.GuardNotNull(nameof(node));
+
+            foreach (var child in node.Parent.Children)
+            {
+                if (child != node)
+                    yield return child;
+            }
+        }
+
+        public static IEnumerable<HtmlElement> GetSiblingElements(this HtmlNode node)
+        {
+            node.GuardNotNull(nameof(node));
+
+            return node.GetSiblings().OfType<HtmlElement>();
         }
     }
 }
