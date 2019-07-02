@@ -23,6 +23,21 @@ namespace LtGt.Models
         public HtmlElement Parent { get; internal set; }
 
         /// <summary>
+        /// Zero-based index of this <see cref="HtmlAttribute"/>.
+        /// </summary>
+        public int Index { get; internal set; }
+
+        /// <summary>
+        /// Previous sibling of this <see cref="HtmlAttribute"/>.
+        /// </summary>
+        public HtmlAttribute Previous { get; internal set; }
+
+        /// <summary>
+        /// Next sibling of this <see cref="HtmlAttribute"/>.
+        /// </summary>
+        public HtmlAttribute Next { get; internal set; }
+
+        /// <summary>
         /// Initializes an instance of <see cref="HtmlAttribute"/>.
         /// </summary>
         public HtmlAttribute(string name, string value)

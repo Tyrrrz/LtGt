@@ -29,8 +29,13 @@ namespace LtGt.Models
             Attributes = attributes.GuardNotNull(nameof(attributes));
 
             // Update contextual information on attributes
-            foreach (var attribute in Attributes)
-                attribute.Parent = this;
+            for (var i = 0; i < Attributes.Count; i++)
+            {
+                Attributes[i].Parent = this;
+                Attributes[i].Index = i;
+                Attributes[i].Previous = Attributes.ElementAtOrDefault(i - 1);
+                Attributes[i].Next = Attributes.ElementAtOrDefault(i + 1);
+            }
         }
 
         /// <summary>
