@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using LtGt.Internal;
 
 namespace LtGt.Models
@@ -25,12 +26,12 @@ namespace LtGt.Models
 
         private bool Equals(HtmlElement x, HtmlElement y) =>
             StringComparer.OrdinalIgnoreCase.Equals(x.Name, y.Name) &&
-            this.AllEquals(x.Attributes, y.Attributes) &&
-            this.AllEquals(x.Children, y.Children);
+            x.Attributes.SequenceEqual(y.Attributes, this) &&
+            x.Children.SequenceEqual(y.Children, this);
 
         private bool Equals(HtmlDocument x, HtmlDocument y) =>
             Equals(x.Declaration, y.Declaration) &&
-            this.AllEquals(x.Children, y.Children);
+            x.Children.SequenceEqual(y.Children, this);
 
         /// <inheritdoc />
         public bool Equals(HtmlEntity entity1, HtmlEntity entity2)
