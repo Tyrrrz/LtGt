@@ -72,16 +72,6 @@ namespace LtGt.Tests
             );
         }
 
-        private static IEnumerable<TestCaseData> GetTestCases_GetElementByTagName()
-        {
-            foreach (var testCase in GetTestCases_GetElementsByTagName())
-            {
-                testCase.Arguments[2] = ((IEnumerable<HtmlElement>) testCase.Arguments[2]).FirstOrDefault();
-
-                yield return testCase;
-            }
-        }
-
         private static IEnumerable<TestCaseData> GetTestCases_GetElementsByClassName()
         {
             yield return new TestCaseData(
@@ -133,16 +123,6 @@ namespace LtGt.Tests
                 "test4",
                 new HtmlElement[0]
             );
-        }
-
-        private static IEnumerable<TestCaseData> GetTestCases_GetElementByClassName()
-        {
-            foreach (var testCase in GetTestCases_GetElementsByClassName())
-            {
-                testCase.Arguments[2] = ((IEnumerable<HtmlElement>) testCase.Arguments[2]).FirstOrDefault();
-
-                yield return testCase;
-            }
         }
 
         private static IEnumerable<TestCaseData> GetTestCases_GetElementsBySelector()
@@ -675,16 +655,6 @@ namespace LtGt.Tests
             );
         }
 
-        private static IEnumerable<TestCaseData> GetTestCases_GetElementBySelector()
-        {
-            foreach (var testCase in GetTestCases_GetElementsBySelector())
-            {
-                testCase.Arguments[2] = ((IEnumerable<HtmlElement>) testCase.Arguments[2]).FirstOrDefault();
-
-                yield return testCase;
-            }
-        }
-
         private static IEnumerable<TestCaseData> GetTestCases_GetInnerText()
         {
             yield return new TestCaseData(
@@ -765,17 +735,6 @@ namespace LtGt.Tests
         }
 
         [Test]
-        [TestCaseSource(nameof(GetTestCases_GetElementByTagName))]
-        public void GetElementByTagName_Test(HtmlContainer container, string tagName, HtmlElement expected)
-        {
-            // Act
-            var actual = container.GetElementByTagName(tagName);
-
-            // Assert
-            Assert.That(actual, Is.EqualTo(expected).Using(HtmlEntity.EqualityComparer));
-        }
-
-        [Test]
         [TestCaseSource(nameof(GetTestCases_GetElementsByClassName))]
         public void GetElementsByClassName_Test(HtmlContainer container, string className, IReadOnlyList<HtmlElement> expected)
         {
@@ -787,33 +746,11 @@ namespace LtGt.Tests
         }
 
         [Test]
-        [TestCaseSource(nameof(GetTestCases_GetElementByClassName))]
-        public void GetElementByClassName_Test(HtmlContainer container, string className, HtmlElement expected)
-        {
-            // Act
-            var actual = container.GetElementByClassName(className);
-
-            // Assert
-            Assert.That(actual, Is.EqualTo(expected).Using(HtmlEntity.EqualityComparer));
-        }
-
-        [Test]
         [TestCaseSource(nameof(GetTestCases_GetElementsBySelector))]
         public void GetElementsBySelector_Test(HtmlContainer container, string selector, IReadOnlyList<HtmlElement> expected)
         {
             // Act
             var actual = container.GetElementsBySelector(selector).ToArray();
-
-            // Assert
-            Assert.That(actual, Is.EqualTo(expected).Using(HtmlEntity.EqualityComparer));
-        }
-
-        [Test]
-        [TestCaseSource(nameof(GetTestCases_GetElementBySelector))]
-        public void GetElementBySelector_Test(HtmlContainer container, string selector, HtmlElement expected)
-        {
-            // Act
-            var actual = container.GetElementBySelector(selector);
 
             // Assert
             Assert.That(actual, Is.EqualTo(expected).Using(HtmlEntity.EqualityComparer));

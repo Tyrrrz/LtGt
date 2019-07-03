@@ -25,7 +25,7 @@ namespace LtGt.Models
         {
             document.GuardNotNull(nameof(document));
 
-            return document.GetElementByTagName("head");
+            return document.GetElementsByTagName("head").FirstOrDefault();
         }
 
         /// <summary>
@@ -35,7 +35,7 @@ namespace LtGt.Models
         {
             document.GuardNotNull(nameof(document));
 
-            return document.GetElementByTagName("body");
+            return document.GetElementsByTagName("body").FirstOrDefault();
         }
 
         /// <summary>
@@ -45,7 +45,7 @@ namespace LtGt.Models
         {
             document.GuardNotNull(nameof(document));
 
-            return document.GetHead()?.GetElementByTagName("title")?.GetInnerText();
+            return document.GetHead()?.GetElementsByTagName("title").FirstOrDefault()?.GetInnerText();
         }
     }
 }

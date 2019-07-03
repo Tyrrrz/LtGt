@@ -64,8 +64,8 @@ There are many extension methods that should help you locate elements you want t
 
 ```c#
 var element1 = document.GetElementById("menu-bar");
-var element2 = document.GetElementByTagName("div");
-var element3 = document.GetElementByClassName("floating-button floating-button--enabled");
+var element2 = document.GetElementsByTagName("div").FirstOrDefault();
+var element3 = document.GetElementsByClassName("floating-button floating-button--enabled").FirstOrDefault();
 
 var element1Data = element1.GetAttribute("data")?.Value;
 var element2Id = element2.GetId();

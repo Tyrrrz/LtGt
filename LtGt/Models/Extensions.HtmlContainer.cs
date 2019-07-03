@@ -11,16 +11,6 @@ namespace LtGt.Models
     public static partial class Extensions
     {
         /// <summary>
-        /// Gets all direct child elements of this <see cref="HtmlContainer"/>.
-        /// </summary>
-        public static IEnumerable<HtmlElement> GetChildElements(this HtmlContainer container)
-        {
-            container.GuardNotNull(nameof(container));
-
-            return container.Children.OfType<HtmlElement>();
-        }
-
-        /// <summary>
         /// Gets all descendants of this <see cref="HtmlContainer"/>.
         /// </summary>
         public static IEnumerable<HtmlNode> GetDescendants(this HtmlContainer container)
@@ -40,16 +30,6 @@ namespace LtGt.Models
         }
 
         /// <summary>
-        /// Gets all descendant elements of this <see cref="HtmlContainer"/>.
-        /// </summary>
-        public static IEnumerable<HtmlElement> GetDescendantElements(this HtmlContainer container)
-        {
-            container.GuardNotNull(nameof(container));
-
-            return container.GetDescendants().OfType<HtmlElement>();
-        }
-
-        /// <summary>
         /// Gets the first descendant element in this <see cref="HtmlContainer"/> that has specified id or null if it's not found.
         /// Element ID comparison is case sensitive.
         /// </summary>
@@ -58,7 +38,9 @@ namespace LtGt.Models
             container.GuardNotNull(nameof(container));
             id.GuardNotNull(nameof(id));
 
-            return container.GetDescendantElements().FirstOrDefault(e => string.Equals(e.GetId(), id, StringComparison.Ordinal));
+            return container.GetDescendants()
+                .OfType<HtmlElement>()
+                .FirstOrDefault(e => string.Equals(e.GetId(), id, StringComparison.Ordinal));
         }
 
         /// <summary>
@@ -72,21 +54,11 @@ namespace LtGt.Models
 
             // Mimic JS behavior
             if (string.Equals(tagName, "*", StringComparison.OrdinalIgnoreCase))
-                return container.GetDescendantElements();
+                return container.GetDescendants().OfType<HtmlElement>();
 
-            return container.GetDescendantElements().Where(e => string.Equals(e.Name, tagName, StringComparison.OrdinalIgnoreCase));
-        }
-
-        /// <summary>
-        /// Gets the first descendant element in this <see cref="HtmlContainer"/> that has specified tag name or null if it's not found.
-        /// Element tag name comparison is not case sensitive.
-        /// </summary>
-        public static HtmlElement GetElementByTagName(this HtmlContainer container, string tagName)
-        {
-            container.GuardNotNull(nameof(container));
-            tagName.GuardNotNull(nameof(tagName));
-
-            return container.GetElementsByTagName(tagName).FirstOrDefault();
+            return container.GetDescendants()
+                .OfType<HtmlElement>()
+                .Where(e => string.Equals(e.Name, tagName, StringComparison.OrdinalIgnoreCase));
         }
 
         /// <summary>
@@ -98,19 +70,9 @@ namespace LtGt.Models
             container.GuardNotNull(nameof(container));
             className.GuardNotNull(nameof(className));
 
-            return container.GetDescendantElements().Where(e => e.MatchesClassName(className));
-        }
-
-        /// <summary>
-        /// Gets the first descendant element in this <see cref="HtmlContainer"/> that matches specified class name or null if it's not found.
-        /// Element class name comparison is case sensitive.
-        /// </summary>
-        public static HtmlElement GetElementByClassName(this HtmlContainer container, string className)
-        {
-            container.GuardNotNull(nameof(container));
-            className.GuardNotNull(nameof(className));
-
-            return container.GetElementsByClassName(className).FirstOrDefault();
+            return container.GetDescendants()
+                .OfType<HtmlElement>()
+                .Where(e => e.MatchesClassName(className));
         }
 
         /// <summary>
@@ -122,29 +84,15 @@ namespace LtGt.Models
             container.GuardNotNull(nameof(container));
             selector.GuardNotNull(nameof(selector));
 
-            // Handle 'any' selector separately for simplicity
-            if (string.Equals(selector, "*", StringComparison.OrdinalIgnoreCase))
-                return container.GetDescendantElements();
-
             var selectorParseResult = SelectorGrammar.Selector.TryParse(selector);
 
             // JS doesn't fail on invalid selectors so neither should we
             if (!selectorParseResult.WasSuccessful)
                 return Enumerable.Empty<HtmlElement>();
 
-            return container.GetDescendantElements().Where(e => selectorParseResult.Value.Matches(e));
-        }
-
-        /// <summary>
-        /// Gets the first descendant element in this <see cref="HtmlContainer"/> that matches specified CSS selector or null if it's not found.
-        /// See https://w3.org/TR/selectors-3 for the list of supported selectors.
-        /// </summary>
-        public static HtmlElement GetElementBySelector(this HtmlContainer container, string selector)
-        {
-            container.GuardNotNull(nameof(container));
-            selector.GuardNotNull(nameof(selector));
-
-            return container.GetElementsBySelector(selector).FirstOrDefault();
+            return container.GetDescendants()
+                .OfType<HtmlElement>()
+                .Where(e => selectorParseResult.Value.Matches(e));
         }
 
         private static string GetTextRepresentation(this HtmlElement element, bool isFirstNode)

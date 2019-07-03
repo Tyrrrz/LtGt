@@ -8,6 +8,8 @@ namespace LtGt.Internal.Selectors
 {
     internal static class SelectorGrammar
     {
+        private static readonly Parser<AnySelector> AnySelector = Parse.Char('*').Return(new AnySelector());
+
         private static readonly Parser<string> Name = Parse.LetterOrDigit.AtLeastOnce().Text();
 
         private static readonly Parser<NameSelector> NameSelector = Name.Select(n => new NameSelector(n));
@@ -62,7 +64,7 @@ namespace LtGt.Internal.Selectors
         private static readonly Parser<AttributeSelector> AttributeSelector = NormalAttributeSelector.Or(ValuelessAttributeSelector);
 
         private static readonly Parser<CombinedSelector> CombinedSelector =
-            NameSelector.Or<Selector>(ClassNameSelector).Or(IdSelector).Or(AttributeSelector)
+            AnySelector.Or<Selector>(NameSelector).Or(ClassNameSelector).Or(IdSelector).Or(AttributeSelector)
                 .XAtLeastOnce()
                 .Select(s => new CombinedSelector(s.ToArray()));
 

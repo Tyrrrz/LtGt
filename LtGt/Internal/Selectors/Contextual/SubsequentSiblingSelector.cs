@@ -16,7 +16,7 @@ namespace LtGt.Internal.Selectors.Contextual
         }
 
         public override bool Matches(HtmlElement element) =>
-            TargetSelector.Matches(element) && element.GetPreviousSiblingElements().Any(PreviousSelector.Matches);
+            TargetSelector.Matches(element) && element.GetPreviousSiblings().OfType<HtmlElement>().Any(PreviousSelector.Matches);
 
         public override string ToString() => "~";
     }

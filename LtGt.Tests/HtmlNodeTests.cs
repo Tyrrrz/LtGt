@@ -97,24 +97,6 @@ namespace LtGt.Tests
             );
         }
 
-        private static IEnumerable<TestCaseData> GetTestCases_GetAncestorElements()
-        {
-            foreach (var testCase in GetTestCases_GetAncestors())
-            {
-                testCase.Arguments[1] = ((IEnumerable<HtmlContainer>) testCase.Arguments[1]).OfType<HtmlElement>().ToArray();
-                yield return testCase;
-            }
-        }
-
-        private static IEnumerable<TestCaseData> GetTestCases_GetAncestorElement()
-        {
-            foreach (var testCase in GetTestCases_GetAncestorElements())
-            {
-                testCase.Arguments[1] = ((IEnumerable<HtmlElement>) testCase.Arguments[1]).FirstOrDefault();
-                yield return testCase;
-            }
-        }
-
         private static IEnumerable<TestCaseData> GetTestCases_GetSiblings()
         {
             HtmlNode node;
@@ -150,15 +132,6 @@ namespace LtGt.Tests
                 node,
                 new HtmlNode[0]
             );
-        }
-
-        private static IEnumerable<TestCaseData> GetTestCases_GetSiblingElements()
-        {
-            foreach (var testCase in GetTestCases_GetSiblings())
-            {
-                testCase.Arguments[1] = ((IEnumerable<HtmlNode>) testCase.Arguments[1]).OfType<HtmlElement>().ToArray();
-                yield return testCase;
-            }
         }
 
         private static IEnumerable<TestCaseData> GetTestCases_GetPreviousSiblings()
@@ -210,24 +183,6 @@ namespace LtGt.Tests
             );
         }
 
-        private static IEnumerable<TestCaseData> GetTestCases_GetPreviousSiblingElements()
-        {
-            foreach (var testCase in GetTestCases_GetPreviousSiblings())
-            {
-                testCase.Arguments[1] = ((IEnumerable<HtmlNode>) testCase.Arguments[1]).OfType<HtmlElement>().ToArray();
-                yield return testCase;
-            }
-        }
-
-        private static IEnumerable<TestCaseData> GetTestCases_GetPreviousSiblingElement()
-        {
-            foreach (var testCase in GetTestCases_GetPreviousSiblingElements())
-            {
-                testCase.Arguments[1] = ((IEnumerable<HtmlElement>) testCase.Arguments[1]).FirstOrDefault();
-                yield return testCase;
-            }
-        }
-
         private static IEnumerable<TestCaseData> GetTestCases_GetNextSiblings()
         {
             HtmlNode node;
@@ -276,24 +231,6 @@ namespace LtGt.Tests
             );
         }
 
-        private static IEnumerable<TestCaseData> GetTestCases_GetNextSiblingElements()
-        {
-            foreach (var testCase in GetTestCases_GetNextSiblings())
-            {
-                testCase.Arguments[1] = ((IEnumerable<HtmlNode>) testCase.Arguments[1]).OfType<HtmlElement>().ToArray();
-                yield return testCase;
-            }
-        }
-
-        private static IEnumerable<TestCaseData> GetTestCases_GetNextSiblingElement()
-        {
-            foreach (var testCase in GetTestCases_GetNextSiblingElements())
-            {
-                testCase.Arguments[1] = ((IEnumerable<HtmlElement>) testCase.Arguments[1]).FirstOrDefault();
-                yield return testCase;
-            }
-        }
-
         [Test]
         [TestCaseSource(nameof(GetTestCases_ToXNode))]
         public void ToXNode_Test(HtmlNode node, XNode expected)
@@ -317,44 +254,11 @@ namespace LtGt.Tests
         }
 
         [Test]
-        [TestCaseSource(nameof(GetTestCases_GetAncestorElements))]
-        public void GetAncestorElements_Test(HtmlNode node, IReadOnlyList<HtmlElement> expected)
-        {
-            // Act
-            var actual = node.GetAncestorElements().ToArray();
-
-            // Assert
-            Assert.That(actual, Is.EqualTo(expected).Using(HtmlEntity.EqualityComparer));
-        }
-
-        [Test]
-        [TestCaseSource(nameof(GetTestCases_GetAncestorElement))]
-        public void GetAncestorElement_Test(HtmlNode node, HtmlElement expected)
-        {
-            // Act
-            var actual = node.GetAncestorElement();
-
-            // Assert
-            Assert.That(actual, Is.EqualTo(expected).Using(HtmlEntity.EqualityComparer));
-        }
-
-        [Test]
         [TestCaseSource(nameof(GetTestCases_GetSiblings))]
         public void GetSiblings_Test(HtmlNode node, IReadOnlyList<HtmlNode> expected)
         {
             // Act
             var actual = node.GetSiblings().ToArray();
-
-            // Assert
-            Assert.That(actual, Is.EqualTo(expected).Using(HtmlEntity.EqualityComparer));
-        }
-
-        [Test]
-        [TestCaseSource(nameof(GetTestCases_GetSiblingElements))]
-        public void GetSiblingElements_Test(HtmlNode node, IReadOnlyList<HtmlElement> expected)
-        {
-            // Act
-            var actual = node.GetSiblingElements().ToArray();
 
             // Assert
             Assert.That(actual, Is.EqualTo(expected).Using(HtmlEntity.EqualityComparer));
@@ -372,55 +276,11 @@ namespace LtGt.Tests
         }
 
         [Test]
-        [TestCaseSource(nameof(GetTestCases_GetPreviousSiblingElements))]
-        public void GetPreviousSiblingElements_Test(HtmlNode node, IReadOnlyList<HtmlElement> expected)
-        {
-            // Act
-            var actual = node.GetPreviousSiblingElements().ToArray();
-
-            // Assert
-            Assert.That(actual, Is.EqualTo(expected).Using(HtmlEntity.EqualityComparer));
-        }
-
-        [Test]
-        [TestCaseSource(nameof(GetTestCases_GetPreviousSiblingElement))]
-        public void GetPreviousSiblingElement_Test(HtmlNode node, HtmlElement expected)
-        {
-            // Act
-            var actual = node.GetPreviousElement();
-
-            // Assert
-            Assert.That(actual, Is.EqualTo(expected).Using(HtmlEntity.EqualityComparer));
-        }
-
-        [Test]
         [TestCaseSource(nameof(GetTestCases_GetNextSiblings))]
         public void GetNextSiblings_Test(HtmlNode node, IReadOnlyList<HtmlNode> expected)
         {
             // Act
             var actual = node.GetNextSiblings().ToArray();
-
-            // Assert
-            Assert.That(actual, Is.EqualTo(expected).Using(HtmlEntity.EqualityComparer));
-        }
-
-        [Test]
-        [TestCaseSource(nameof(GetTestCases_GetNextSiblingElements))]
-        public void GetNextSiblingElements_Test(HtmlNode node, IReadOnlyList<HtmlElement> expected)
-        {
-            // Act
-            var actual = node.GetNextSiblingElements().ToArray();
-
-            // Assert
-            Assert.That(actual, Is.EqualTo(expected).Using(HtmlEntity.EqualityComparer));
-        }
-
-        [Test]
-        [TestCaseSource(nameof(GetTestCases_GetNextSiblingElement))]
-        public void GetNextSiblingElement_Test(HtmlNode node, HtmlElement expected)
-        {
-            // Act
-            var actual = node.GetNextSiblingElement();
 
             // Assert
             Assert.That(actual, Is.EqualTo(expected).Using(HtmlEntity.EqualityComparer));
