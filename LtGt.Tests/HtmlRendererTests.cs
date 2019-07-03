@@ -21,7 +21,7 @@ namespace LtGt.Tests
                         new HtmlElement("body",
                             new HtmlElement("div", new HtmlAttribute("id", "content"),
                                 new HtmlElement("a", new HtmlAttribute("href", "https://example.com"),
-                                    new HtmlText("Test link"))))))
+                                    new HtmlText("Test <link>"))))))
             );
         }
 
