@@ -18,13 +18,13 @@ namespace LtGt.Tests
 
         [Test]
         [TestCaseSource(nameof(GetTestCases_ToXText))]
-        public void ToXText_Test(HtmlText htmlText, XText expectedXText)
+        public void ToXText_Test(HtmlText text, XText expected)
         {
             // Act
-            var xText = htmlText.ToXText();
+            var actual = text.ToXText();
 
             // Assert
-            Assert.That(xText, Is.EqualTo(expectedXText).Using<XNode>(XNode.EqualityComparer));
+            Assert.That(actual, Is.EqualTo(expected).Using<XNode>(XNode.EqualityComparer));
         }
     }
 }

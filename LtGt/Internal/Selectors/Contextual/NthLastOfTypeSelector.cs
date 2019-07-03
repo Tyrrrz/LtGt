@@ -18,7 +18,7 @@ namespace LtGt.Internal.Selectors.Contextual
 
         public override bool Matches(HtmlElement element) =>
             TargetSelector.Matches(element) &&
-            element.GetNextElements().Count(e => string.Equals(e.Name, element.Name, StringComparison.OrdinalIgnoreCase)) == ChildIndex - 1;
+            element.GetNextSiblingElements().Count(e => string.Equals(e.Name, element.Name, StringComparison.OrdinalIgnoreCase)) == ChildIndex - 1;
 
         public override string ToString() => $"{TargetSelector}:nth-last-of-type({ChildIndex})";
     }

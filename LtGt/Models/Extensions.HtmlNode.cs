@@ -31,9 +31,9 @@ namespace LtGt.Models
         }
 
         /// <summary>
-        /// Gets all parents of this <see cref="HtmlNode"/>, from immediate parent to the root node.
+        /// Gets all ancestors of this <see cref="HtmlNode"/>, from immediate parent to the root node.
         /// </summary>
-        public static IEnumerable<HtmlContainer> GetParents(this HtmlNode node)
+        public static IEnumerable<HtmlContainer> GetAncestors(this HtmlNode node)
         {
             node.GuardNotNull(nameof(node));
 
@@ -45,23 +45,23 @@ namespace LtGt.Models
         }
 
         /// <summary>
-        /// Gets all parent elements of this <see cref="HtmlNode"/>, from immediate parent to the root element.
+        /// Gets all ancestor elements of this <see cref="HtmlNode"/>, from immediate parent to the root element.
         /// </summary>
-        public static IEnumerable<HtmlElement> GetParentElements(this HtmlNode node)
+        public static IEnumerable<HtmlElement> GetAncestorElements(this HtmlNode node)
         {
             node.GuardNotNull(nameof(node));
 
-            return node.GetParents().OfType<HtmlElement>();
+            return node.GetAncestors().OfType<HtmlElement>();
         }
 
         /// <summary>
-        /// Gets the parent element of this <see cref="HtmlNode"/> or null if there is none.
+        /// Gets the first ancestor element of this <see cref="HtmlNode"/> or null if there is none.
         /// </summary>
-        public static HtmlElement GetParentElement(this HtmlNode node)
+        public static HtmlElement GetAncestorElement(this HtmlNode node)
         {
             node.GuardNotNull(nameof(node));
 
-            return node.GetParentElements().FirstOrDefault();
+            return node.GetAncestorElements().FirstOrDefault();
         }
 
         /// <summary>
@@ -97,7 +97,7 @@ namespace LtGt.Models
 
             while (node.Previous != null)
             {
-                yield return node;
+                yield return node.Previous;
                 node = node.Previous;
             }
         }
@@ -105,7 +105,7 @@ namespace LtGt.Models
         /// <summary>
         /// Gets all sibling elements preceding this <see cref="HtmlNode"/>.
         /// </summary>
-        public static IEnumerable<HtmlElement> GetPreviousElements(this HtmlNode node)
+        public static IEnumerable<HtmlElement> GetPreviousSiblingElements(this HtmlNode node)
         {
             node.GuardNotNull(nameof(node));
 
@@ -119,7 +119,7 @@ namespace LtGt.Models
         {
             node.GuardNotNull(nameof(node));
 
-            return node.GetPreviousElements().FirstOrDefault();
+            return node.GetPreviousSiblingElements().FirstOrDefault();
         }
 
         /// <summary>
@@ -131,7 +131,7 @@ namespace LtGt.Models
 
             while (node.Next != null)
             {
-                yield return node;
+                yield return node.Next;
                 node = node.Next;
             }
         }
@@ -139,7 +139,7 @@ namespace LtGt.Models
         /// <summary>
         /// Gets all sibling elements following this <see cref="HtmlNode"/>.
         /// </summary>
-        public static IEnumerable<HtmlElement> GetNextElements(this HtmlNode node)
+        public static IEnumerable<HtmlElement> GetNextSiblingElements(this HtmlNode node)
         {
             node.GuardNotNull(nameof(node));
 
@@ -149,11 +149,11 @@ namespace LtGt.Models
         /// <summary>
         /// Gets the first sibling element following this <see cref="HtmlNode"/>.
         /// </summary>
-        public static HtmlElement GetNextElement(this HtmlNode node)
+        public static HtmlElement GetNextSiblingElement(this HtmlNode node)
         {
             node.GuardNotNull(nameof(node));
 
-            return node.GetNextElements().FirstOrDefault();
+            return node.GetNextSiblingElements().FirstOrDefault();
         }
     }
 }

@@ -16,7 +16,7 @@ namespace LtGt.Internal.Selectors.Contextual
         }
 
         public override bool Matches(HtmlElement element) =>
-            TargetSelector.Matches(element) && element.GetParentElements().Any(ParentSelector.Matches);
+            TargetSelector.Matches(element) && element.GetAncestorElements().Any(ParentSelector.Matches);
 
         public override string ToString() => $"{ParentSelector} {TargetSelector}";
     }

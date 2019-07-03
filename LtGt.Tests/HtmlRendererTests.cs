@@ -30,11 +30,11 @@ namespace LtGt.Tests
         public void RenderNode_Test(HtmlNode node)
         {
             // Act
-            var html = HtmlRenderer.Default.RenderNode(node);
-            var roundTripNode = HtmlParser.Default.ParseNode(html);
+            var actual = HtmlRenderer.Default.RenderNode(node);
+            var roundTrip = HtmlParser.Default.ParseNode(actual);
 
             // Assert
-            Assert.That(roundTripNode, Is.EqualTo(node).Using(HtmlEntity.EqualityComparer));
+            Assert.That(roundTrip, Is.EqualTo(node).Using(HtmlEntity.EqualityComparer));
         }
     }
 }

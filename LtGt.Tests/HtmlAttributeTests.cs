@@ -23,16 +23,16 @@ namespace LtGt.Tests
 
         [Test]
         [TestCaseSource(nameof(GetTestCases_ToXAttribute))]
-        public void ToXAttribute_Test(HtmlAttribute htmlAttribute, XAttribute expectedXAttribute)
+        public void ToXAttribute_Test(HtmlAttribute attribute, XAttribute expected)
         {
             // Act
-            var xAttribute = htmlAttribute.ToXAttribute();
+            var actual = attribute.ToXAttribute();
 
             // Assert
             Assert.Multiple(() =>
             {
-                Assert.That(xAttribute.Name, Is.EqualTo(expectedXAttribute.Name), "Name");
-                Assert.That(xAttribute.Value, Is.EqualTo(expectedXAttribute.Value), "Value");
+                Assert.That(actual.Name, Is.EqualTo(expected.Name), "Name");
+                Assert.That(actual.Value, Is.EqualTo(expected.Value), "Value");
             });
         }
     }

@@ -14,7 +14,7 @@ namespace LtGt.Internal.Selectors.Contextual
         }
 
         public override bool Matches(HtmlElement element) =>
-            TargetSelector.Matches(element) && !element.GetPreviousElements()
+            TargetSelector.Matches(element) && !element.GetPreviousSiblingElements()
                 .Any(e => string.Equals(e.Name, element.Name, StringComparison.OrdinalIgnoreCase));
 
         public override string ToString() => ":first-of-type";
