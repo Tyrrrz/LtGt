@@ -1,15 +1,15 @@
 ﻿using System.Linq;
 using LtGt.Models;
 
-namespace LtGt.Internal.Selectors.Contextual
+namespace LtGt.Internal.Selectors.Combinators
 {
-    internal class SubsequentSiblingSelector : Selector
+    internal class SubsequentSiblingCombinator : Selector
     {
         public Selector PreviousSelector { get; }
 
         public Selector TargetSelector { get; }
 
-        public SubsequentSiblingSelector(Selector previousSelector, Selector targetSelector)
+        public SubsequentSiblingCombinator(Selector previousSelector, Selector targetSelector)
         {
             PreviousSelector = previousSelector;
             TargetSelector = targetSelector;

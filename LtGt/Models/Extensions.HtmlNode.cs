@@ -51,6 +51,9 @@ namespace LtGt.Models
         {
             node.GuardNotNull(nameof(node));
 
+            if (node.Parent == null)
+                yield break;
+
             foreach (var child in node.Parent.Children)
             {
                 if (child != node)

@@ -1,7 +1,7 @@
-﻿using LtGt.Internal.Selectors.Simple.StringOperators;
+﻿using LtGt.Internal.Selectors.Terms;
 using LtGt.Models;
 
-namespace LtGt.Internal.Selectors.Simple
+namespace LtGt.Internal.Selectors
 {
     internal class AttributeSelector : Selector
     {
@@ -9,13 +9,13 @@ namespace LtGt.Internal.Selectors.Simple
 
         public string AttributeValue { get; }
 
-        public StringMatchOperator AttributeValueMatchOperator { get; }
+        public StringComparisonTerm StringComparisonTerm { get; }
 
-        public AttributeSelector(string attributeName, string attributeValue, StringMatchOperator attributeValueMatchOperator)
+        public AttributeSelector(string attributeName, string attributeValue, StringComparisonTerm stringComparisonTerm)
         {
             AttributeName = attributeName;
             AttributeValue = attributeValue;
-            AttributeValueMatchOperator = attributeValueMatchOperator;
+            StringComparisonTerm = stringComparisonTerm;
         }
 
         public AttributeSelector(string attributeName)
@@ -30,14 +30,14 @@ namespace LtGt.Internal.Selectors.Simple
             if (attribute == null)
                 return false;
 
-            if (AttributeValueMatchOperator != null && !AttributeValueMatchOperator.Matches(attribute.Value, AttributeValue))
+            if (StringComparisonTerm != null && !StringComparisonTerm.Check(attribute.Value, AttributeValue))
                 return false;
 
             return true;
         }
 
-        public override string ToString() => AttributeValueMatchOperator != null
-            ? $"[{AttributeName}{AttributeValueMatchOperator}=\"{AttributeValue}\"]"
+        public override string ToString() => StringComparisonTerm != null
+            ? $"[{AttributeName}{StringComparisonTerm}=\"{AttributeValue}\"]"
             : $"[{AttributeName}]";
     }
 }

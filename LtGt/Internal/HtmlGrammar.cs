@@ -76,7 +76,10 @@ namespace LtGt.Internal
         private static readonly Parser<HtmlAttribute> ValuelessHtmlAttribute = HtmlAttributeName.Select(n => new HtmlAttribute(n));
 
         public static readonly Parser<HtmlAttribute> HtmlAttribute =
-            QuotedHtmlAttribute.Or(UnquotedHtmlAttribute).Or(ValuelessHtmlAttribute).Named("Attribute");
+            QuotedHtmlAttribute
+                .Or(UnquotedHtmlAttribute)
+                .Or(ValuelessHtmlAttribute)
+                .Named("Attribute");
 
         /* Comment */
 
@@ -95,7 +98,9 @@ namespace LtGt.Internal
             select new HtmlComment(content);
 
         public static readonly Parser<HtmlComment> HtmlComment =
-            XmlDirectiveHtmlComment.Or(NormalHtmlComment).Named("Comment");
+            XmlDirectiveHtmlComment
+                .Or(NormalHtmlComment)
+                .Named("Comment");
 
         /* Text */
 
@@ -110,7 +115,10 @@ namespace LtGt.Internal
         public static readonly Parser<HtmlText> NormalHtmlText =
             Parse.CharExcept('<').AtLeastOnce().Text().Select(WebUtility.HtmlDecode).Select(t => t.Trim()).Select(t => new HtmlText(t));
 
-        public static readonly Parser<HtmlText> HtmlText = CDataHtmlText.Or(NormalHtmlText).Named("Text");
+        public static readonly Parser<HtmlText> HtmlText =
+            CDataHtmlText
+                .Or(NormalHtmlText)
+                .Named("Text");
 
         /* Element */
 
@@ -156,7 +164,11 @@ namespace LtGt.Internal
             select new HtmlElement(name, attributes.ToArray(), children.ToArray());
 
         public static readonly Parser<HtmlElement> HtmlElement =
-            RawTextHtmlElement.Or(VoidHtmlElement).Or(SelfClosingHtmlElement).Or(NormalHtmlElement).Named("Element");
+            RawTextHtmlElement
+                .Or(VoidHtmlElement)
+                .Or(SelfClosingHtmlElement)
+                .Or(NormalHtmlElement)
+                .Named("Element");
 
         /* Document */
 
@@ -168,8 +180,14 @@ namespace LtGt.Internal
         /* Node */
 
         private static readonly Parser<HtmlNode> ElementChildHtmlNode =
-            HtmlElement.Or<HtmlNode>(HtmlComment).Or(HtmlText).Named("Element child");
+            HtmlElement
+                .Or<HtmlNode>(HtmlComment)
+                .Or(HtmlText)
+                .Named("Element child");
 
-        public static readonly Parser<HtmlNode> HtmlNode = HtmlDocument.Or(ElementChildHtmlNode).Named("Node");
+        public static readonly Parser<HtmlNode> HtmlNode =
+            HtmlDocument
+                .Or(ElementChildHtmlNode)
+                .Named("Node");
     }
 }

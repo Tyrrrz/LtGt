@@ -1,22 +1,22 @@
 ﻿using LtGt.Models;
 
-namespace LtGt.Internal.Selectors.Contextual
+namespace LtGt.Internal.Selectors.Combinators
 {
-    internal class ChildSelector : Selector
+    internal class ChildCombinator : Selector
     {
         public Selector ParentSelector { get; }
 
         public Selector TargetSelector { get; }
 
-        public ChildSelector(Selector parentSelector, Selector targetSelector)
+        public ChildCombinator(Selector parentSelector, Selector targetSelector)
         {
             ParentSelector = parentSelector;
             TargetSelector = targetSelector;
         }
 
         public override bool Matches(HtmlElement element) =>
-            TargetSelector.Matches(element) &&
-            element.Parent is HtmlElement parentElement && ParentSelector.Matches(parentElement);
+            element.Parent is HtmlElement parentElement && ParentSelector.Matches(parentElement) &&
+            TargetSelector.Matches(element);
 
         public override string ToString() => $"{ParentSelector} > {TargetSelector}";
     }

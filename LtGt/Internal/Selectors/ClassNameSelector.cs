@@ -1,6 +1,6 @@
 ﻿using LtGt.Models;
 
-namespace LtGt.Internal.Selectors.Simple
+namespace LtGt.Internal.Selectors
 {
     internal class ClassNameSelector : Selector
     {

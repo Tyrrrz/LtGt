@@ -1,13 +1,13 @@
 ﻿using System;
 using LtGt.Models;
 
-namespace LtGt.Internal.Selectors.Simple
+namespace LtGt.Internal.Selectors
 {
-    internal class NameSelector : Selector
+    internal class TypeSelector : Selector
     {
         public string Name { get; }
 
-        public NameSelector(string name)
+        public TypeSelector(string name)
         {
             Name = name;
         }

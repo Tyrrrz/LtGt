@@ -1,53 +1,99 @@
-﻿using System.Linq;
-using LtGt.Internal.Selectors.Contextual;
-using LtGt.Internal.Selectors.Simple;
-using LtGt.Internal.Selectors.Simple.StringOperators;
+﻿using System.Globalization;
+using System.Linq;
+using LtGt.Internal.Selectors.Combinators;
+using LtGt.Internal.Selectors.Terms;
 using Sprache;
 
 namespace LtGt.Internal.Selectors
 {
     internal static class SelectorGrammar
     {
+        /* Special character */
+
+        private static readonly Parser<char> SpecialCharacter =
+            Parse.Chars(' ', '.', '#', ':', '[', ']', '(', ')', '>', '+', '~', '*', '^', '$', '|', '=');
+
+        /* String comparison term */
+
+        private static readonly Parser<StringComparisonTerm> StringComparisonTerm =
+            Parse.Char('~').Return(new StringComparisonTerm(StringComparisonStrategy.ContainsWithinWhiteSpaceSeparated))
+                .Or(Parse.Char('^').Return(new StringComparisonTerm(StringComparisonStrategy.StartsWith)))
+                .Or(Parse.Char('$').Return(new StringComparisonTerm(StringComparisonStrategy.EndsWith)))
+                .Or(Parse.Char('*').Return(new StringComparisonTerm(StringComparisonStrategy.Contains)))
+                .Or(Parse.Char('|').Return(new StringComparisonTerm(StringComparisonStrategy.StartsWithHyphenSeparated)));
+
+        /* Number composition term */
+
+        // 2n+1
+        private static readonly Parser<NumberCompositionTerm> FormulaWithConstantNumberCompositionTerm =
+            from multiplierSign in Parse.Chars('+', '-').Once().Text().Optional()
+            from multiplierAbs in Parse.Digit.AtLeastOnce().Text()
+            from n in Parse.IgnoreCase('n')
+            from constantSign in Parse.Chars('+', '-').Once().Text()
+            from constantAbs in Parse.Digit.AtLeastOnce().Text()
+            let multiplier = int.Parse(multiplierSign.GetOrDefault() + multiplierAbs, CultureInfo.InvariantCulture)
+            let constant = int.Parse(constantSign + constantAbs, CultureInfo.InvariantCulture)
+            select new NumberCompositionTerm(multiplier, constant);
+
+        // 2n
+        private static readonly Parser<NumberCompositionTerm> FormulaWithoutConstantNumberCompositionTerm =
+            from multiplierSign in Parse.Chars('+', '-').Once().Text().Optional()
+            from multiplierAbs in Parse.Digit.AtLeastOnce().Text()
+            from n in Parse.IgnoreCase('n')
+            let multiplier = int.Parse(multiplierSign.GetOrDefault() + multiplierAbs, CultureInfo.InvariantCulture)
+            select new NumberCompositionTerm(multiplier);
+
+        // 2
+        private static readonly Parser<NumberCompositionTerm> ValueNumberCompositionTerm =
+            from constantAbs in Parse.Digit.AtLeastOnce().Text()
+            let constant = int.Parse(constantAbs, CultureInfo.InvariantCulture)
+            select new NumberCompositionTerm(0, constant);
+
+        // odd
+        private static readonly Parser<NumberCompositionTerm> OddNumberCompositionTerm =
+            Parse.IgnoreCase("odd").Return(new NumberCompositionTerm(2, 1));
+
+        // even
+        private static readonly Parser<NumberCompositionTerm> EvenNumberCompositionTerm =
+            Parse.IgnoreCase("even").Return(new NumberCompositionTerm(2));
+
+        private static readonly Parser<NumberCompositionTerm> NumberCompositionTerm =
+            FormulaWithConstantNumberCompositionTerm
+                .Or(FormulaWithoutConstantNumberCompositionTerm)
+                .Or(ValueNumberCompositionTerm)
+                .Or(OddNumberCompositionTerm)
+                .Or(EvenNumberCompositionTerm);
+
+        /* Any selector */
+
         private static readonly Parser<AnySelector> AnySelector = Parse.Char('*').Return(new AnySelector());
 
-        private static readonly Parser<string> Name = Parse.LetterOrDigit.AtLeastOnce().Text();
+        /* Type selector */
 
-        private static readonly Parser<NameSelector> NameSelector = Name.Select(n => new NameSelector(n));
+        private static readonly Parser<TypeSelector> TypeSelector =
+            Parse.LetterOrDigit.AtLeastOnce().Text().Select(n => new TypeSelector(n));
 
-        private static readonly Parser<string> ClassName =
-            from leading in Parse.Letter.Or(Parse.Char('_')).Once().Text()
-            from trailing in Parse.LetterOrDigit.Or(Parse.Chars('_', '-')).Many().Text()
-            select leading + trailing;
+        /* Class name selector */
 
         private static readonly Parser<ClassNameSelector> ClassNameSelector =
             from dot in Parse.Char('.')
-            from className in ClassName
+            from className in Parse.AnyChar.Except(SpecialCharacter).AtLeastOnce().Text()
             select new ClassNameSelector(className);
 
-        private static readonly Parser<string> Id = Parse.AnyChar.Except(Parse.WhiteSpace.Or(Parse.Chars('.', '#', ':', '[', ')'))).AtLeastOnce().Text();
+        /* Element ID selector */
 
         private static readonly Parser<IdSelector> IdSelector =
             from pound in Parse.Char('#')
-            from id in Id
+            from id in Parse.AnyChar.Except(SpecialCharacter).AtLeastOnce().Text()
             select new IdSelector(id);
 
-        private static readonly Parser<string> AttributeName =
-            Parse.CharExcept(
-                c => char.IsWhiteSpace(c) || c == '~' || c == '^' || c == '$' || c == '*' || c == '|' || c == '=' || c == '\'' || c == '"' || c == ']' || c == ')',
-                "invalid attribute name characters")
-                .AtLeastOnce().Text();
+        /* Attribute selector */
 
-        private static readonly Parser<StringMatchOperator> StringMatchOperator =
-            Parse.Char('~').Return(new WhiteSpaceSeparatedContainsStringMatchOperator()).Or<StringMatchOperator>(
-                Parse.Char('^').Return(new StartsWithStringMatchOperator())).Or(
-                Parse.Char('$').Return(new EndsWithStringMatchOperator())).Or(
-                Parse.Char('*').Return(new ContainsStringMatchOperator())).Or(
-                Parse.Char('|').Return(new HyphenSeparatedStartsWithStringMatchOperator()));
-
+        // [id="main"]
         private static readonly Parser<AttributeSelector> NormalAttributeSelector =
             from openBrace in Parse.Char('[')
-            from name in AttributeName
-            from matchOperator in StringMatchOperator.Optional().Select(o => o.GetOrElse(new EqualsStringMatchOperator()))
+            from name in Parse.AnyChar.Except(SpecialCharacter).AtLeastOnce().Text()
+            from matchOperator in StringComparisonTerm.Optional().Select(o => o.GetOrElse(new StringComparisonTerm()))
             from eq in Parse.Char('=')
             from openQuote in Parse.Chars('"', '\'')
             from value in Parse.CharExcept(openQuote).Many().Text()
@@ -55,115 +101,153 @@ namespace LtGt.Internal.Selectors
             from closeBrace in Parse.Char(']')
             select new AttributeSelector(name, value, matchOperator);
 
+        // [id]
         private static readonly Parser<AttributeSelector> ValuelessAttributeSelector =
             from open in Parse.Char('[')
-            from name in AttributeName
+            from name in Parse.AnyChar.Except(SpecialCharacter).AtLeastOnce().Text()
             from close in Parse.Char(']')
             select new AttributeSelector(name);
 
-        private static readonly Parser<AttributeSelector> AttributeSelector = NormalAttributeSelector.Or(ValuelessAttributeSelector);
+        private static readonly Parser<AttributeSelector> AttributeSelector =
+            NormalAttributeSelector
+                .Or(ValuelessAttributeSelector);
+
+        /* Root selector */
+
+        private static readonly Parser<RootSelector> RootSelector =
+            Parse.IgnoreCase(":root").Return(new RootSelector());
+
+        /* Child selectors */
+
+        private static readonly Parser<OnlyChildSelector> OnlyChildSelector =
+            Parse.IgnoreCase(":only-child").Return(new OnlyChildSelector());
+
+        private static readonly Parser<FirstChildSelector> FirstChildSelector =
+            Parse.IgnoreCase(":first-child").Return(new FirstChildSelector());
+
+        private static readonly Parser<LastChildSelector> LastChildSelector =
+            Parse.IgnoreCase(":last-child").Return(new LastChildSelector());
+
+        private static readonly Parser<NthChildSelector> NthChildSelector =
+            from name in Parse.IgnoreCase(":nth-child")
+            from open in Parse.Char('(')
+            from indexDescriptor in NumberCompositionTerm
+            from close in Parse.Char(')')
+            select new NthChildSelector(indexDescriptor);
+
+        private static readonly Parser<NthLastChildSelector> NthLastChildSelector =
+            from name in Parse.IgnoreCase(":nth-last-child")
+            from open in Parse.Char('(')
+            from indexDescriptor in NumberCompositionTerm
+            from close in Parse.Char(')')
+            select new NthLastChildSelector(indexDescriptor);
+
+        /* Type selectors */
+
+        private static readonly Parser<OnlyOfTypeSelector> OnlyOfTypeSelector =
+            Parse.IgnoreCase(":only-of-type").Return(new OnlyOfTypeSelector());
+
+        private static readonly Parser<FirstOfTypeSelector> FirstOfTypeSelector =
+            Parse.IgnoreCase(":first-of-type").Return(new FirstOfTypeSelector());
+
+        private static readonly Parser<LastOfTypeSelector> LastOfTypeSelector =
+            Parse.IgnoreCase(":last-of-type").Return(new LastOfTypeSelector());
+
+        private static readonly Parser<NthOfTypeSelector> NthOfTypeSelector =
+            from name in Parse.IgnoreCase(":nth-of-type")
+            from open in Parse.Char('(')
+            from indexDescriptor in NumberCompositionTerm
+            from close in Parse.Char(')')
+            select new NthOfTypeSelector(indexDescriptor);
+
+        private static readonly Parser<NthLastOfTypeSelector> NthLastOfTypeSelector =
+            from name in Parse.IgnoreCase(":nth-last-of-type")
+            from open in Parse.Char('(')
+            from indexDescriptor in NumberCompositionTerm
+            from close in Parse.Char(')')
+            select new NthLastOfTypeSelector(indexDescriptor);
+
+        /* Empty selector */
+
+        private static readonly Parser<EmptySelector> EmptySelector =
+            Parse.IgnoreCase(":empty").Return(new EmptySelector());
+
+        /* Stand-alone selector */
+
+        private static readonly Parser<Selector> StandaloneSelector =
+            AnySelector
+                .Or<Selector>(TypeSelector)
+                .Or(ClassNameSelector)
+                .Or(IdSelector)
+                .Or(AttributeSelector)
+                .Or(RootSelector)
+                .Or(OnlyChildSelector)
+                .Or(FirstChildSelector)
+                .Or(LastChildSelector)
+                .Or(OnlyOfTypeSelector)
+                .Or(FirstOfTypeSelector)
+                .Or(LastOfTypeSelector)
+                .Or(NthChildSelector)
+                .Or(NthLastChildSelector)
+                .Or(NthOfTypeSelector)
+                .Or(NthLastOfTypeSelector)
+                .Or(EmptySelector);
+
+        /* Not selector */
 
         private static readonly Parser<NotSelector> NotSelector =
             from name in Parse.IgnoreCase(":not")
             from open in Parse.Char('(')
-            from targetSelector in CombinedSelector
+            from targetSelector in GroupCombinator
             from close in Parse.Char(')')
             select new NotSelector(targetSelector);
 
-        private static readonly Parser<CombinedSelector> CombinedSelector =
-            AnySelector.Or<Selector>(NotSelector).Or(NameSelector).Or(ClassNameSelector).Or(IdSelector).Or(AttributeSelector)
-                .XAtLeastOnce()
-                .Select(s => new CombinedSelector(s.ToArray()));
+        /* Group combinator */
 
-        private static readonly Parser<DescendantSelector> DescendantSelector =
-            from parentSelector in CombinedSelector
+        private static readonly Parser<GroupCombinator> GroupCombinator =
+            StandaloneSelector
+                .Or(NotSelector)
+                .AtLeastOnce().Select(s => new GroupCombinator(s.ToArray()));
+
+        /* Descendant combinator */
+
+        private static readonly Parser<DescendantCombinator> DescendantCombinator =
+            from parentSelector in GroupCombinator
             from space in Parse.WhiteSpace
-            from targetSelector in CombinedSelector
-            select new DescendantSelector(parentSelector, targetSelector);
+            from targetSelector in GroupCombinator
+            select new DescendantCombinator(parentSelector, targetSelector);
 
-        private static readonly Parser<ChildSelector> ChildSelector =
-            from parentSelector in CombinedSelector
+        /* Child combinator */
+
+        private static readonly Parser<ChildCombinator> ChildCombinator =
+            from parentSelector in GroupCombinator
             from gt in Parse.Char('>').Token()
-            from targetSelector in CombinedSelector
-            select new ChildSelector(parentSelector, targetSelector);
+            from targetSelector in GroupCombinator
+            select new ChildCombinator(parentSelector, targetSelector);
 
-        private static readonly Parser<OnlyOfTypeSelector> OnlyOfTypeSelector =
-            from targetSelector in CombinedSelector
-            from name in Parse.IgnoreCase(":only-of-type")
-            select new OnlyOfTypeSelector(targetSelector);
+        /* Sibling combinator */
 
-        private static readonly Parser<FirstOfTypeSelector> FirstOfTypeSelector =
-            from targetSelector in CombinedSelector
-            from name in Parse.IgnoreCase(":first-of-type")
-            select new FirstOfTypeSelector(targetSelector);
-
-        private static readonly Parser<LastOfTypeSelector> LastOfTypeSelector =
-            from targetSelector in CombinedSelector
-            from name in Parse.IgnoreCase(":last-of-type")
-            select new LastOfTypeSelector(targetSelector);
-
-        private static readonly Parser<NthOfTypeSelector> NthOfTypeSelector =
-            from targetSelector in CombinedSelector
-            from name in Parse.IgnoreCase(":nth-of-type")
-            from open in Parse.Char('(')
-            from index in Parse.Digit.AtLeastOnce().Text().Select(int.Parse)
-            from close in Parse.Char(')')
-            select new NthOfTypeSelector(targetSelector, index);
-
-        private static readonly Parser<NthLastOfTypeSelector> NthLastOfTypeSelector =
-            from targetSelector in CombinedSelector
-            from name in Parse.IgnoreCase(":nth-last-of-type")
-            from open in Parse.Char('(')
-            from index in Parse.Digit.AtLeastOnce().Text().Select(int.Parse)
-            from close in Parse.Char(')')
-            select new NthLastOfTypeSelector(targetSelector, index);
-
-        private static readonly Parser<OnlyChildSelector> OnlyChildSelector =
-            from targetSelector in CombinedSelector
-            from name in Parse.IgnoreCase(":only-child")
-            select new OnlyChildSelector(targetSelector);
-
-        private static readonly Parser<FirstChildSelector> FirstChildSelector =
-            from targetSelector in CombinedSelector
-            from name in Parse.IgnoreCase(":first-child")
-            select new FirstChildSelector(targetSelector);
-
-        private static readonly Parser<LastChildSelector> LastChildSelector =
-            from targetSelector in CombinedSelector
-            from name in Parse.IgnoreCase(":last-child")
-            select new LastChildSelector(targetSelector);
-
-        private static readonly Parser<NthChildSelector> NthChildSelector =
-            from targetSelector in CombinedSelector
-            from name in Parse.IgnoreCase(":nth-child")
-            from open in Parse.Char('(')
-            from index in Parse.Digit.AtLeastOnce().Text().Select(int.Parse)
-            from close in Parse.Char(')')
-            select new NthChildSelector(targetSelector, index);
-
-        private static readonly Parser<NthLastChildSelector> NthLastChildSelector =
-            from targetSelector in CombinedSelector
-            from name in Parse.IgnoreCase(":nth-last-child")
-            from open in Parse.Char('(')
-            from index in Parse.Digit.AtLeastOnce().Text().Select(int.Parse)
-            from close in Parse.Char(')')
-            select new NthLastChildSelector(targetSelector, index);
-
-        private static readonly Parser<SiblingSelector> SiblingSelector =
-            from previousSelector in CombinedSelector
+        private static readonly Parser<SiblingCombinator> SiblingCombinator =
+            from previousSelector in GroupCombinator
             from plus in Parse.Char('+').Token()
-            from targetSelector in CombinedSelector
-            select new SiblingSelector(previousSelector, targetSelector);
+            from targetSelector in GroupCombinator
+            select new SiblingCombinator(previousSelector, targetSelector);
 
-        private static readonly Parser<SubsequentSiblingSelector> SubsequentSiblingSelector =
-            from previousSelector in CombinedSelector
+        /* Subsequent sibling combinator */
+
+        private static readonly Parser<SubsequentSiblingCombinator> SubsequentSiblingCombinator =
+            from previousSelector in GroupCombinator
             from tilde in Parse.Char('~').Token()
-            from targetSelector in CombinedSelector
-            select new SubsequentSiblingSelector(previousSelector, targetSelector);
+            from targetSelector in GroupCombinator
+            select new SubsequentSiblingCombinator(previousSelector, targetSelector);
 
-        public static readonly Parser<Selector> Selector = ChildSelector.Or<Selector>(SiblingSelector).Or(OnlyOfTypeSelector)
-            .Or(NthOfTypeSelector).Or(NthLastOfTypeSelector).Or(FirstChildSelector).Or(LastChildSelector).Or(FirstOfTypeSelector)
-            .Or(LastOfTypeSelector).Or(OnlyChildSelector).Or(SubsequentSiblingSelector).Or(DescendantSelector).Or(NthChildSelector)
-            .Or(NthLastChildSelector).Or(CombinedSelector);
+        /* Selector */
+
+        public static readonly Parser<Selector> Selector =
+            DescendantCombinator
+                .Or<Selector>(ChildCombinator)
+                .Or(SiblingCombinator)
+                .Or(SubsequentSiblingCombinator)
+                .Or(GroupCombinator);
     }
 }
