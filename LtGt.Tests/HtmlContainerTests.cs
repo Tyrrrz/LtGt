@@ -120,6 +120,19 @@ namespace LtGt.Tests
                     new HtmlElement("span",
                         new HtmlElement("p", new HtmlAttribute("class", "test2"))),
                     new HtmlElement("p", new HtmlAttribute("class", "test2 test3"))),
+                "test3 test2",
+                new[]
+                {
+                    new HtmlElement("p", new HtmlAttribute("class", "test2 test3"))
+                }
+            );
+
+            yield return new TestCaseData(
+                new HtmlElement("div",
+                    new HtmlElement("a", new HtmlAttribute("class", "test1")),
+                    new HtmlElement("span",
+                        new HtmlElement("p", new HtmlAttribute("class", "test2"))),
+                    new HtmlElement("p", new HtmlAttribute("class", "test2 test3"))),
                 "test4",
                 new HtmlElement[0]
             );
@@ -127,530 +140,932 @@ namespace LtGt.Tests
 
         private static IEnumerable<TestCaseData> GetTestCases_GetElementsBySelector()
         {
+            // Any
+
             yield return new TestCaseData(
                 new HtmlElement("div",
-                    new HtmlElement("p", new HtmlAttribute("class", "test1")),
-                    new HtmlElement("span", new HtmlAttribute("id", "container"),
-                        new HtmlElement("p", new HtmlAttribute("class", "test2"))),
-                    new HtmlElement("p", new HtmlAttribute("class", "test2 test3"))),
+                    new HtmlElement("p", new HtmlAttribute("id", "test1")),
+                    new HtmlElement("div",
+                        new HtmlElement("p", new HtmlAttribute("id", "test2"))),
+                    new HtmlElement("p", new HtmlAttribute("id", "test3"))),
                 "*",
                 new[]
                 {
-                    new HtmlElement("p", new HtmlAttribute("class", "test1")),
-                    new HtmlElement("span", new HtmlAttribute("id", "container"),
-                        new HtmlElement("p", new HtmlAttribute("class", "test2"))),
-                    new HtmlElement("p", new HtmlAttribute("class", "test2")),
-                    new HtmlElement("p", new HtmlAttribute("class", "test2 test3"))
+                    new HtmlElement("p", new HtmlAttribute("id", "test1")),
+                    new HtmlElement("div",
+                        new HtmlElement("p", new HtmlAttribute("id", "test2"))),
+                    new HtmlElement("p", new HtmlAttribute("id", "test2")),
+                    new HtmlElement("p", new HtmlAttribute("id", "test3"))
                 }
             );
 
+            // Type
+
             yield return new TestCaseData(
                 new HtmlElement("div",
-                    new HtmlElement("p", new HtmlAttribute("class", "test1")),
-                    new HtmlElement("span", new HtmlAttribute("id", "container"),
-                        new HtmlElement("p", new HtmlAttribute("class", "test2"))),
-                    new HtmlElement("p", new HtmlAttribute("class", "test2 test3"))),
+                    new HtmlElement("p", new HtmlAttribute("id", "test1")),
+                    new HtmlElement("div",
+                        new HtmlElement("p", new HtmlAttribute("id", "test2"))),
+                    new HtmlElement("p", new HtmlAttribute("id", "test3"))),
                 "p",
                 new[]
                 {
-                    new HtmlElement("p", new HtmlAttribute("class", "test1")),
-                    new HtmlElement("p", new HtmlAttribute("class", "test2")),
-                    new HtmlElement("p", new HtmlAttribute("class", "test2 test3"))
+                    new HtmlElement("p", new HtmlAttribute("id", "test1")),
+                    new HtmlElement("p", new HtmlAttribute("id", "test2")),
+                    new HtmlElement("p", new HtmlAttribute("id", "test3"))
                 }
             );
 
             yield return new TestCaseData(
                 new HtmlElement("div",
-                    new HtmlElement("p", new HtmlAttribute("class", "test1")),
-                    new HtmlElement("span", new HtmlAttribute("id", "container"),
-                        new HtmlElement("p", new HtmlAttribute("class", "test2"))),
-                    new HtmlElement("p", new HtmlAttribute("class", "test2 test3"))),
-                ".test2",
+                    new HtmlElement("p", new HtmlAttribute("id", "test1")),
+                    new HtmlElement("div",
+                        new HtmlElement("p", new HtmlAttribute("id", "test2"))),
+                    new HtmlElement("p", new HtmlAttribute("id", "test3"))),
+                "br",
+                new HtmlElement[0]
+            );
+
+            // Attribute
+
+            yield return new TestCaseData(
+                new HtmlElement("div",
+                    new HtmlElement("p", new HtmlAttribute("id", "test1")),
+                    new HtmlElement("div",
+                        new HtmlElement("p", new HtmlAttribute("id", "test2"))),
+                    new HtmlElement("p", new HtmlAttribute("id", "test3"))),
+                "[id]",
                 new[]
                 {
-                    new HtmlElement("p", new HtmlAttribute("class", "test2")),
-                    new HtmlElement("p", new HtmlAttribute("class", "test2 test3"))
+                    new HtmlElement("p", new HtmlAttribute("id", "test1")),
+                    new HtmlElement("p", new HtmlAttribute("id", "test2")),
+                    new HtmlElement("p", new HtmlAttribute("id", "test3"))
                 }
             );
 
             yield return new TestCaseData(
                 new HtmlElement("div",
-                    new HtmlElement("p", new HtmlAttribute("class", "test1")),
-                    new HtmlElement("span", new HtmlAttribute("id", "container"),
-                        new HtmlElement("p", new HtmlAttribute("class", "test2"))),
-                    new HtmlElement("p", new HtmlAttribute("class", "test2 test3"))),
-                ".test2.test3",
+                    new HtmlElement("p", new HtmlAttribute("id", "test1")),
+                    new HtmlElement("div",
+                        new HtmlElement("p", new HtmlAttribute("id", "test2"))),
+                    new HtmlElement("p", new HtmlAttribute("id", "test3"))),
+                "[data]",
+                new HtmlElement[0]
+            );
+
+            // Attribute value
+
+            yield return new TestCaseData(
+                new HtmlElement("div",
+                    new HtmlElement("p", new HtmlAttribute("class", "test")),
+                    new HtmlElement("div",
+                        new HtmlElement("p", new HtmlAttribute("class", "test"))),
+                    new HtmlElement("p")),
+                "[class=\"test\"]",
                 new[]
                 {
-                    new HtmlElement("p", new HtmlAttribute("class", "test2 test3"))
+                    new HtmlElement("p", new HtmlAttribute("class", "test")),
+                    new HtmlElement("p", new HtmlAttribute("class", "test"))
                 }
             );
 
             yield return new TestCaseData(
                 new HtmlElement("div",
-                    new HtmlElement("p", new HtmlAttribute("class", "test1")),
-                    new HtmlElement("span", new HtmlAttribute("id", "container"),
-                        new HtmlElement("p", new HtmlAttribute("class", "test2"))),
-                    new HtmlElement("p", new HtmlAttribute("class", "test2 test3"))),
-                "p.test2",
-                new[]
-                {
-                    new HtmlElement("p", new HtmlAttribute("class", "test2")),
-                    new HtmlElement("p", new HtmlAttribute("class", "test2 test3"))
-                }
+                    new HtmlElement("p", new HtmlAttribute("class", "test")),
+                    new HtmlElement("div",
+                        new HtmlElement("p", new HtmlAttribute("class", "test"))),
+                    new HtmlElement("p")),
+                "[class=\"test0\"]",
+                new HtmlElement[0]
             );
+
+            // Attribute value (whitespace-separated-contains)
 
             yield return new TestCaseData(
                 new HtmlElement("div",
-                    new HtmlElement("p", new HtmlAttribute("class", "test1")),
-                    new HtmlElement("span", new HtmlAttribute("id", "container"),
+                    new HtmlElement("p", new HtmlAttribute("class", "test1 test2")),
+                    new HtmlElement("div",
                         new HtmlElement("p", new HtmlAttribute("class", "test2"))),
-                    new HtmlElement("p", new HtmlAttribute("class", "test2 test3"))),
-                "#container",
+                    new HtmlElement("p", new HtmlAttribute("class", "test3"))),
+                "[class~=\"test2\"]",
                 new[]
                 {
-                    new HtmlElement("span", new HtmlAttribute("id", "container"),
-                        new HtmlElement("p", new HtmlAttribute("class", "test2")))
-                }
-            );
-
-            yield return new TestCaseData(
-                new HtmlElement("div",
-                    new HtmlElement("p", new HtmlAttribute("class", "test1")),
-                    new HtmlElement("span", new HtmlAttribute("id", "container"),
-                        new HtmlElement("p", new HtmlAttribute("class", "test2"))),
-                    new HtmlElement("p", new HtmlAttribute("class", "test2 test3"))),
-                "span#container",
-                new[]
-                {
-                    new HtmlElement("span", new HtmlAttribute("id", "container"),
-                        new HtmlElement("p", new HtmlAttribute("class", "test2")))
-                }
-            );
-
-            yield return new TestCaseData(
-                new HtmlElement("div",
-                    new HtmlElement("p", new HtmlAttribute("class", "test1")),
-                    new HtmlElement("span", new HtmlAttribute("id", "container"),
-                        new HtmlElement("p", new HtmlAttribute("class", "test2"))),
-                    new HtmlElement("p", new HtmlAttribute("class", "test2 test3"))),
-                "span p",
-                new[]
-                {
+                    new HtmlElement("p", new HtmlAttribute("class", "test1 test2")),
                     new HtmlElement("p", new HtmlAttribute("class", "test2"))
                 }
             );
 
             yield return new TestCaseData(
                 new HtmlElement("div",
-                    new HtmlElement("p", new HtmlAttribute("class", "test1")),
-                    new HtmlElement("span", new HtmlAttribute("id", "container"),
+                    new HtmlElement("p", new HtmlAttribute("class", "test1 test2")),
+                    new HtmlElement("div",
                         new HtmlElement("p", new HtmlAttribute("class", "test2"))),
-                    new HtmlElement("p", new HtmlAttribute("class", "test2 test3"))),
-                "span > p",
-                new[]
-                {
-                    new HtmlElement("p", new HtmlAttribute("class", "test2"))
-                }
+                    new HtmlElement("p", new HtmlAttribute("class", "test3"))),
+                "[class~=\"test4\"]",
+                new HtmlElement[0]
             );
+
+            // Attribute value (starts with)
 
             yield return new TestCaseData(
                 new HtmlElement("div",
-                    new HtmlElement("p", new HtmlAttribute("class", "test1")),
-                    new HtmlElement("span", new HtmlAttribute("id", "container"),
+                    new HtmlElement("p", new HtmlAttribute("class", "test1 test2")),
+                    new HtmlElement("div",
                         new HtmlElement("p", new HtmlAttribute("class", "test2"))),
-                    new HtmlElement("p", new HtmlAttribute("class", "test2 test3"))),
-                "p + span",
+                    new HtmlElement("p", new HtmlAttribute("class", "test3"))),
+                "[class^=\"test\"]",
                 new[]
                 {
-                    new HtmlElement("span", new HtmlAttribute("id", "container"),
-                        new HtmlElement("p", new HtmlAttribute("class", "test2")))
-                }
-            );
-
-            yield return new TestCaseData(
-                new HtmlElement("div",
-                    new HtmlElement("p", new HtmlAttribute("class", "test1")),
-                    new HtmlElement("span", new HtmlAttribute("id", "container"),
-                        new HtmlElement("p", new HtmlAttribute("class", "test2"))),
-                    new HtmlElement("p", new HtmlAttribute("class", "test2 test3"))),
-                "p ~ p",
-                new[]
-                {
-                    new HtmlElement("p", new HtmlAttribute("class", "test2 test3"))
-                }
-            );
-
-            yield return new TestCaseData(
-                new HtmlElement("div",
-                    new HtmlElement("p", new HtmlAttribute("class", "test1")),
-                    new HtmlElement("span", new HtmlAttribute("id", "container"),
-                        new HtmlElement("p", new HtmlAttribute("class", "test2"))),
-                    new HtmlElement("p", new HtmlAttribute("class", "test2 test3"))),
-                "#container .test2",
-                new[]
-                {
-                    new HtmlElement("p", new HtmlAttribute("class", "test2"))
-                }
-            );
-
-            yield return new TestCaseData(
-                new HtmlElement("div",
-                    new HtmlElement("p", new HtmlAttribute("class", "test1")),
-                    new HtmlElement("span", new HtmlAttribute("id", "container"),
-                        new HtmlElement("p", new HtmlAttribute("class", "test2"))),
-                    new HtmlElement("p", new HtmlAttribute("class", "test2 test3"))),
-                "span[id]",
-                new[]
-                {
-                    new HtmlElement("span", new HtmlAttribute("id", "container"),
-                        new HtmlElement("p", new HtmlAttribute("class", "test2")))
-                }
-            );
-
-            yield return new TestCaseData(
-                new HtmlElement("div",
-                    new HtmlElement("p", new HtmlAttribute("class", "test1")),
-                    new HtmlElement("span", new HtmlAttribute("id", "container"),
-                        new HtmlElement("p", new HtmlAttribute("class", "test2"))),
-                    new HtmlElement("p", new HtmlAttribute("class", "test2 test3"))),
-                "span[id=\"container\"]",
-                new[]
-                {
-                    new HtmlElement("span", new HtmlAttribute("id", "container"),
-                        new HtmlElement("p", new HtmlAttribute("class", "test2")))
-                }
-            );
-
-            yield return new TestCaseData(
-                new HtmlElement("div",
-                    new HtmlElement("p", new HtmlAttribute("class", "test1")),
-                    new HtmlElement("span", new HtmlAttribute("id", "container"),
-                        new HtmlElement("p", new HtmlAttribute("class", "test2"))),
-                    new HtmlElement("p", new HtmlAttribute("class", "test2 test3"))),
-                "p[class~=\"test3\"]",
-                new[]
-                {
-                    new HtmlElement("p", new HtmlAttribute("class", "test2 test3"))
-                }
-            );
-
-            yield return new TestCaseData(
-                new HtmlElement("div",
-                    new HtmlElement("p", new HtmlAttribute("class", "test1")),
-                    new HtmlElement("span", new HtmlAttribute("id", "container"),
-                        new HtmlElement("p", new HtmlAttribute("class", "test2"))),
-                    new HtmlElement("p", new HtmlAttribute("class", "test2 test3"))),
-                "p[class^=\"test\"]",
-                new[]
-                {
-                    new HtmlElement("p", new HtmlAttribute("class", "test1")),
+                    new HtmlElement("p", new HtmlAttribute("class", "test1 test2")),
                     new HtmlElement("p", new HtmlAttribute("class", "test2")),
-                    new HtmlElement("p", new HtmlAttribute("class", "test2 test3"))
+                    new HtmlElement("p", new HtmlAttribute("class", "test3"))
                 }
             );
 
             yield return new TestCaseData(
                 new HtmlElement("div",
-                    new HtmlElement("p", new HtmlAttribute("class", "test1")),
-                    new HtmlElement("span", new HtmlAttribute("id", "container"),
+                    new HtmlElement("p", new HtmlAttribute("class", "test1 test2")),
+                    new HtmlElement("div",
                         new HtmlElement("p", new HtmlAttribute("class", "test2"))),
-                    new HtmlElement("p", new HtmlAttribute("class", "test2 test3"))),
-                "p[class$=\"st2\"]",
+                    new HtmlElement("p", new HtmlAttribute("class", "test3"))),
+                "[class^=\"test4\"]",
+                new HtmlElement[0]
+            );
+
+            // Attribute value (ends with)
+
+            yield return new TestCaseData(
+                new HtmlElement("div",
+                    new HtmlElement("p", new HtmlAttribute("class", "test1 test2")),
+                    new HtmlElement("div",
+                        new HtmlElement("p", new HtmlAttribute("class", "test2"))),
+                    new HtmlElement("p", new HtmlAttribute("class", "test3"))),
+                "[class$=\"st2\"]",
                 new[]
                 {
+                    new HtmlElement("p", new HtmlAttribute("class", "test1 test2")),
                     new HtmlElement("p", new HtmlAttribute("class", "test2"))
                 }
             );
 
             yield return new TestCaseData(
                 new HtmlElement("div",
-                    new HtmlElement("p", new HtmlAttribute("class", "test1")),
-                    new HtmlElement("span", new HtmlAttribute("id", "container"),
+                    new HtmlElement("p", new HtmlAttribute("class", "test1 test2")),
+                    new HtmlElement("div",
                         new HtmlElement("p", new HtmlAttribute("class", "test2"))),
-                    new HtmlElement("p", new HtmlAttribute("class", "test2 test3"))),
-                "span[id*=\"tai\"]",
+                    new HtmlElement("p", new HtmlAttribute("class", "test3"))),
+                "[class$=\"test1\"]",
+                new HtmlElement[0]
+            );
+
+            // Attribute value (contains)
+
+            yield return new TestCaseData(
+                new HtmlElement("div",
+                    new HtmlElement("p", new HtmlAttribute("class", "test1 test2")),
+                    new HtmlElement("div",
+                        new HtmlElement("p", new HtmlAttribute("class", "test2"))),
+                    new HtmlElement("p", new HtmlAttribute("class", "test3"))),
+                "[class*=\"st1\"]",
                 new[]
                 {
-                    new HtmlElement("span", new HtmlAttribute("id", "container"),
-                        new HtmlElement("p", new HtmlAttribute("class", "test2")))
+                    new HtmlElement("p", new HtmlAttribute("class", "test1 test2"))
                 }
             );
 
             yield return new TestCaseData(
                 new HtmlElement("div",
-                    new HtmlElement("p", new HtmlAttribute("class", "test1")),
-                    new HtmlElement("span", new HtmlAttribute("id", "container"),
+                    new HtmlElement("p", new HtmlAttribute("class", "test1 test2")),
+                    new HtmlElement("div",
                         new HtmlElement("p", new HtmlAttribute("class", "test2"))),
-                    new HtmlElement("p", new HtmlAttribute("class", "test2 test3"))),
-                "p:nth-child(3)",
+                    new HtmlElement("p", new HtmlAttribute("class", "test3"))),
+                "[class*=\"toast\"]",
+                new HtmlElement[0]
+            );
+
+            // Attribute value (hyphen-separated-starts-with)
+
+            yield return new TestCaseData(
+                new HtmlElement("div",
+                    new HtmlElement("p", new HtmlAttribute("class", "test1-test2 test1-test2--test3")),
+                    new HtmlElement("div",
+                        new HtmlElement("p", new HtmlAttribute("class", "test1-test4"))),
+                    new HtmlElement("p", new HtmlAttribute("class", "test2-test5"))),
+                "[class|=\"test1\"]",
                 new[]
                 {
-                    new HtmlElement("p", new HtmlAttribute("class", "test2 test3"))
+                    new HtmlElement("p", new HtmlAttribute("class", "test1-test2 test1-test2--test3")),
+                    new HtmlElement("p", new HtmlAttribute("class", "test1-test4"))
                 }
             );
 
             yield return new TestCaseData(
                 new HtmlElement("div",
-                    new HtmlElement("p", new HtmlAttribute("class", "test1")),
-                    new HtmlElement("span", new HtmlAttribute("id", "container"),
-                        new HtmlElement("p", new HtmlAttribute("class", "test2"))),
-                    new HtmlElement("p", new HtmlAttribute("class", "test2 test3"))),
-                "p:nth-last-child(3)",
+                    new HtmlElement("p", new HtmlAttribute("class", "test1-test2 test1-test2--test3")),
+                    new HtmlElement("div",
+                        new HtmlElement("p", new HtmlAttribute("class", "test1-test4"))),
+                    new HtmlElement("p", new HtmlAttribute("class", "test2-test5"))),
+                "[class|=\"test2\"]",
+                new HtmlElement[0]
+            );
+
+            // Root
+
+            yield return new TestCaseData(
+                new HtmlElement("div",
+                    new HtmlElement("p", new HtmlAttribute("id", "test1")),
+                    new HtmlElement("div",
+                        new HtmlElement("p", new HtmlAttribute("id", "test2"))),
+                    new HtmlElement("p", new HtmlAttribute("id", "test3"))),
+                "div:root",
                 new[]
                 {
-                    new HtmlElement("p", new HtmlAttribute("class", "test1"))
+                    new HtmlElement("div",
+                        new HtmlElement("p", new HtmlAttribute("id", "test1")),
+                        new HtmlElement("div",
+                            new HtmlElement("p", new HtmlAttribute("id", "test2"))),
+                        new HtmlElement("p", new HtmlAttribute("id", "test3")))
+                }
+            );
+
+            // Nth child
+
+            yield return new TestCaseData(
+                new HtmlElement("div",
+                    new HtmlElement("p", new HtmlAttribute("id", "test1")),
+                    new HtmlElement("div",
+                        new HtmlElement("p", new HtmlAttribute("id", "test2"))),
+                    new HtmlElement("p", new HtmlAttribute("id", "test3"))),
+                ":nth-child(1)",
+                new[]
+                {
+                    new HtmlElement("p", new HtmlAttribute("id", "test1")),
+                    new HtmlElement("p", new HtmlAttribute("id", "test2"))
                 }
             );
 
             yield return new TestCaseData(
                 new HtmlElement("div",
-                    new HtmlElement("p", new HtmlAttribute("class", "test1")),
-                    new HtmlElement("span", new HtmlAttribute("id", "container"),
-                        new HtmlElement("p", new HtmlAttribute("class", "test2"))),
-                    new HtmlElement("p", new HtmlAttribute("class", "test2 test3"))),
-                "p:nth-of-type(2)",
+                    new HtmlElement("p", new HtmlAttribute("id", "test1")),
+                    new HtmlElement("div",
+                        new HtmlElement("p", new HtmlAttribute("id", "test2"))),
+                    new HtmlElement("p", new HtmlAttribute("id", "test3"))),
+                ":nth-child(odd)",
                 new[]
                 {
-                    new HtmlElement("p", new HtmlAttribute("class", "test2 test3"))
+                    new HtmlElement("p", new HtmlAttribute("id", "test1")),
+                    new HtmlElement("p", new HtmlAttribute("id", "test2")),
+                    new HtmlElement("p", new HtmlAttribute("id", "test3"))
                 }
             );
 
             yield return new TestCaseData(
                 new HtmlElement("div",
-                    new HtmlElement("p", new HtmlAttribute("class", "test1")),
-                    new HtmlElement("span", new HtmlAttribute("id", "container"),
-                        new HtmlElement("p", new HtmlAttribute("class", "test2"))),
-                    new HtmlElement("p", new HtmlAttribute("class", "test2 test3"))),
-                "p:first-child",
+                    new HtmlElement("p", new HtmlAttribute("id", "test1")),
+                    new HtmlElement("div",
+                        new HtmlElement("p", new HtmlAttribute("id", "test2"))),
+                    new HtmlElement("p", new HtmlAttribute("id", "test3"))),
+                ":nth-child(2n+1)",
                 new[]
                 {
-                    new HtmlElement("p", new HtmlAttribute("class", "test1")),
-                    new HtmlElement("p", new HtmlAttribute("class", "test2"))
+                    new HtmlElement("p", new HtmlAttribute("id", "test1")),
+                    new HtmlElement("p", new HtmlAttribute("id", "test2")),
+                    new HtmlElement("p", new HtmlAttribute("id", "test3"))
                 }
             );
 
             yield return new TestCaseData(
                 new HtmlElement("div",
-                    new HtmlElement("p", new HtmlAttribute("class", "test1")),
-                    new HtmlElement("span", new HtmlAttribute("id", "container"),
-                        new HtmlElement("p", new HtmlAttribute("class", "test2"))),
-                    new HtmlElement("p", new HtmlAttribute("class", "test2 test3"))),
-                "p:last-child",
+                    new HtmlElement("p", new HtmlAttribute("id", "test1")),
+                    new HtmlElement("div",
+                        new HtmlElement("p", new HtmlAttribute("id", "test2"))),
+                    new HtmlElement("p", new HtmlAttribute("id", "test3"))),
+                ":nth-child(even)",
                 new[]
                 {
-                    new HtmlElement("p", new HtmlAttribute("class", "test2")),
-                    new HtmlElement("p", new HtmlAttribute("class", "test2 test3"))
+                    new HtmlElement("div",
+                        new HtmlElement("p", new HtmlAttribute("id", "test2")))
                 }
             );
 
             yield return new TestCaseData(
                 new HtmlElement("div",
-                    new HtmlElement("p", new HtmlAttribute("class", "test1")),
-                    new HtmlElement("span", new HtmlAttribute("id", "container"),
-                        new HtmlElement("p", new HtmlAttribute("class", "test2"))),
-                    new HtmlElement("p", new HtmlAttribute("class", "test2 test3"))),
-                "p:first-of-type",
-                new[]
-                {
-                    new HtmlElement("p", new HtmlAttribute("class", "test1")),
-                    new HtmlElement("p", new HtmlAttribute("class", "test2"))
-                }
-            );
-
-            yield return new TestCaseData(
-                new HtmlElement("div",
-                    new HtmlElement("p", new HtmlAttribute("class", "test1")),
-                    new HtmlElement("span", new HtmlAttribute("id", "container"),
-                        new HtmlElement("p", new HtmlAttribute("class", "test2"))),
-                    new HtmlElement("p", new HtmlAttribute("class", "test2 test3"))),
-                "p:last-of-type",
-                new[]
-                {
-                    new HtmlElement("p", new HtmlAttribute("class", "test2")),
-                    new HtmlElement("p", new HtmlAttribute("class", "test2 test3"))
-                }
-            );
-
-            yield return new TestCaseData(
-                new HtmlElement("div",
-                    new HtmlElement("p", new HtmlAttribute("class", "test1")),
-                    new HtmlElement("span", new HtmlAttribute("id", "container"),
-                        new HtmlElement("p", new HtmlAttribute("class", "test2"))),
-                    new HtmlElement("p", new HtmlAttribute("class", "test2 test3"))),
-                "p:only-child",
-                new[]
-                {
-                    new HtmlElement("p", new HtmlAttribute("class", "test2"))
-                }
-            );
-
-            yield return new TestCaseData(
-                new HtmlElement("div",
-                    new HtmlElement("p", new HtmlAttribute("class", "test1")),
-                    new HtmlElement("span", new HtmlAttribute("id", "container"),
-                        new HtmlElement("p", new HtmlAttribute("class", "test2"))),
-                    new HtmlElement("p", new HtmlAttribute("class", "test2 test3"))),
-                "span:only-of-type",
-                new[]
-                {
-                    new HtmlElement("span", new HtmlAttribute("id", "container"),
-                        new HtmlElement("p", new HtmlAttribute("class", "test2")))
-                }
-            );
-
-            yield return new TestCaseData(
-                new HtmlElement("div",
-                    new HtmlElement("p", new HtmlAttribute("class", "test1")),
-                    new HtmlElement("span", new HtmlAttribute("id", "container"),
-                        new HtmlElement("p", new HtmlAttribute("class", "test2"))),
-                    new HtmlElement("p", new HtmlAttribute("class", "test2 test3"))),
-                "p:empty",
-                new[]
-                {
-                    new HtmlElement("p", new HtmlAttribute("class", "test1")),
-                    new HtmlElement("p", new HtmlAttribute("class", "test2")),
-                    new HtmlElement("p", new HtmlAttribute("class", "test2 test3"))
-                }
-            );
-
-            yield return new TestCaseData(
-                new HtmlElement("div",
-                    new HtmlElement("p", new HtmlAttribute("class", "test1")),
-                    new HtmlElement("span", new HtmlAttribute("id", "container"),
-                        new HtmlElement("p", new HtmlAttribute("class", "test2"))),
-                    new HtmlElement("p", new HtmlAttribute("class", "test2 test3"))),
-                "img",
+                    new HtmlElement("p", new HtmlAttribute("id", "test1")),
+                    new HtmlElement("div",
+                        new HtmlElement("p", new HtmlAttribute("id", "test2"))),
+                    new HtmlElement("p", new HtmlAttribute("id", "test3"))),
+                ":nth-child(4)",
                 new HtmlElement[0]
             );
 
             yield return new TestCaseData(
                 new HtmlElement("div",
-                    new HtmlElement("p", new HtmlAttribute("class", "test1")),
-                    new HtmlElement("span", new HtmlAttribute("id", "container"),
+                    new HtmlElement("p", new HtmlAttribute("id", "test1")),
+                    new HtmlElement("div",
+                        new HtmlElement("p", new HtmlAttribute("id", "test2"))),
+                    new HtmlElement("p", new HtmlAttribute("id", "test3"))),
+                ":nth-child(4n)",
+                new HtmlElement[0]
+            );
+
+            // Nth last child
+
+            yield return new TestCaseData(
+                new HtmlElement("div",
+                    new HtmlElement("p", new HtmlAttribute("id", "test1")),
+                    new HtmlElement("div",
+                        new HtmlElement("p", new HtmlAttribute("id", "test2"))),
+                    new HtmlElement("p", new HtmlAttribute("id", "test3"))),
+                ":nth-last-child(1)",
+                new[]
+                {
+                    new HtmlElement("p", new HtmlAttribute("id", "test2")),
+                    new HtmlElement("p", new HtmlAttribute("id", "test3"))
+                }
+            );
+
+            yield return new TestCaseData(
+                new HtmlElement("div",
+                    new HtmlElement("p", new HtmlAttribute("id", "test1")),
+                    new HtmlElement("div",
+                        new HtmlElement("p", new HtmlAttribute("id", "test2"))),
+                    new HtmlElement("p", new HtmlAttribute("id", "test3"))),
+                ":nth-last-child(odd)",
+                new[]
+                {
+                    new HtmlElement("p", new HtmlAttribute("id", "test1")),
+                    new HtmlElement("p", new HtmlAttribute("id", "test2")),
+                    new HtmlElement("p", new HtmlAttribute("id", "test3"))
+                }
+            );
+
+            yield return new TestCaseData(
+                new HtmlElement("div",
+                    new HtmlElement("p", new HtmlAttribute("id", "test1")),
+                    new HtmlElement("div",
+                        new HtmlElement("p", new HtmlAttribute("id", "test2"))),
+                    new HtmlElement("p", new HtmlAttribute("id", "test3"))),
+                ":nth-last-child(2n+1)",
+                new[]
+                {
+                    new HtmlElement("p", new HtmlAttribute("id", "test1")),
+                    new HtmlElement("p", new HtmlAttribute("id", "test2")),
+                    new HtmlElement("p", new HtmlAttribute("id", "test3"))
+                }
+            );
+
+            yield return new TestCaseData(
+                new HtmlElement("div",
+                    new HtmlElement("p", new HtmlAttribute("id", "test1")),
+                    new HtmlElement("div",
+                        new HtmlElement("p", new HtmlAttribute("id", "test2"))),
+                    new HtmlElement("p", new HtmlAttribute("id", "test3"))),
+                ":nth-last-child(even)",
+                new[]
+                {
+                    new HtmlElement("div",
+                        new HtmlElement("p", new HtmlAttribute("id", "test2")))
+                }
+            );
+
+            yield return new TestCaseData(
+                new HtmlElement("div",
+                    new HtmlElement("p", new HtmlAttribute("id", "test1")),
+                    new HtmlElement("div",
+                        new HtmlElement("p", new HtmlAttribute("id", "test2"))),
+                    new HtmlElement("p", new HtmlAttribute("id", "test3"))),
+                ":nth-last-child(4)",
+                new HtmlElement[0]
+            );
+
+            yield return new TestCaseData(
+                new HtmlElement("div",
+                    new HtmlElement("p", new HtmlAttribute("id", "test1")),
+                    new HtmlElement("div",
+                        new HtmlElement("p", new HtmlAttribute("id", "test2"))),
+                    new HtmlElement("p", new HtmlAttribute("id", "test3"))),
+                ":nth-last-child(4n)",
+                new HtmlElement[0]
+            );
+
+            // Nth of type
+
+            yield return new TestCaseData(
+                new HtmlElement("div",
+                    new HtmlElement("p", new HtmlAttribute("id", "test1")),
+                    new HtmlElement("div",
+                        new HtmlElement("p", new HtmlAttribute("id", "test2"))),
+                    new HtmlElement("p", new HtmlAttribute("id", "test3"))),
+                ":nth-of-type(2)",
+                new[]
+                {
+                    new HtmlElement("p", new HtmlAttribute("id", "test2"))
+                }
+            );
+
+            yield return new TestCaseData(
+                new HtmlElement("div",
+                    new HtmlElement("p", new HtmlAttribute("id", "test1")),
+                    new HtmlElement("div",
+                        new HtmlElement("p", new HtmlAttribute("id", "test2"))),
+                    new HtmlElement("p", new HtmlAttribute("id", "test3"))),
+                ":nth-of-type(odd)",
+                new[]
+                {
+                    new HtmlElement("p", new HtmlAttribute("id", "test1")),
+                    new HtmlElement("div",
+                        new HtmlElement("p", new HtmlAttribute("id", "test2"))),
+                    new HtmlElement("p", new HtmlAttribute("id", "test3"))
+                }
+            );
+
+            yield return new TestCaseData(
+                new HtmlElement("div",
+                    new HtmlElement("p", new HtmlAttribute("id", "test1")),
+                    new HtmlElement("div",
+                        new HtmlElement("p", new HtmlAttribute("id", "test2"))),
+                    new HtmlElement("p", new HtmlAttribute("id", "test3"))),
+                ":nth-of-type(2n+1)",
+                new[]
+                {
+                    new HtmlElement("p", new HtmlAttribute("id", "test1")),
+                    new HtmlElement("div",
+                        new HtmlElement("p", new HtmlAttribute("id", "test2"))),
+                    new HtmlElement("p", new HtmlAttribute("id", "test3"))
+                }
+            );
+
+            yield return new TestCaseData(
+                new HtmlElement("div",
+                    new HtmlElement("p", new HtmlAttribute("id", "test1")),
+                    new HtmlElement("div",
+                        new HtmlElement("p", new HtmlAttribute("id", "test2"))),
+                    new HtmlElement("p", new HtmlAttribute("id", "test3"))),
+                ":nth-of-type(even)",
+                new[]
+                {
+                    new HtmlElement("p", new HtmlAttribute("id", "test2"))
+                }
+            );
+
+            yield return new TestCaseData(
+                new HtmlElement("div",
+                    new HtmlElement("p", new HtmlAttribute("id", "test1")),
+                    new HtmlElement("div",
+                        new HtmlElement("p", new HtmlAttribute("id", "test2"))),
+                    new HtmlElement("p", new HtmlAttribute("id", "test3"))),
+                ":nth-of-type(4)",
+                new HtmlElement[0]
+            );
+
+            yield return new TestCaseData(
+                new HtmlElement("div",
+                    new HtmlElement("p", new HtmlAttribute("id", "test1")),
+                    new HtmlElement("div",
+                        new HtmlElement("p", new HtmlAttribute("id", "test2"))),
+                    new HtmlElement("p", new HtmlAttribute("id", "test3"))),
+                ":nth-of-type(4n)",
+                new HtmlElement[0]
+            );
+
+            // Nth last of type
+
+            yield return new TestCaseData(
+                new HtmlElement("div",
+                    new HtmlElement("p", new HtmlAttribute("id", "test1")),
+                    new HtmlElement("div",
+                        new HtmlElement("p", new HtmlAttribute("id", "test2"))),
+                    new HtmlElement("p", new HtmlAttribute("id", "test3"))),
+                ":nth-last-of-type(2)",
+                new[]
+                {
+                    new HtmlElement("p", new HtmlAttribute("id", "test2"))
+                }
+            );
+
+            yield return new TestCaseData(
+                new HtmlElement("div",
+                    new HtmlElement("p", new HtmlAttribute("id", "test1")),
+                    new HtmlElement("div",
+                        new HtmlElement("p", new HtmlAttribute("id", "test2"))),
+                    new HtmlElement("p", new HtmlAttribute("id", "test3"))),
+                ":nth-last-of-type(odd)",
+                new[]
+                {
+                    new HtmlElement("p", new HtmlAttribute("id", "test1")),
+                    new HtmlElement("div",
+                        new HtmlElement("p", new HtmlAttribute("id", "test2"))),
+                    new HtmlElement("p", new HtmlAttribute("id", "test3"))
+                }
+            );
+
+            yield return new TestCaseData(
+                new HtmlElement("div",
+                    new HtmlElement("p", new HtmlAttribute("id", "test1")),
+                    new HtmlElement("div",
+                        new HtmlElement("p", new HtmlAttribute("id", "test2"))),
+                    new HtmlElement("p", new HtmlAttribute("id", "test3"))),
+                ":nth-last-of-type(2n+1)",
+                new[]
+                {
+                    new HtmlElement("p", new HtmlAttribute("id", "test1")),
+                    new HtmlElement("div",
+                        new HtmlElement("p", new HtmlAttribute("id", "test2"))),
+                    new HtmlElement("p", new HtmlAttribute("id", "test3"))
+                }
+            );
+
+            yield return new TestCaseData(
+                new HtmlElement("div",
+                    new HtmlElement("p", new HtmlAttribute("id", "test1")),
+                    new HtmlElement("div",
+                        new HtmlElement("p", new HtmlAttribute("id", "test2"))),
+                    new HtmlElement("p", new HtmlAttribute("id", "test3"))),
+                ":nth-last-of-type(even)",
+                new[]
+                {
+                    new HtmlElement("p", new HtmlAttribute("id", "test2"))
+                }
+            );
+
+            yield return new TestCaseData(
+                new HtmlElement("div",
+                    new HtmlElement("p", new HtmlAttribute("id", "test1")),
+                    new HtmlElement("div",
+                        new HtmlElement("p", new HtmlAttribute("id", "test2"))),
+                    new HtmlElement("p", new HtmlAttribute("id", "test3"))),
+                ":nth-last-of-type(4)",
+                new HtmlElement[0]
+            );
+
+            yield return new TestCaseData(
+                new HtmlElement("div",
+                    new HtmlElement("p", new HtmlAttribute("id", "test1")),
+                    new HtmlElement("div",
+                        new HtmlElement("p", new HtmlAttribute("id", "test2"))),
+                    new HtmlElement("p", new HtmlAttribute("id", "test3"))),
+                ":nth-last-of-type(4n)",
+                new HtmlElement[0]
+            );
+
+            // First child
+
+            yield return new TestCaseData(
+                new HtmlElement("div",
+                    new HtmlElement("p", new HtmlAttribute("id", "test1")),
+                    new HtmlElement("div",
+                        new HtmlElement("p", new HtmlAttribute("id", "test2"))),
+                    new HtmlElement("p", new HtmlAttribute("id", "test3"))),
+                ":first-child",
+                new[]
+                {
+                    new HtmlElement("p", new HtmlAttribute("id", "test1")),
+                    new HtmlElement("p", new HtmlAttribute("id", "test2"))
+                }
+            );
+
+            // Last child
+
+            yield return new TestCaseData(
+                new HtmlElement("div",
+                    new HtmlElement("p", new HtmlAttribute("id", "test1")),
+                    new HtmlElement("div",
+                        new HtmlElement("p", new HtmlAttribute("id", "test2"))),
+                    new HtmlElement("p", new HtmlAttribute("id", "test3"))),
+                ":last-child",
+                new[]
+                {
+                    new HtmlElement("p", new HtmlAttribute("id", "test2")),
+                    new HtmlElement("p", new HtmlAttribute("id", "test3"))
+                }
+            );
+
+            // First of type
+
+            yield return new TestCaseData(
+                new HtmlElement("div",
+                    new HtmlElement("p", new HtmlAttribute("id", "test1")),
+                    new HtmlElement("div",
+                        new HtmlElement("p", new HtmlAttribute("id", "test2"))),
+                    new HtmlElement("p", new HtmlAttribute("id", "test3"))),
+                ":first-of-type",
+                new[]
+                {
+                    new HtmlElement("p", new HtmlAttribute("id", "test1")),
+                    new HtmlElement("div",
+                        new HtmlElement("p", new HtmlAttribute("id", "test2")))
+                }
+            );
+
+            // Last of type
+
+            yield return new TestCaseData(
+                new HtmlElement("div",
+                    new HtmlElement("p", new HtmlAttribute("id", "test1")),
+                    new HtmlElement("div",
+                        new HtmlElement("p", new HtmlAttribute("id", "test2"))),
+                    new HtmlElement("p", new HtmlAttribute("id", "test3"))),
+                ":last-of-type",
+                new[]
+                {
+                    new HtmlElement("div",
+                        new HtmlElement("p", new HtmlAttribute("id", "test2"))),
+                    new HtmlElement("p", new HtmlAttribute("id", "test3"))
+                }
+            );
+
+            // Only child
+
+            yield return new TestCaseData(
+                new HtmlElement("div",
+                    new HtmlElement("p", new HtmlAttribute("id", "test1")),
+                    new HtmlElement("div",
+                        new HtmlElement("p", new HtmlAttribute("id", "test2"))),
+                    new HtmlElement("p", new HtmlAttribute("id", "test3"))),
+                ":only-child",
+                new[]
+                {
+                        new HtmlElement("p", new HtmlAttribute("id", "test2"))
+                }
+            );
+
+            // Only of type
+
+            yield return new TestCaseData(
+                new HtmlElement("div",
+                    new HtmlElement("p", new HtmlAttribute("id", "test1")),
+                    new HtmlElement("div",
+                        new HtmlElement("p", new HtmlAttribute("id", "test2"))),
+                    new HtmlElement("p", new HtmlAttribute("id", "test3"))),
+                ":only-of-type",
+                new[]
+                {
+                    new HtmlElement("div",
+                        new HtmlElement("p", new HtmlAttribute("id", "test2")))
+                }
+            );
+
+            // Empty
+
+            yield return new TestCaseData(
+                new HtmlElement("div",
+                    new HtmlElement("p", new HtmlAttribute("id", "test1")),
+                    new HtmlElement("div",
+                        new HtmlElement("p", new HtmlAttribute("id", "test2"))),
+                    new HtmlElement("p", new HtmlAttribute("id", "test3"))),
+                ":empty",
+                new[]
+                {
+                    new HtmlElement("p", new HtmlAttribute("id", "test1")),
+                    new HtmlElement("p", new HtmlAttribute("id", "test3"))
+                }
+            );
+
+            // Id
+
+            yield return new TestCaseData(
+                new HtmlElement("div",
+                    new HtmlElement("p", new HtmlAttribute("id", "test1")),
+                    new HtmlElement("div",
+                        new HtmlElement("p", new HtmlAttribute("id", "test2"))),
+                    new HtmlElement("p", new HtmlAttribute("id", "test3"))),
+                "#test2",
+                new[]
+                {
+                    new HtmlElement("p", new HtmlAttribute("id", "test2"))
+                }
+            );
+
+            yield return new TestCaseData(
+                new HtmlElement("div",
+                    new HtmlElement("p", new HtmlAttribute("id", "test1")),
+                    new HtmlElement("div",
+                        new HtmlElement("p", new HtmlAttribute("id", "test2"))),
+                    new HtmlElement("p", new HtmlAttribute("id", "test3"))),
+                "#test4",
+                new HtmlElement[0]
+            );
+
+            // Class name
+
+            yield return new TestCaseData(
+                new HtmlElement("div",
+                    new HtmlElement("p", new HtmlAttribute("class", "test1 test2")),
+                    new HtmlElement("div",
                         new HtmlElement("p", new HtmlAttribute("class", "test2"))),
-                    new HtmlElement("p", new HtmlAttribute("class", "test2 test3"))),
+                    new HtmlElement("p", new HtmlAttribute("class", "test3"))),
+                ".test2",
+                new[]
+                {
+                    new HtmlElement("p", new HtmlAttribute("class", "test1 test2")),
+                    new HtmlElement("p", new HtmlAttribute("class", "test2"))
+                }
+            );
+
+            yield return new TestCaseData(
+                new HtmlElement("div",
+                    new HtmlElement("p", new HtmlAttribute("class", "test1 test2")),
+                    new HtmlElement("div",
+                        new HtmlElement("p", new HtmlAttribute("class", "test2"))),
+                    new HtmlElement("p", new HtmlAttribute("class", "test3"))),
                 ".test4",
                 new HtmlElement[0]
             );
 
+            // Not
+
             yield return new TestCaseData(
                 new HtmlElement("div",
-                    new HtmlElement("p", new HtmlAttribute("class", "test1")),
-                    new HtmlElement("span", new HtmlAttribute("id", "container"),
-                        new HtmlElement("p", new HtmlAttribute("class", "test2"))),
-                    new HtmlElement("p", new HtmlAttribute("class", "test2 test3"))),
-                ".test2.test4",
-                new HtmlElement[0]
+                    new HtmlElement("p", new HtmlAttribute("id", "test1")),
+                    new HtmlElement("div",
+                        new HtmlElement("p", new HtmlAttribute("id", "test2"))),
+                    new HtmlElement("p", new HtmlAttribute("id", "test3"))),
+                ":not(#test1)",
+                new[]
+                {
+                    new HtmlElement("div",
+                        new HtmlElement("p", new HtmlAttribute("id", "test2"))),
+                    new HtmlElement("p", new HtmlAttribute("id", "test2")),
+                    new HtmlElement("p", new HtmlAttribute("id", "test3"))
+                }
             );
 
             yield return new TestCaseData(
                 new HtmlElement("div",
-                    new HtmlElement("p", new HtmlAttribute("class", "test1")),
-                    new HtmlElement("span", new HtmlAttribute("id", "container"),
-                        new HtmlElement("p", new HtmlAttribute("class", "test2"))),
-                    new HtmlElement("p", new HtmlAttribute("class", "test2 test3"))),
-                "#main",
-                new HtmlElement[0]
+                    new HtmlElement("p", new HtmlAttribute("id", "test1")),
+                    new HtmlElement("div",
+                        new HtmlElement("p", new HtmlAttribute("id", "test2"))),
+                    new HtmlElement("p", new HtmlAttribute("id", "test3"))),
+                ":not(p)",
+                new[]
+                {
+                    new HtmlElement("div",
+                        new HtmlElement("p", new HtmlAttribute("id", "test2")))
+                }
             );
 
             yield return new TestCaseData(
                 new HtmlElement("div",
-                    new HtmlElement("p", new HtmlAttribute("class", "test1")),
-                    new HtmlElement("span", new HtmlAttribute("id", "container"),
-                        new HtmlElement("p", new HtmlAttribute("class", "test2"))),
-                    new HtmlElement("p", new HtmlAttribute("class", "test2 test3"))),
-                "p.test4",
-                new HtmlElement[0]
+                    new HtmlElement("p", new HtmlAttribute("id", "test1")),
+                    new HtmlElement("div",
+                        new HtmlElement("p", new HtmlAttribute("id", "test2"))),
+                    new HtmlElement("p", new HtmlAttribute("id", "test3"))),
+                ":not(p[id])",
+                new[]
+                {
+                    new HtmlElement("div",
+                        new HtmlElement("p", new HtmlAttribute("id", "test2")))
+                }
             );
 
             yield return new TestCaseData(
                 new HtmlElement("div",
-                    new HtmlElement("p", new HtmlAttribute("class", "test1")),
-                    new HtmlElement("span", new HtmlAttribute("id", "container"),
-                        new HtmlElement("p", new HtmlAttribute("class", "test2"))),
-                    new HtmlElement("p", new HtmlAttribute("class", "test2 test3"))),
-                "div#container",
-                new HtmlElement[0]
+                    new HtmlElement("p", new HtmlAttribute("id", "test1")),
+                    new HtmlElement("div",
+                        new HtmlElement("p", new HtmlAttribute("id", "test2"))),
+                    new HtmlElement("p", new HtmlAttribute("id", "test3"))),
+                ":not(p[id]^=\"st3\")",
+                new[]
+                {
+                    new HtmlElement("p", new HtmlAttribute("id", "test1")),
+                    new HtmlElement("div",
+                        new HtmlElement("p", new HtmlAttribute("id", "test2"))),
+                    new HtmlElement("p", new HtmlAttribute("id", "test2"))
+                }
             );
 
             yield return new TestCaseData(
                 new HtmlElement("div",
-                    new HtmlElement("p", new HtmlAttribute("class", "test1")),
-                    new HtmlElement("span", new HtmlAttribute("id", "container"),
-                        new HtmlElement("p", new HtmlAttribute("class", "test2"))),
-                    new HtmlElement("p", new HtmlAttribute("class", "test2 test3"))),
-                "a p",
+                    new HtmlElement("p", new HtmlAttribute("id", "test1")),
+                    new HtmlElement("div",
+                        new HtmlElement("p", new HtmlAttribute("id", "test2"))),
+                    new HtmlElement("p", new HtmlAttribute("id", "test3"))),
+                ":not(*)",
                 new HtmlElement[0]
+            );
+
+            // Descendant
+
+            yield return new TestCaseData(
+                new HtmlElement("div",
+                    new HtmlElement("p", new HtmlAttribute("id", "test1")),
+                    new HtmlElement("div",
+                        new HtmlElement("p", new HtmlAttribute("id", "test2"))),
+                    new HtmlElement("div",
+                        new HtmlElement("span",
+                            new HtmlElement("p", new HtmlAttribute("id", "test3"))))),
+                "div p",
+                new[]
+                {
+                    new HtmlElement("p", new HtmlAttribute("id", "test2")),
+                    new HtmlElement("p", new HtmlAttribute("id", "test3"))
+                }
             );
 
             yield return new TestCaseData(
                 new HtmlElement("div",
-                    new HtmlElement("p", new HtmlAttribute("class", "test1")),
-                    new HtmlElement("span", new HtmlAttribute("id", "container"),
-                        new HtmlElement("p", new HtmlAttribute("class", "test2"))),
-                    new HtmlElement("p", new HtmlAttribute("class", "test2 test3"))),
-                "p[name]",
+                    new HtmlElement("p", new HtmlAttribute("id", "test1")),
+                    new HtmlElement("div",
+                        new HtmlElement("p", new HtmlAttribute("id", "test2"))),
+                    new HtmlElement("div",
+                        new HtmlElement("span",
+                            new HtmlElement("p", new HtmlAttribute("id", "test3"))))),
+                "tr p",
                 new HtmlElement[0]
+            );
+
+            // Child
+
+            yield return new TestCaseData(
+                new HtmlElement("div",
+                    new HtmlElement("p", new HtmlAttribute("id", "test1")),
+                    new HtmlElement("div",
+                        new HtmlElement("p", new HtmlAttribute("id", "test2"))),
+                    new HtmlElement("div",
+                        new HtmlElement("span",
+                            new HtmlElement("p", new HtmlAttribute("id", "test3"))))),
+                "div > p",
+                new[]
+                {
+                    new HtmlElement("p", new HtmlAttribute("id", "test2"))
+                }
             );
 
             yield return new TestCaseData(
                 new HtmlElement("div",
-                    new HtmlElement("p", new HtmlAttribute("class", "test1")),
-                    new HtmlElement("span", new HtmlAttribute("id", "container"),
-                        new HtmlElement("p", new HtmlAttribute("class", "test2"))),
-                    new HtmlElement("p", new HtmlAttribute("class", "test2 test3"))),
-                "p[class=\"test4\"]",
+                    new HtmlElement("p", new HtmlAttribute("id", "test1")),
+                    new HtmlElement("div",
+                        new HtmlElement("p", new HtmlAttribute("id", "test2"))),
+                    new HtmlElement("div",
+                        new HtmlElement("span",
+                            new HtmlElement("p", new HtmlAttribute("id", "test3"))))),
+                "tr > p",
                 new HtmlElement[0]
+            );
+
+            // Sibling
+
+            yield return new TestCaseData(
+                new HtmlElement("div",
+                    new HtmlElement("p", new HtmlAttribute("id", "test1")),
+                    new HtmlElement("div",
+                        new HtmlElement("p", new HtmlAttribute("id", "test2"))),
+                    new HtmlElement("p", new HtmlAttribute("id", "test3"))),
+                "div + p",
+                new[]
+                {
+                    new HtmlElement("p", new HtmlAttribute("id", "test3"))
+                }
             );
 
             yield return new TestCaseData(
                 new HtmlElement("div",
-                    new HtmlElement("p", new HtmlAttribute("class", "test1")),
-                    new HtmlElement("span", new HtmlAttribute("id", "container"),
-                        new HtmlElement("p", new HtmlAttribute("class", "test2"))),
-                    new HtmlElement("p", new HtmlAttribute("class", "test2 test3"))),
-                "p[class~=\"test4\"]",
+                    new HtmlElement("p", new HtmlAttribute("id", "test1")),
+                    new HtmlElement("div",
+                        new HtmlElement("p", new HtmlAttribute("id", "test2"))),
+                    new HtmlElement("p", new HtmlAttribute("id", "test3"))),
+                "tr + p",
                 new HtmlElement[0]
+            );
+
+            // Subsequent sibling
+
+            yield return new TestCaseData(
+                new HtmlElement("div",
+                    new HtmlElement("p", new HtmlAttribute("id", "test1")),
+                    new HtmlElement("div",
+                        new HtmlElement("p", new HtmlAttribute("id", "test2"))),
+                    new HtmlElement("span",
+                        new HtmlElement("p", new HtmlAttribute("id", "test3"))),
+                    new HtmlElement("p", new HtmlAttribute("id", "test4"))),
+                "div ~ p",
+                new[]
+                {
+                    new HtmlElement("p", new HtmlAttribute("id", "test4"))
+                }
             );
 
             yield return new TestCaseData(
                 new HtmlElement("div",
-                    new HtmlElement("p", new HtmlAttribute("class", "test1")),
-                    new HtmlElement("span", new HtmlAttribute("id", "container"),
-                        new HtmlElement("p", new HtmlAttribute("class", "test2"))),
-                    new HtmlElement("p", new HtmlAttribute("class", "test2 test3"))),
-                "p[class^=\"test3\"]",
+                    new HtmlElement("p", new HtmlAttribute("id", "test1")),
+                    new HtmlElement("div",
+                        new HtmlElement("p", new HtmlAttribute("id", "test2"))),
+                    new HtmlElement("span",
+                        new HtmlElement("p", new HtmlAttribute("id", "test3"))),
+                    new HtmlElement("p", new HtmlAttribute("id", "test4"))),
+                "tr ~ p",
                 new HtmlElement[0]
             );
 
-            yield return new TestCaseData(
-                new HtmlElement("div",
-                    new HtmlElement("p", new HtmlAttribute("class", "test1")),
-                    new HtmlElement("span", new HtmlAttribute("id", "container"),
-                        new HtmlElement("p", new HtmlAttribute("class", "test2"))),
-                    new HtmlElement("p", new HtmlAttribute("class", "test2 test3"))),
-                "p[class$=\"test4\"]",
-                new HtmlElement[0]
-            );
+            // Malformed
 
             yield return new TestCaseData(
                 new HtmlElement("div",
-                    new HtmlElement("p", new HtmlAttribute("class", "test1")),
-                    new HtmlElement("span", new HtmlAttribute("id", "container"),
-                        new HtmlElement("p", new HtmlAttribute("class", "test2"))),
-                    new HtmlElement("p", new HtmlAttribute("class", "test2 test3"))),
-                "p[class*=\"test4\"]",
-                new HtmlElement[0]
-            );
-
-            yield return new TestCaseData(
-                new HtmlElement("div",
-                    new HtmlElement("p", new HtmlAttribute("class", "test1")),
-                    new HtmlElement("span", new HtmlAttribute("id", "container"),
-                        new HtmlElement("p", new HtmlAttribute("class", "test2"))),
-                    new HtmlElement("p", new HtmlAttribute("class", "test2 test3"))),
-                "p[class|=\"test4\"]",
+                    new HtmlElement("p", new HtmlAttribute("id", "test1")),
+                    new HtmlElement("div",
+                        new HtmlElement("p", new HtmlAttribute("id", "test2"))),
+                    new HtmlElement("p", new HtmlAttribute("id", "test3"))),
+                "@a! asdk; $%^",
                 new HtmlElement[0]
             );
         }
