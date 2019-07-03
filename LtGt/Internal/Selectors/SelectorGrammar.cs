@@ -24,7 +24,7 @@ namespace LtGt.Internal.Selectors
             from className in ClassName
             select new ClassNameSelector(className);
 
-        private static readonly Parser<string> Id = Parse.AnyChar.Except(Parse.WhiteSpace.Or(Parse.Chars('.', '#', ':', '['))).AtLeastOnce().Text();
+        private static readonly Parser<string> Id = Parse.AnyChar.Except(Parse.WhiteSpace.Or(Parse.Chars('.', '#', ':', '[', ')'))).AtLeastOnce().Text();
 
         private static readonly Parser<IdSelector> IdSelector =
             from pound in Parse.Char('#')
@@ -33,7 +33,7 @@ namespace LtGt.Internal.Selectors
 
         private static readonly Parser<string> AttributeName =
             Parse.CharExcept(
-                c => char.IsWhiteSpace(c) || c == '~' || c == '^' || c == '$' || c == '*' || c == '|' || c == '=' || c == '\'' || c == '"' || c == ']',
+                c => char.IsWhiteSpace(c) || c == '~' || c == '^' || c == '$' || c == '*' || c == '|' || c == '=' || c == '\'' || c == '"' || c == ']' || c == ')',
                 "invalid attribute name characters")
                 .AtLeastOnce().Text();
 
@@ -63,8 +63,15 @@ namespace LtGt.Internal.Selectors
 
         private static readonly Parser<AttributeSelector> AttributeSelector = NormalAttributeSelector.Or(ValuelessAttributeSelector);
 
+        private static readonly Parser<NotSelector> NotSelector =
+            from name in Parse.IgnoreCase(":not")
+            from open in Parse.Char('(')
+            from targetSelector in CombinedSelector
+            from close in Parse.Char(')')
+            select new NotSelector(targetSelector);
+
         private static readonly Parser<CombinedSelector> CombinedSelector =
-            AnySelector.Or<Selector>(NameSelector).Or(ClassNameSelector).Or(IdSelector).Or(AttributeSelector)
+            AnySelector.Or<Selector>(NotSelector).Or(NameSelector).Or(ClassNameSelector).Or(IdSelector).Or(AttributeSelector)
                 .XAtLeastOnce()
                 .Select(s => new CombinedSelector(s.ToArray()));
 

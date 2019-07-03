@@ -924,7 +924,7 @@ namespace LtGt.Tests
                     new HtmlElement("div",
                         new HtmlElement("p", new HtmlAttribute("id", "test2"))),
                     new HtmlElement("p", new HtmlAttribute("id", "test3"))),
-                ":not(p[id]^=\"st3\")",
+                ":not(p[id$=\"st3\"])",
                 new[]
                 {
                     new HtmlElement("p", new HtmlAttribute("id", "test1")),
