@@ -31,6 +31,18 @@ namespace LtGt.Models
         {
         }
 
+        /// <summary>
+        /// Initializes an instance of <see cref="HtmlDocument"/>.
+        /// </summary>
+        public HtmlDocument(HtmlDocument other)
+            : this((HtmlDeclaration) other.Declaration.Clone(),
+                other.Children.Select(n => (HtmlNode) n.Clone()).ToArray())
+        {
+        }
+
+        /// <inheritdoc />
+        public override HtmlEntity Clone() => new HtmlDocument(this);
+
         /// <inheritdoc />
         public override string ToString()
         {

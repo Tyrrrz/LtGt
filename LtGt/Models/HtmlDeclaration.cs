@@ -26,6 +26,17 @@ namespace LtGt.Models
             Value = value.GuardNotNull(nameof(value));
         }
 
+        /// <summary>
+        /// Initializes an instance of <see cref="HtmlDeclaration"/>.
+        /// </summary>
+        public HtmlDeclaration(HtmlDeclaration other)
+            : this(other.Name, other.Value)
+        {
+        }
+
+        /// <inheritdoc />
+        public override HtmlEntity Clone() => new HtmlDeclaration(this);
+
         /// <inheritdoc />
         public override string ToString() => $"<!{Name} {Value}>";
     }

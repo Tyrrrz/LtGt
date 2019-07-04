@@ -107,6 +107,19 @@ namespace LtGt.Models
         {
         }
 
+        /// <summary>
+        /// Initializes an instance of <see cref="HtmlElement"/>.
+        /// </summary>
+        public HtmlElement(HtmlElement other)
+            : this(other.Name,
+                other.Attributes.Select(a => (HtmlAttribute) a.Clone()).ToArray(),
+                other.Children.Select(c => (HtmlNode) c.Clone()).ToArray())
+        {
+        }
+
+        /// <inheritdoc />
+        public override HtmlEntity Clone() => new HtmlElement(this);
+
         /// <inheritdoc />
         public override string ToString()
         {

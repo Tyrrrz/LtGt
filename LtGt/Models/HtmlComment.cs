@@ -20,6 +20,17 @@ namespace LtGt.Models
             Value = value.GuardNotNull(nameof(value));
         }
 
+        /// <summary>
+        /// Initializes an instance of <see cref="HtmlComment"/>.
+        /// </summary>
+        public HtmlComment(HtmlComment other)
+            : this(other.Value)
+        {
+        }
+
+        /// <inheritdoc />
+        public override HtmlEntity Clone() => new HtmlComment(this);
+
         /// <inheritdoc />
         public override string ToString() => $"<!-- {Value} -->";
     }

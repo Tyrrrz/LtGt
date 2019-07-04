@@ -49,6 +49,17 @@ namespace LtGt.Models
         {
         }
 
+        /// <summary>
+        /// Initializes an instance of <see cref="HtmlAttribute"/>.
+        /// </summary>
+        public HtmlAttribute(HtmlAttribute other)
+            : this(other.Name, other.Value)
+        {
+        }
+
+        /// <inheritdoc />
+        public override HtmlEntity Clone() => new HtmlAttribute(this);
+
         /// <inheritdoc />
         public override string ToString() => !Value.IsNullOrWhiteSpace() ? $"{Name}=\"{Value}\"" : Name;
     }
