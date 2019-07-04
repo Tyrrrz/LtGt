@@ -31,14 +31,6 @@ namespace LtGt.Internal
 
     internal static partial class HtmlGrammar
     {
-        private static Parser<T> TokenLeft<T>(this Parser<T> parser) => i =>
-        {
-            while (!i.AtEnd && char.IsWhiteSpace(i.Current))
-                i = i.Advance();
-
-            return parser(i);
-        };
-
         /* Declaration */
 
         // <!doctype html>
@@ -76,7 +68,10 @@ namespace LtGt.Internal
         private static readonly Parser<HtmlAttribute> ValuelessHtmlAttribute = HtmlAttributeName.Select(n => new HtmlAttribute(n));
 
         public static readonly Parser<HtmlAttribute> HtmlAttribute =
-            QuotedHtmlAttribute.Or(UnquotedHtmlAttribute).Or(ValuelessHtmlAttribute).Named("Attribute");
+            QuotedHtmlAttribute
+                .Or(UnquotedHtmlAttribute)
+                .Or(ValuelessHtmlAttribute)
+                .Named("Attribute");
 
         /* Comment */
 
@@ -95,7 +90,9 @@ namespace LtGt.Internal
             select new HtmlComment(content);
 
         public static readonly Parser<HtmlComment> HtmlComment =
-            XmlDirectiveHtmlComment.Or(NormalHtmlComment).Named("Comment");
+            XmlDirectiveHtmlComment
+                .Or(NormalHtmlComment)
+                .Named("Comment");
 
         /* Text */
 
@@ -110,7 +107,10 @@ namespace LtGt.Internal
         public static readonly Parser<HtmlText> NormalHtmlText =
             Parse.CharExcept('<').AtLeastOnce().Text().Select(WebUtility.HtmlDecode).Select(t => t.Trim()).Select(t => new HtmlText(t));
 
-        public static readonly Parser<HtmlText> HtmlText = CDataHtmlText.Or(NormalHtmlText).Named("Text");
+        public static readonly Parser<HtmlText> HtmlText =
+            CDataHtmlText
+                .Or(NormalHtmlText)
+                .Named("Text");
 
         /* Element */
 
@@ -127,15 +127,16 @@ namespace LtGt.Internal
             from closeGt in Parse.Char('>').TokenLeft()
             select new HtmlElement(name, attributes.ToArray(), new[] {new HtmlText(text)});
 
-        // <meta> / <br>
+        // <meta> / <meta/> / <br> / <br/>
         private static readonly Parser<HtmlElement> VoidHtmlElement =
             from open in Parse.Char('<')
             from name in HtmlElementName.Where(IsVoidElement)
             from attributes in HtmlAttribute.Token().Many()
-            from close in Parse.Char('>').TokenLeft()
+            from slash in Parse.Char('/').Optional().TokenLeft()
+            from close in Parse.Char('>')
             select new HtmlElement(name, attributes.ToArray());
 
-        // <input />
+        // <div/>
         private static readonly Parser<HtmlElement> SelfClosingHtmlElement =
             from open in Parse.Char('<')
             from name in HtmlElementName
@@ -155,7 +156,11 @@ namespace LtGt.Internal
             select new HtmlElement(name, attributes.ToArray(), children.ToArray());
 
         public static readonly Parser<HtmlElement> HtmlElement =
-            RawTextHtmlElement.Or(VoidHtmlElement).Or(SelfClosingHtmlElement).Or(NormalHtmlElement).Named("Element");
+            RawTextHtmlElement
+                .Or(VoidHtmlElement)
+                .Or(SelfClosingHtmlElement)
+                .Or(NormalHtmlElement)
+                .Named("Element");
 
         /* Document */
 
@@ -167,8 +172,14 @@ namespace LtGt.Internal
         /* Node */
 
         private static readonly Parser<HtmlNode> ElementChildHtmlNode =
-            HtmlElement.Or<HtmlNode>(HtmlComment).Or(HtmlText).Named("Element child");
+            HtmlElement
+                .Or<HtmlNode>(HtmlComment)
+                .Or(HtmlText)
+                .Named("Element child");
 
-        public static readonly Parser<HtmlNode> HtmlNode = HtmlDocument.Or(ElementChildHtmlNode).Named("Node");
+        public static readonly Parser<HtmlNode> HtmlNode =
+            HtmlDocument
+                .Or(ElementChildHtmlNode)
+                .Named("Node");
     }
 }

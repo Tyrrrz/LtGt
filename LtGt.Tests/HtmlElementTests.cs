@@ -30,17 +30,6 @@ namespace LtGt.Tests
             );
         }
 
-        [Test]
-        [TestCaseSource(nameof(GetTestCases_ToXElement))]
-        public void ToXElement_Test(HtmlElement htmlElement, XElement expectedXElement)
-        {
-            // Act
-            var xElement = htmlElement.ToXElement();
-
-            // Assert
-            Assert.That(xElement, Is.EqualTo(expectedXElement).Using<XNode>(XNode.EqualityComparer));
-        }
-
         private static IEnumerable<TestCaseData> GetTestCases_GetAttribute()
         {
             yield return new TestCaseData(
@@ -66,17 +55,6 @@ namespace LtGt.Tests
             );
         }
 
-        [Test]
-        [TestCaseSource(nameof(GetTestCases_GetAttribute))]
-        public void GetAttribute_Test(HtmlElement element, string attributeName, HtmlAttribute expectedAttribute)
-        {
-            // Act
-            var attribute = element.GetAttribute(attributeName);
-
-            // Assert
-            Assert.That(attribute, Is.EqualTo(expectedAttribute));
-        }
-
         private static IEnumerable<TestCaseData> GetTestCases_GetId()
         {
             yield return new TestCaseData(
@@ -88,17 +66,6 @@ namespace LtGt.Tests
                 new HtmlElement("div"),
                 null
             );
-        }
-
-        [Test]
-        [TestCaseSource(nameof(GetTestCases_GetId))]
-        public void GetId_Test(HtmlElement element, string expectedId)
-        {
-            // Act
-            var id = element.GetId();
-
-            // Assert
-            Assert.That(id, Is.EqualTo(expectedId));
         }
 
         private static IEnumerable<TestCaseData> GetTestCases_GetClassName()
@@ -119,17 +86,6 @@ namespace LtGt.Tests
             );
         }
 
-        [Test]
-        [TestCaseSource(nameof(GetTestCases_GetClassName))]
-        public void GetClassName_Test(HtmlElement element, string expectedClassName)
-        {
-            // Act
-            var className = element.GetClassName();
-
-            // Assert
-            Assert.That(className, Is.EqualTo(expectedClassName));
-        }
-
         private static IEnumerable<TestCaseData> GetTestCases_GetClassNames()
         {
             yield return new TestCaseData(
@@ -146,17 +102,6 @@ namespace LtGt.Tests
                 new HtmlElement("div"),
                 new string[0]
             );
-        }
-
-        [Test]
-        [TestCaseSource(nameof(GetTestCases_GetClassNames))]
-        public void GetClassNames_Test(HtmlElement element, IReadOnlyList<string> expectedClassList)
-        {
-            // Act
-            var classNames = element.GetClassNames();
-
-            // Assert
-            Assert.That(classNames, Is.EqualTo(expectedClassList));
         }
 
         private static IEnumerable<TestCaseData> GetTestCases_MatchesClassName()
@@ -216,17 +161,6 @@ namespace LtGt.Tests
             );
         }
 
-        [Test]
-        [TestCaseSource(nameof(GetTestCases_MatchesClassName))]
-        public void MatchesClassName_Test(HtmlElement element, string className, bool expectedMatches)
-        {
-            // Act
-            var matches = element.MatchesClassName(className);
-
-            // Assert
-            Assert.That(matches, Is.EqualTo(expectedMatches));
-        }
-
         private static IEnumerable<TestCaseData> GetTestCases_GetHref()
         {
             yield return new TestCaseData(
@@ -238,17 +172,6 @@ namespace LtGt.Tests
                 new HtmlElement("a"),
                 null
             );
-        }
-
-        [Test]
-        [TestCaseSource(nameof(GetTestCases_GetHref))]
-        public void GetHref_Test(HtmlElement element, string expectedHref)
-        {
-            // Act
-            var href = element.GetHref();
-
-            // Assert
-            Assert.That(href, Is.EqualTo(expectedHref));
         }
 
         private static IEnumerable<TestCaseData> GetTestCases_GetSrc()
@@ -265,14 +188,91 @@ namespace LtGt.Tests
         }
 
         [Test]
-        [TestCaseSource(nameof(GetTestCases_GetSrc))]
-        public void GetSrc_Test(HtmlElement element, string expectedSrc)
+        [TestCaseSource(nameof(GetTestCases_ToXElement))]
+        public void ToXElement_Test(HtmlElement element, XElement expected)
         {
             // Act
-            var src = element.GetSrc();
+            var actual = element.ToXElement();
 
             // Assert
-            Assert.That(src, Is.EqualTo(expectedSrc));
+            Assert.That(actual, Is.EqualTo(expected).Using<XNode>(XNode.EqualityComparer));
+        }
+
+        [Test]
+        [TestCaseSource(nameof(GetTestCases_GetAttribute))]
+        public void GetAttribute_Test(HtmlElement element, string attributeName, HtmlAttribute expected)
+        {
+            // Act
+            var actual = element.GetAttribute(attributeName);
+
+            // Assert
+            Assert.That(actual, Is.EqualTo(expected).Using(HtmlEntity.EqualityComparer));
+        }
+
+        [Test]
+        [TestCaseSource(nameof(GetTestCases_GetId))]
+        public void GetId_Test(HtmlElement element, string expected)
+        {
+            // Act
+            var actual = element.GetId();
+
+            // Assert
+            Assert.That(actual, Is.EqualTo(expected));
+        }
+
+        [Test]
+        [TestCaseSource(nameof(GetTestCases_GetClassName))]
+        public void GetClassName_Test(HtmlElement element, string expected)
+        {
+            // Act
+            var actual = element.GetClassName();
+
+            // Assert
+            Assert.That(actual, Is.EqualTo(expected));
+        }
+
+        [Test]
+        [TestCaseSource(nameof(GetTestCases_GetClassNames))]
+        public void GetClassNames_Test(HtmlElement element, IReadOnlyList<string> expected)
+        {
+            // Act
+            var actual = element.GetClassNames();
+
+            // Assert
+            Assert.That(actual, Is.EqualTo(expected));
+        }
+
+        [Test]
+        [TestCaseSource(nameof(GetTestCases_MatchesClassName))]
+        public void MatchesClassName_Test(HtmlElement element, string className, bool expected)
+        {
+            // Act
+            var actual = element.MatchesClassName(className);
+
+            // Assert
+            Assert.That(actual, Is.EqualTo(expected));
+        }
+
+        [Test]
+        [TestCaseSource(nameof(GetTestCases_GetHref))]
+        public void GetHref_Test(HtmlElement element, string expected)
+        {
+            // Act
+            var actual = element.GetHref();
+
+            // Assert
+            Assert.That(actual, Is.EqualTo(expected));
+        }
+
+        [Test]
+        [TestCaseSource(nameof(GetTestCases_GetSrc))]
+        public void GetSrc_Test(HtmlElement element, string expected)
+        {
+            // Act
+            var actual = element.GetSrc();
+
+            // Assert
+            Assert.That(actual, Is.EqualTo(expected));
         }
     }
 }

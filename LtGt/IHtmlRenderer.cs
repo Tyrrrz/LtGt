@@ -3,12 +3,12 @@
 namespace LtGt
 {
     /// <summary>
-    /// Provides an interface to render HTML from its object model representation.
+    /// Provides an interface to render HTML objects to code.
     /// </summary>
     public interface IHtmlRenderer
     {
         /// <summary>
-        /// Renders an HTML node to string.
+        /// Renders any <see cref="HtmlNode"/> to string.
         /// </summary>
         string RenderNode(HtmlNode node);
     }

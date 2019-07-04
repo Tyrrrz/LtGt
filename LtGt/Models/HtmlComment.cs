@@ -1,49 +1,26 @@
-﻿using System;
-using LtGt.Internal;
+﻿using LtGt.Internal;
 
 namespace LtGt.Models
 {
     /// <summary>
     /// Represents a comment node in HTML document object model.
     /// </summary>
-    public class HtmlComment : HtmlNode, IEquatable<HtmlComment>
+    public class HtmlComment : HtmlNode
     {
         /// <summary>
-        /// Text content of this comment node.
+        /// Text content of this <see cref="HtmlComment"/>.
         /// </summary>
-        public string Content { get; }
+        public string Value { get; }
 
         /// <summary>
         /// Initializes an instance of <see cref="HtmlComment"/>.
         /// </summary>
-        public HtmlComment(string content)
+        public HtmlComment(string value)
         {
-            Content = content.GuardNotNull(nameof(content));
+            Value = value.GuardNotNull(nameof(value));
         }
 
         /// <inheritdoc />
-        public bool Equals(HtmlComment other)
-        {
-            if (ReferenceEquals(null, other)) return false;
-            if (ReferenceEquals(this, other)) return true;
-
-            return string.Equals(Content, other.Content);
-        }
-
-        /// <inheritdoc />
-        public override bool Equals(object obj)
-        {
-            if (ReferenceEquals(null, obj)) return false;
-            if (ReferenceEquals(this, obj)) return true;
-            if (obj.GetType() != GetType()) return false;
-
-            return Equals((HtmlComment) obj);
-        }
-
-        /// <inheritdoc />
-        public override int GetHashCode() => HashCode.Combine(Content);
-
-        /// <inheritdoc />
-        public override string ToString() => $"<!-- {Content} -->";
+        public override string ToString() => $"<!-- {Value} -->";
     }
 }

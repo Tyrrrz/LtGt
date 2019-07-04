@@ -35,17 +35,6 @@ namespace LtGt.Tests
             );
         }
 
-        [Test]
-        [TestCaseSource(nameof(GetTestCases_ParseDocument))]
-        public void ParseDocument_Test(string source, HtmlDocument expectedDocument)
-        {
-            // Act
-            var document = HtmlParser.Default.ParseDocument(source);
-
-            // Assert
-            Assert.That(document, Is.EqualTo(expectedDocument));
-        }
-
         private static IEnumerable<TestCaseData> GetTestCases_ParseElement()
         {
             yield return new TestCaseData(
@@ -54,17 +43,6 @@ namespace LtGt.Tests
                 new HtmlElement("div", new HtmlAttribute("id", "main"),
                     new HtmlText("test"))
             );
-        }
-
-        [Test]
-        [TestCaseSource(nameof(GetTestCases_ParseElement))]
-        public void ParseElement_Test(string source, HtmlElement expectedElement)
-        {
-            // Act
-            var element = HtmlParser.Default.ParseElement(source);
-
-            // Assert
-            Assert.That(element, Is.EqualTo(expectedElement));
         }
 
         private static IEnumerable<TestCaseData> GetTestCases_ParseNode()
@@ -174,14 +152,36 @@ namespace LtGt.Tests
         }
 
         [Test]
-        [TestCaseSource(nameof(GetTestCases_ParseNode))]
-        public void ParseNode_Test(string source, HtmlNode expectedNode)
+        [TestCaseSource(nameof(GetTestCases_ParseDocument))]
+        public void ParseDocument_Test(string source, HtmlDocument expected)
         {
             // Act
-            var node = HtmlParser.Default.ParseNode(source);
+            var actual = HtmlParser.Default.ParseDocument(source);
 
             // Assert
-            Assert.That(node, Is.EqualTo(expectedNode));
+            Assert.That(actual, Is.EqualTo(expected).Using(HtmlEntity.EqualityComparer));
+        }
+
+        [Test]
+        [TestCaseSource(nameof(GetTestCases_ParseElement))]
+        public void ParseElement_Test(string source, HtmlElement expected)
+        {
+            // Act
+            var actual = HtmlParser.Default.ParseElement(source);
+
+            // Assert
+            Assert.That(actual, Is.EqualTo(expected).Using(HtmlEntity.EqualityComparer));
+        }
+
+        [Test]
+        [TestCaseSource(nameof(GetTestCases_ParseNode))]
+        public void ParseNode_Test(string source, HtmlNode expected)
+        {
+            // Act
+            var actual = HtmlParser.Default.ParseNode(source);
+
+            // Assert
+            Assert.That(actual, Is.EqualTo(expected).Using(HtmlEntity.EqualityComparer));
         }
     }
 }

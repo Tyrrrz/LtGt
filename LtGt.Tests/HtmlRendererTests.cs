@@ -21,7 +21,7 @@ namespace LtGt.Tests
                         new HtmlElement("body",
                             new HtmlElement("div", new HtmlAttribute("id", "content"),
                                 new HtmlElement("a", new HtmlAttribute("href", "https://example.com"),
-                                    new HtmlText("Test link"))))))
+                                    new HtmlText("Test <link>"))))))
             );
         }
 
@@ -30,11 +30,11 @@ namespace LtGt.Tests
         public void RenderNode_Test(HtmlNode node)
         {
             // Act
-            var html = HtmlRenderer.Default.RenderNode(node);
-            var roundTripNode = HtmlParser.Default.ParseNode(html);
+            var actual = HtmlRenderer.Default.RenderNode(node);
+            var roundTrip = HtmlParser.Default.ParseNode(actual);
 
             // Assert
-            Assert.That(roundTripNode, Is.EqualTo(node));
+            Assert.That(roundTrip, Is.EqualTo(node).Using(HtmlEntity.EqualityComparer));
         }
     }
 }

@@ -18,13 +18,13 @@ namespace LtGt.Tests
 
         [Test]
         [TestCaseSource(nameof(GetTestCases_ToXComment))]
-        public void ToXComment_Test(HtmlComment htmlComment, XComment expectedXComment)
+        public void ToXComment_Test(HtmlComment comment, XComment expected)
         {
             // Act
-            var xComment = htmlComment.ToXComment();
+            var actual = comment.ToXComment();
 
             // Assert
-            Assert.That(xComment, Is.EqualTo(expectedXComment).Using<XNode>(XNode.EqualityComparer));
+            Assert.That(actual, Is.EqualTo(expected).Using<XNode>(XNode.EqualityComparer));
         }
     }
 }

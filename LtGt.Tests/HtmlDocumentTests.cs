@@ -32,17 +32,6 @@ namespace LtGt.Tests
             );
         }
 
-        [Test]
-        [TestCaseSource(nameof(GetTestCases_ToXDocument))]
-        public void ToXDocument_Test(HtmlDocument htmlDocument, XDocument expectedXDocument)
-        {
-            // Act
-            var xDocument = htmlDocument.ToXDocument();
-
-            // Assert
-            Assert.That(xDocument, Is.EqualTo(expectedXDocument).Using<XNode>(XNode.EqualityComparer));
-        }
-
         private static IEnumerable<TestCaseData> GetTestCases_GetHead()
         {
             yield return new TestCaseData(
@@ -56,17 +45,6 @@ namespace LtGt.Tests
             );
         }
 
-        [Test]
-        [TestCaseSource(nameof(GetTestCases_GetHead))]
-        public void GetHead_Test(HtmlDocument document, HtmlElement expectedElement)
-        {
-            // Act
-            var element = document.GetHead();
-
-            // Assert
-            Assert.That(element, Is.EqualTo(expectedElement));
-        }
-
         private static IEnumerable<TestCaseData> GetTestCases_GetBody()
         {
             yield return new TestCaseData(
@@ -78,17 +56,6 @@ namespace LtGt.Tests
                 new HtmlDocument(HtmlDeclaration.DoctypeHtml, new HtmlElement("html")),
                 null
             );
-        }
-
-        [Test]
-        [TestCaseSource(nameof(GetTestCases_GetBody))]
-        public void GetBody_Test(HtmlDocument document, HtmlElement expectedElement)
-        {
-            // Act
-            var element = document.GetBody();
-
-            // Assert
-            Assert.That(element, Is.EqualTo(expectedElement));
         }
 
         private static IEnumerable<TestCaseData> GetTestCases_GetTitle()
@@ -108,14 +75,47 @@ namespace LtGt.Tests
         }
 
         [Test]
-        [TestCaseSource(nameof(GetTestCases_GetTitle))]
-        public void GetTitle_Test(HtmlDocument document, string expectedTitle)
+        [TestCaseSource(nameof(GetTestCases_ToXDocument))]
+        public void ToXDocument_Test(HtmlDocument document, XDocument expected)
         {
             // Act
-            var title = document.GetTitle();
+            var actual = document.ToXDocument();
 
             // Assert
-            Assert.That(title, Is.EqualTo(expectedTitle));
+            Assert.That(actual, Is.EqualTo(expected).Using<XNode>(XNode.EqualityComparer));
+        }
+
+        [Test]
+        [TestCaseSource(nameof(GetTestCases_GetHead))]
+        public void GetHead_Test(HtmlDocument document, HtmlElement expected)
+        {
+            // Act
+            var actual = document.GetHead();
+
+            // Assert
+            Assert.That(actual, Is.EqualTo(expected).Using(HtmlEntity.EqualityComparer));
+        }
+
+        [Test]
+        [TestCaseSource(nameof(GetTestCases_GetBody))]
+        public void GetBody_Test(HtmlDocument document, HtmlElement expected)
+        {
+            // Act
+            var actual = document.GetBody();
+
+            // Assert
+            Assert.That(actual, Is.EqualTo(expected).Using(HtmlEntity.EqualityComparer));
+        }
+
+        [Test]
+        [TestCaseSource(nameof(GetTestCases_GetTitle))]
+        public void GetTitle_Test(HtmlDocument document, string expected)
+        {
+            // Act
+            var actual = document.GetTitle();
+
+            // Assert
+            Assert.That(actual, Is.EqualTo(expected));
         }
     }
 }

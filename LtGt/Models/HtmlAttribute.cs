@@ -1,22 +1,36 @@
-﻿using System;
-using LtGt.Internal;
+﻿using LtGt.Internal;
 
 namespace LtGt.Models
 {
     /// <summary>
     /// Represents an attribute entity in HTML document object model.
     /// </summary>
-    public class HtmlAttribute : HtmlEntity, IEquatable<HtmlAttribute>
+    public class HtmlAttribute : HtmlEntity
     {
         /// <summary>
-        /// Name of this attribute node.
+        /// Name of this <see cref="HtmlAttribute"/>.
         /// </summary>
         public string Name { get; }
 
         /// <summary>
-        /// Value of this attribute node.
+        /// Value of this <see cref="HtmlAttribute"/>.
         /// </summary>
         public string Value { get; }
+
+        /// <summary>
+        /// Parent of this <see cref="HtmlAttribute"/>.
+        /// </summary>
+        public HtmlElement Parent { get; internal set; }
+
+        /// <summary>
+        /// Previous sibling of this <see cref="HtmlAttribute"/>.
+        /// </summary>
+        public HtmlAttribute Previous { get; internal set; }
+
+        /// <summary>
+        /// Next sibling of this <see cref="HtmlAttribute"/>.
+        /// </summary>
+        public HtmlAttribute Next { get; internal set; }
 
         /// <summary>
         /// Initializes an instance of <see cref="HtmlAttribute"/>.
@@ -34,29 +48,6 @@ namespace LtGt.Models
             : this(name, null)
         {
         }
-
-        /// <inheritdoc />
-        public bool Equals(HtmlAttribute other)
-        {
-            if (ReferenceEquals(null, other)) return false;
-            if (ReferenceEquals(this, other)) return true;
-
-            return string.Equals(Name, other.Name) &&
-                   string.Equals(Value, other.Value);
-        }
-
-        /// <inheritdoc />
-        public override bool Equals(object obj)
-        {
-            if (ReferenceEquals(null, obj)) return false;
-            if (ReferenceEquals(this, obj)) return true;
-            if (obj.GetType() != GetType()) return false;
-
-            return Equals((HtmlAttribute) obj);
-        }
-
-        /// <inheritdoc />
-        public override int GetHashCode() => HashCode.Combine(Name, Value);
 
         /// <inheritdoc />
         public override string ToString() => !Value.IsNullOrWhiteSpace() ? $"{Name}=\"{Value}\"" : Name;

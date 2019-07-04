@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Linq;
 using System.Net;
 using System.Text;
@@ -10,7 +9,8 @@ namespace LtGt.Internal
     internal class HtmlStringBuilder
     {
         private readonly StringBuilder _internalBuilder = new StringBuilder();
-        private readonly Stack<HtmlElement> _parentElements = new Stack<HtmlElement>();
+
+        private int _depth;
 
         private HtmlStringBuilder Append(string value)
         {
@@ -27,12 +27,12 @@ namespace LtGt.Internal
         private HtmlStringBuilder AppendLine()
         {
             _internalBuilder.AppendLine();
-            _internalBuilder.Append(' ', _parentElements.Count * 2);
+            _internalBuilder.Append(' ', _depth * 2);
             return this;
         }
 
         private HtmlStringBuilder Append(HtmlDeclaration declaration) =>
-            Append("<!").Append(declaration.Name).Append(' ').Append(declaration.Content).Append('>');
+            Append("<!").Append(declaration.Name).Append(' ').Append(declaration.Value).Append('>');
 
         private HtmlStringBuilder Append(HtmlAttribute attribute) =>
             attribute.Value != null
@@ -40,12 +40,12 @@ namespace LtGt.Internal
                 : Append(attribute.Name);
 
         private HtmlStringBuilder Append(HtmlComment comment) =>
-            Append("<!-- ").Append(comment.Content).Append(" -->");
+            Append("<!-- ").Append(comment.Value).Append(" -->");
 
         private HtmlStringBuilder Append(HtmlText text) =>
-            HtmlGrammar.IsRawTextElement(_parentElements.Peek().Name)
-                ? Append(text.Content)
-                : Append(WebUtility.HtmlEncode(text.Content));
+            HtmlGrammar.IsRawTextElement((text.Parent as HtmlElement)?.Name)
+                ? Append(text.Value)
+                : Append(WebUtility.HtmlEncode(text.Value));
 
         private HtmlStringBuilder Append(HtmlElement element)
         {
@@ -59,12 +59,12 @@ namespace LtGt.Internal
             if (HtmlGrammar.IsVoidElement(element.Name) && !element.Children.Any())
                 return this;
 
-            _parentElements.Push(element);
+            _depth++;
 
             foreach (var child in element.Children)
                 AppendLine().Append(child);
 
-            _parentElements.Pop();
+            _depth--;
 
             AppendLine().Append("</").Append(element.Name).Append('>');
 

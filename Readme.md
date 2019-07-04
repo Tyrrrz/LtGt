@@ -19,7 +19,8 @@ LtGt is a minimalistic library for working with HTML. It can be used to parse HT
 - Parse and render HTML5-compliant code
 - Traverse nodes using LINQ
 - Find elements using methods like `GetElementById()`, `GetElementsByTagName()`, etc
-- Convert DOM to a Linq2Xml representation
+- Find elements by evaluating CSS selectors using `GetElementsBySelector()`
+- Convert the DOM to a Linq2Xml representation
 - Easily extensible with custom workflows
 - Targets .NET Framework 4.5+ and .NET Standard 1.0+
 
@@ -63,8 +64,8 @@ There are many extension methods that should help you locate elements you want t
 
 ```c#
 var element1 = document.GetElementById("menu-bar");
-var element2 = document.GetElementByTagName("div");
-var element3 = document.GetElementByClassName("floating-button floating-button--enabled");
+var element2 = document.GetElementsByTagName("div").FirstOrDefault();
+var element3 = document.GetElementsByClassName("floating-button floating-button--enabled").FirstOrDefault();
 
 var element1Data = element1.GetAttribute("data")?.Value;
 var element2Id = element2.GetId();
