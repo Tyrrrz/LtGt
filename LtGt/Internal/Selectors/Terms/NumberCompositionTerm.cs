@@ -12,7 +12,7 @@
             Constant = constant;
         }
 
-        public bool Check(int value) => Multiplier != 0 ? (value - Constant) % Multiplier == 0 : value == Constant;
+        public bool Matches(int value) => Multiplier != 0 ? (value - Constant) % Multiplier == 0 : value == Constant;
 
         public override string ToString()
         {

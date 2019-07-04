@@ -1,4 +1,5 @@
-﻿using LtGt.Internal.Selectors.Terms;
+﻿using System.Linq;
+using LtGt.Internal.Selectors.Terms;
 using LtGt.Models;
 
 namespace LtGt.Internal.Selectors
@@ -12,7 +13,7 @@ namespace LtGt.Internal.Selectors
             NumberCompositionTerm = numberCompositionTerm;
         }
 
-        public override bool Matches(HtmlElement element) => NumberCompositionTerm.Check(element.Index + 1);
+        public override bool Matches(HtmlElement element) => NumberCompositionTerm.Matches(element.GetPreviousSiblings().Count() + 1);
 
         public override string ToString() => $":nth-child({NumberCompositionTerm})";
     }

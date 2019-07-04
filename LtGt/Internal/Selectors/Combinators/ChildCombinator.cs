@@ -14,9 +14,13 @@ namespace LtGt.Internal.Selectors.Combinators
             TargetSelector = targetSelector;
         }
 
-        public override bool Matches(HtmlElement element) =>
-            element.Parent is HtmlElement parentElement && ParentSelector.Matches(parentElement) &&
-            TargetSelector.Matches(element);
+        public override bool Matches(HtmlElement element)
+        {
+            if (element.Parent is HtmlElement parentElement)
+                return ParentSelector.Matches(parentElement) && TargetSelector.Matches(element);
+
+            return false;
+        }
 
         public override string ToString() => $"{ParentSelector} > {TargetSelector}";
     }

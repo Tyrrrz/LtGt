@@ -2,11 +2,11 @@
 
 namespace LtGt.Internal.Selectors
 {
-    internal class ClassNameSelector : Selector
+    internal class ClassSelector : Selector
     {
         public string ClassName { get; }
 
-        public ClassNameSelector(string className)
+        public ClassSelector(string className)
         {
             ClassName = className;
         }

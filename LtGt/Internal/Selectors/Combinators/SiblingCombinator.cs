@@ -14,9 +14,13 @@ namespace LtGt.Internal.Selectors.Combinators
             TargetSelector = targetSelector;
         }
 
-        public override bool Matches(HtmlElement element) =>
-            TargetSelector.Matches(element) &&
-            element.Previous is HtmlElement previousElement && PreviousSelector.Matches(previousElement);
+        public override bool Matches(HtmlElement element)
+        {
+            if (element.Previous is HtmlElement previousElement)
+                return PreviousSelector.Matches(previousElement) && TargetSelector.Matches(element);
+
+            return false;
+        }
 
         public override string ToString() => $"{PreviousSelector} + {TargetSelector}";
     }

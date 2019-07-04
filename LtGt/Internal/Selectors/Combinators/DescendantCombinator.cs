@@ -16,7 +16,8 @@ namespace LtGt.Internal.Selectors.Combinators
         }
 
         public override bool Matches(HtmlElement element) =>
-            element.GetAncestors().OfType<HtmlElement>().Any(AncestorSelector.Matches) && TargetSelector.Matches(element);
+            element.GetAncestors().OfType<HtmlElement>().Any(AncestorSelector.Matches) &&
+            TargetSelector.Matches(element);
 
         public override string ToString() => $"{AncestorSelector} {TargetSelector}";
     }

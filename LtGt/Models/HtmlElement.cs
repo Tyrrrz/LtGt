@@ -32,7 +32,6 @@ namespace LtGt.Models
             for (var i = 0; i < Attributes.Count; i++)
             {
                 Attributes[i].Parent = this;
-                Attributes[i].Index = i;
                 Attributes[i].Previous = Attributes.ElementAtOrDefault(i - 1);
                 Attributes[i].Next = Attributes.ElementAtOrDefault(i + 1);
             }

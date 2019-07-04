@@ -12,7 +12,7 @@ namespace LtGt.Internal.Selectors.Terms
             Strategy = strategy;
         }
 
-        public bool Check(string source, string value)
+        public bool Matches(string source, string value)
         {
             if (source is null || value is null)
                 return false;

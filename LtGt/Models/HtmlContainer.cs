@@ -25,7 +25,6 @@ namespace LtGt.Models
             for (var i = 0; i < Children.Count; i++)
             {
                 Children[i].Parent = this;
-                Children[i].Index = i;
                 Children[i].Previous = Children.ElementAtOrDefault(i - 1);
                 Children[i].Next = Children.ElementAtOrDefault(i + 1);
             }

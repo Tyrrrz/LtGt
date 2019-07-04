@@ -73,12 +73,12 @@ namespace LtGt.Internal.Selectors
         private static readonly Parser<TypeSelector> TypeSelector =
             Parse.LetterOrDigit.AtLeastOnce().Text().Select(n => new TypeSelector(n));
 
-        /* Class name selector */
+        /* Class selector */
 
-        private static readonly Parser<ClassNameSelector> ClassNameSelector =
+        private static readonly Parser<ClassSelector> ClassSelector =
             from dot in Parse.Char('.')
             from className in Parse.AnyChar.Except(SpecialCharacter).AtLeastOnce().Text()
-            select new ClassNameSelector(className);
+            select new ClassSelector(className);
 
         /* Element ID selector */
 
@@ -177,7 +177,7 @@ namespace LtGt.Internal.Selectors
         private static readonly Parser<Selector> StandaloneSelector =
             AnySelector
                 .Or<Selector>(TypeSelector)
-                .Or(ClassNameSelector)
+                .Or(ClassSelector)
                 .Or(IdSelector)
                 .Or(AttributeSelector)
                 .Or(RootSelector)

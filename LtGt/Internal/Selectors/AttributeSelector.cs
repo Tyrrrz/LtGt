@@ -30,7 +30,7 @@ namespace LtGt.Internal.Selectors
             if (attribute == null)
                 return false;
 
-            if (StringComparisonTerm != null && !StringComparisonTerm.Check(attribute.Value, AttributeValue))
+            if (StringComparisonTerm != null && !StringComparisonTerm.Matches(attribute.Value, AttributeValue))
                 return false;
 
             return true;

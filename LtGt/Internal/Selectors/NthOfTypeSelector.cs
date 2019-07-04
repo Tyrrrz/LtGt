@@ -16,14 +16,12 @@ namespace LtGt.Internal.Selectors
 
         public override bool Matches(HtmlElement element)
         {
-            var previousSiblingsOfSameType = element.GetPreviousSiblings()
+            var previousSiblingsOfSameTypeCount = element
+                .GetPreviousSiblings()
                 .OfType<HtmlElement>()
-                .Where(e => string.Equals(e.Name, element.Name, StringComparison.OrdinalIgnoreCase))
-                .ToArray();
+                .Count(e => string.Equals(e.Name, element.Name, StringComparison.OrdinalIgnoreCase));
 
-            var index = previousSiblingsOfSameType.Length + 1;
-
-            return NumberCompositionTerm.Check(index);
+            return NumberCompositionTerm.Matches(previousSiblingsOfSameTypeCount + 1);
         }
 
         public override string ToString() => $"nth-of-type({NumberCompositionTerm})";

@@ -11,11 +11,6 @@
         public HtmlContainer Parent { get; internal set; }
 
         /// <summary>
-        /// Zero-based index of this <see cref="HtmlNode"/>.
-        /// </summary>
-        public int Index { get; internal set; }
-
-        /// <summary>
         /// Previous sibling of this <see cref="HtmlNode"/>.
         /// </summary>
         public HtmlNode Previous { get; internal set; }
