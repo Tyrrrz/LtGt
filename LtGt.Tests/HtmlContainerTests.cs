@@ -560,7 +560,7 @@ namespace LtGt.Tests
                 ":nth-of-type(2)",
                 new[]
                 {
-                    new HtmlElement("p", new HtmlAttribute("id", "test2"))
+                    new HtmlElement("p", new HtmlAttribute("id", "test3"))
                 }
             );
 
@@ -576,7 +576,7 @@ namespace LtGt.Tests
                     new HtmlElement("p", new HtmlAttribute("id", "test1")),
                     new HtmlElement("div",
                         new HtmlElement("p", new HtmlAttribute("id", "test2"))),
-                    new HtmlElement("p", new HtmlAttribute("id", "test3"))
+                    new HtmlElement("p", new HtmlAttribute("id", "test2"))
                 }
             );
 
@@ -592,7 +592,7 @@ namespace LtGt.Tests
                     new HtmlElement("p", new HtmlAttribute("id", "test1")),
                     new HtmlElement("div",
                         new HtmlElement("p", new HtmlAttribute("id", "test2"))),
-                    new HtmlElement("p", new HtmlAttribute("id", "test3"))
+                    new HtmlElement("p", new HtmlAttribute("id", "test2"))
                 }
             );
 
@@ -605,7 +605,7 @@ namespace LtGt.Tests
                 ":nth-of-type(even)",
                 new[]
                 {
-                    new HtmlElement("p", new HtmlAttribute("id", "test2"))
+                    new HtmlElement("p", new HtmlAttribute("id", "test3"))
                 }
             );
 
@@ -640,7 +640,7 @@ namespace LtGt.Tests
                 ":nth-last-of-type(2)",
                 new[]
                 {
-                    new HtmlElement("p", new HtmlAttribute("id", "test2"))
+                    new HtmlElement("p", new HtmlAttribute("id", "test1"))
                 }
             );
 
@@ -653,9 +653,9 @@ namespace LtGt.Tests
                 ":nth-last-of-type(odd)",
                 new[]
                 {
-                    new HtmlElement("p", new HtmlAttribute("id", "test1")),
                     new HtmlElement("div",
                         new HtmlElement("p", new HtmlAttribute("id", "test2"))),
+                    new HtmlElement("p", new HtmlAttribute("id", "test2")),
                     new HtmlElement("p", new HtmlAttribute("id", "test3"))
                 }
             );
@@ -669,9 +669,9 @@ namespace LtGt.Tests
                 ":nth-last-of-type(2n+1)",
                 new[]
                 {
-                    new HtmlElement("p", new HtmlAttribute("id", "test1")),
                     new HtmlElement("div",
                         new HtmlElement("p", new HtmlAttribute("id", "test2"))),
+                    new HtmlElement("p", new HtmlAttribute("id", "test2")),
                     new HtmlElement("p", new HtmlAttribute("id", "test3"))
                 }
             );
@@ -685,7 +685,7 @@ namespace LtGt.Tests
                 ":nth-last-of-type(even)",
                 new[]
                 {
-                    new HtmlElement("p", new HtmlAttribute("id", "test2"))
+                    new HtmlElement("p", new HtmlAttribute("id", "test1"))
                 }
             );
 
@@ -754,7 +754,8 @@ namespace LtGt.Tests
                 {
                     new HtmlElement("p", new HtmlAttribute("id", "test1")),
                     new HtmlElement("div",
-                        new HtmlElement("p", new HtmlAttribute("id", "test2")))
+                        new HtmlElement("p", new HtmlAttribute("id", "test2"))),
+                    new HtmlElement("p", new HtmlAttribute("id", "test2"))
                 }
             );
 
@@ -771,6 +772,7 @@ namespace LtGt.Tests
                 {
                     new HtmlElement("div",
                         new HtmlElement("p", new HtmlAttribute("id", "test2"))),
+                    new HtmlElement("p", new HtmlAttribute("id", "test2")),
                     new HtmlElement("p", new HtmlAttribute("id", "test3"))
                 }
             );
@@ -802,7 +804,8 @@ namespace LtGt.Tests
                 new[]
                 {
                     new HtmlElement("div",
-                        new HtmlElement("p", new HtmlAttribute("id", "test2")))
+                        new HtmlElement("p", new HtmlAttribute("id", "test2"))),
+                    new HtmlElement("p", new HtmlAttribute("id", "test2"))
                 }
             );
 
@@ -1127,7 +1130,7 @@ namespace LtGt.Tests
                 new[]
                 {
                     new HtmlElement("p", new HtmlAttribute("class", "test1")),
-                    new HtmlElement("p", new HtmlAttribute("class", "test1 test4"))
+                    new HtmlElement("p", new HtmlAttribute("class", "test1 test3"))
                 }
             );
 

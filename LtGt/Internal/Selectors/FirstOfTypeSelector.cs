@@ -6,10 +6,15 @@ namespace LtGt.Internal.Selectors
 {
     internal class FirstOfTypeSelector : Selector
     {
-        public override bool Matches(HtmlElement element) =>
-            !element.GetPreviousSiblings()
+        public override bool Matches(HtmlElement element)
+        {
+            var previousSiblingsOfSameType = element.GetPreviousSiblings()
                 .OfType<HtmlElement>()
-                .Any(e => string.Equals(e.Name, element.Name, StringComparison.OrdinalIgnoreCase));
+                .Where(e => string.Equals(e.Name, element.Name, StringComparison.OrdinalIgnoreCase))
+                .ToArray();
+
+            return !previousSiblingsOfSameType.Any();
+        }
 
         public override string ToString() => ":first-of-type";
     }

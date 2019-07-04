@@ -14,9 +14,17 @@ namespace LtGt.Internal.Selectors
             NumberCompositionTerm = numberCompositionTerm;
         }
 
-        public override bool Matches(HtmlElement element) =>
-            NumberCompositionTerm.Check(element.GetNextSiblings().OfType<HtmlElement>()
-                .Count(e => string.Equals(e.Name, element.Name, StringComparison.OrdinalIgnoreCase)));
+        public override bool Matches(HtmlElement element)
+        {
+            var nextSiblingsOfSameType = element.GetNextSiblings()
+                .OfType<HtmlElement>()
+                .Where(e => string.Equals(e.Name, element.Name, StringComparison.OrdinalIgnoreCase))
+                .ToArray();
+
+            var index = nextSiblingsOfSameType.Length + 1;
+
+            return NumberCompositionTerm.Check(index);
+        }
 
         public override string ToString() => $":nth-last-of-type({NumberCompositionTerm})";
     }

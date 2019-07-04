@@ -12,7 +12,7 @@ namespace LtGt.Internal.Selectors
             NumberCompositionTerm = numberCompositionTerm;
         }
 
-        public override bool Matches(HtmlElement element) => NumberCompositionTerm.Check(element.Index);
+        public override bool Matches(HtmlElement element) => NumberCompositionTerm.Check(element.Index + 1);
 
         public override string ToString() => $":nth-child({NumberCompositionTerm})";
     }
