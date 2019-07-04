@@ -7,7 +7,7 @@
 [![Donate](https://img.shields.io/badge/patreon-donate-yellow.svg)](https://patreon.com/tyrrrz)
 [![Donate](https://img.shields.io/badge/buymeacoffee-donate-yellow.svg)](https://buymeacoffee.com/tyrrrz)
 
-LtGt is a minimalistic library for working with HTML. It can parse any HTML5-compliant code into an object model which you can use to traverse individual nodes or locate specific elements. The library establishes itself as a foundation that you can build upon, and it comes with a lot of extension methods that can help navigate the DOM easily. It also supports HTML rendering, so you can turn any HTML object tree to code.
+LtGt is a minimalistic library for working with HTML. It can parse any HTML5-compliant code into an object model which you can use to traverse nodes or locate specific elements. The library establishes itself as a foundation that you can build upon, and comes with a lot of extension methods that can help navigate the DOM easily. It also supports HTML rendering, so you can turn any HTML object tree to code.
 
 _Currently, the object model in LtGt is immutable so it cannot be used to manipulate DOM directly._
 
@@ -49,7 +49,7 @@ var document = HtmlParser.Default.ParseDocument(html);
 
 ### Parse a fragment
 
-Besides parsing a full document, you can also parse any other type of node.
+Besides a full document, you can also parse any other type of node.
 
 ```c#
 const string html = "<div id=\"some-element\"><a href=\"https://example.com\">Link</a></div>";
@@ -72,7 +72,7 @@ var element3 = document.GetElementsByClassName("floating-button floating-button-
 
 var element1Data = element1.GetAttribute("data")?.Value;
 var element2Id = element2.GetId();
-var element2Text = element3.GetInnerText();
+var element3Text = element3.GetInnerText();
 ```
 
 You can leverage the full power of CSS selectors as well.
@@ -83,7 +83,7 @@ var element = document.GetElementsBySelector("div#main > span.container:empty").
 
 ### Convert to Linq2Xml
 
-It's possible to convert LtGt's objects to `System.Xml.Linq` objects (`XNode`, `XElement`, etc). This can be useful if you need to convert HTML to XML or if you want to use XPath to select nodes.
+You can convert LtGt's objects to `System.Xml.Linq` objects (`XNode`, `XElement`, etc). This can be useful if you need to convert HTML to XML or if you want to use XPath to select nodes.
 
 ```c#
 var htmlDocument = HtmlParser.Default.ParseDocument(html);
@@ -95,7 +95,7 @@ var elements = xmlDocument.XPathSelectElements("//input[@type=\"submit\"]");
 
 ### Render nodes
 
-You can convert any node or hierarchy of nodes to HTML code.
+You can turn any node or hierarchy of nodes to HTML code.
 
 ```c#
 var element = new HtmlElement("div",
