@@ -31,14 +31,6 @@ namespace LtGt.Internal
 
     internal static partial class HtmlGrammar
     {
-        private static Parser<T> TokenLeft<T>(this Parser<T> parser) => i =>
-        {
-            while (!i.AtEnd && char.IsWhiteSpace(i.Current))
-                i = i.Advance();
-
-            return parser(i);
-        };
-
         /* Declaration */
 
         // <!doctype html>

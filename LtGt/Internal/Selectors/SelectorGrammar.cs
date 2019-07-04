@@ -92,25 +92,23 @@ namespace LtGt.Internal.Selectors
         // [id="main"]
         private static readonly Parser<AttributeSelector> NormalAttributeSelector =
             from openBrace in Parse.Char('[')
-            from name in Parse.AnyChar.Except(SpecialCharacter).AtLeastOnce().Text()
-            from matchOperator in StringComparisonTerm.Optional().Select(o => o.GetOrElse(new StringComparisonTerm()))
+            from name in Parse.AnyChar.Except(SpecialCharacter).AtLeastOnce().Text().Token()
+            from matchOperator in StringComparisonTerm.Optional().Select(o => o.GetOrElse(new StringComparisonTerm())).TokenLeft()
             from eq in Parse.Char('=')
-            from openQuote in Parse.Chars('"', '\'')
+            from openQuote in Parse.Chars('"', '\'').TokenLeft()
             from value in Parse.CharExcept(openQuote).Many().Text()
             from closeQuote in Parse.Char(openQuote)
-            from closeBrace in Parse.Char(']')
+            from closeBrace in Parse.Char(']').TokenLeft()
             select new AttributeSelector(name, value, matchOperator);
 
         // [id]
         private static readonly Parser<AttributeSelector> ValuelessAttributeSelector =
             from open in Parse.Char('[')
-            from name in Parse.AnyChar.Except(SpecialCharacter).AtLeastOnce().Text()
+            from name in Parse.AnyChar.Except(SpecialCharacter).AtLeastOnce().Text().Token()
             from close in Parse.Char(']')
             select new AttributeSelector(name);
 
-        private static readonly Parser<AttributeSelector> AttributeSelector =
-            NormalAttributeSelector
-                .Or(ValuelessAttributeSelector);
+        private static readonly Parser<AttributeSelector> AttributeSelector = NormalAttributeSelector.Or(ValuelessAttributeSelector);
 
         /* Root selector */
 
@@ -131,14 +129,14 @@ namespace LtGt.Internal.Selectors
         private static readonly Parser<NthChildSelector> NthChildSelector =
             from name in Parse.IgnoreCase(":nth-child")
             from open in Parse.Char('(')
-            from indexDescriptor in NumberCompositionTerm
+            from indexDescriptor in NumberCompositionTerm.Token()
             from close in Parse.Char(')')
             select new NthChildSelector(indexDescriptor);
 
         private static readonly Parser<NthLastChildSelector> NthLastChildSelector =
             from name in Parse.IgnoreCase(":nth-last-child")
             from open in Parse.Char('(')
-            from indexDescriptor in NumberCompositionTerm
+            from indexDescriptor in NumberCompositionTerm.Token()
             from close in Parse.Char(')')
             select new NthLastChildSelector(indexDescriptor);
 
@@ -156,14 +154,14 @@ namespace LtGt.Internal.Selectors
         private static readonly Parser<NthOfTypeSelector> NthOfTypeSelector =
             from name in Parse.IgnoreCase(":nth-of-type")
             from open in Parse.Char('(')
-            from indexDescriptor in NumberCompositionTerm
+            from indexDescriptor in NumberCompositionTerm.Token()
             from close in Parse.Char(')')
             select new NthOfTypeSelector(indexDescriptor);
 
         private static readonly Parser<NthLastOfTypeSelector> NthLastOfTypeSelector =
             from name in Parse.IgnoreCase(":nth-last-of-type")
             from open in Parse.Char('(')
-            from indexDescriptor in NumberCompositionTerm
+            from indexDescriptor in NumberCompositionTerm.Token()
             from close in Parse.Char(')')
             select new NthLastOfTypeSelector(indexDescriptor);
 
@@ -198,7 +196,7 @@ namespace LtGt.Internal.Selectors
         private static readonly Parser<NotSelector> NotSelector =
             from name in Parse.IgnoreCase(":not")
             from open in Parse.Char('(')
-            from targetSelector in GroupCombinator
+            from targetSelector in GroupCombinator.Token()
             from close in Parse.Char(')')
             select new NotSelector(targetSelector);
 
@@ -213,7 +211,7 @@ namespace LtGt.Internal.Selectors
 
         private static readonly Parser<DescendantCombinator> DescendantCombinator =
             from parentSelector in GroupCombinator
-            from space in Parse.WhiteSpace
+            from space in Parse.WhiteSpace.AtLeastOnce()
             from targetSelector in GroupCombinator
             select new DescendantCombinator(parentSelector, targetSelector);
 
