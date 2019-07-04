@@ -7,7 +7,9 @@
 [![Donate](https://img.shields.io/badge/patreon-donate-yellow.svg)](https://patreon.com/tyrrrz)
 [![Donate](https://img.shields.io/badge/buymeacoffee-donate-yellow.svg)](https://buymeacoffee.com/tyrrrz)
 
-LtGt is a minimalistic library for working with HTML. It can be used to parse HTML5-compliant code, traverse the resulting syntax tree, locate specific elements, and extract information. The library can also be used the other way around, to render HTML code from its document object model.
+LtGt is a minimalistic library for working with HTML. It can parse any HTML5-compliant code into an object model which you can use to traverse individual nodes or locate specific elements. The library establishes itself as a foundation that you can build upon, and it comes with a lot of extension methods that can help navigate the DOM easily. It also supports HTML rendering, so you can turn any HTML object tree to code.
+
+_Currently, the object model in LtGt is immutable so it cannot be used to manipulate DOM directly._
 
 ## Download
 
@@ -16,12 +18,13 @@ LtGt is a minimalistic library for working with HTML. It can be used to parse HT
 
 ## Features
 
-- Parse and render HTML5-compliant code
-- Traverse nodes using LINQ
-- Find elements using methods like `GetElementById()`, `GetElementsByTagName()`, etc
-- Find elements by evaluating CSS selectors using `GetElementsBySelector()`
-- Convert the DOM to a Linq2Xml representation
-- Easily extensible with custom workflows
+- Parse any HTML5-compliant code
+- Use LINQ to traverse HTML nodes
+- Find elements using JS-like functions (`GetElementById()`, `GetElementsByTagName()`, etc)
+- Find elements using CSS selectors
+- Convert HTML nodes to a Linq2Xml representation (`XNode`, `XElement`, etc)
+- Render HTML nodes as code
+- Easily extensible with custom methods
 - Targets .NET Framework 4.5+ and .NET Standard 1.0+
 
 ## Usage
@@ -70,6 +73,12 @@ var element3 = document.GetElementsByClassName("floating-button floating-button-
 var element1Data = element1.GetAttribute("data")?.Value;
 var element2Id = element2.GetId();
 var element2Text = element3.GetInnerText();
+```
+
+You can leverage the full power of CSS selectors as well.
+
+```c#
+var element = document.GetElementsBySelector("div#main > span.container:empty").FirstOrDefault();
 ```
 
 ### Convert to Linq2Xml
