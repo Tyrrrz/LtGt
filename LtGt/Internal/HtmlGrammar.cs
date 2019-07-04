@@ -44,9 +44,7 @@ namespace LtGt.Internal
         /* Attribute */
 
         private static readonly Parser<string> HtmlAttributeName =
-            Parse.CharExcept(c => char.IsControl(c) || char.IsWhiteSpace(c) || c == '\'' || c == '"' || c == '=' || c == '>' || c == '/',
-                    "invalid attribute name characters")
-                .AtLeastOnce().Text().Named("Attribute name");
+            Parse.CharExcept(new[] {' ', '\r', '\n', '\'', '"', '=', '>', '/'}).AtLeastOnce().Text().Named("Attribute name");
 
         // id="main" / id='main'
         private static readonly Parser<HtmlAttribute> QuotedHtmlAttribute =
@@ -76,11 +74,19 @@ namespace LtGt.Internal
         /* Comment */
 
         // <?xml version="1.0"?>
-        public static readonly Parser<HtmlComment> XmlDirectiveHtmlComment =
+        public static readonly Parser<HtmlComment> UnexpectedDirectiveHtmlComment =
             from open in Parse.String("<?")
             from content in Parse.AnyChar.Except(Parse.String("?>")).Many().Text().Select(t => t.Trim())
             from close in Parse.String("?>")
             select new HtmlComment(content);
+
+        // <!doctype html>
+        public static readonly Parser<HtmlComment> UnexpectedDeclarationHtmlComment =
+            from open in Parse.String("<!")
+            from name in Parse.LetterOrDigit.AtLeastOnce().Text()
+            from value in Parse.CharExcept('>').Many().Text().Select(t => t.Trim())
+            from close in Parse.Char('>')
+            select new HtmlComment(name + value);
 
         // <!-- content -->
         public static readonly Parser<HtmlComment> NormalHtmlComment =
@@ -90,7 +96,8 @@ namespace LtGt.Internal
             select new HtmlComment(content);
 
         public static readonly Parser<HtmlComment> HtmlComment =
-            XmlDirectiveHtmlComment
+            UnexpectedDirectiveHtmlComment
+                .Or(UnexpectedDeclarationHtmlComment)
                 .Or(NormalHtmlComment)
                 .Named("Comment");
 
@@ -105,7 +112,7 @@ namespace LtGt.Internal
 
         // content
         public static readonly Parser<HtmlText> NormalHtmlText =
-            Parse.CharExcept('<').AtLeastOnce().Text().Select(WebUtility.HtmlDecode).Select(t => t.Trim()).Select(t => new HtmlText(t));
+            Parse.CharExcept('<').AtLeastOnce().Text().Select(t => t.Trim()).Select(WebUtility.HtmlDecode).Select(t => new HtmlText(t));
 
         public static readonly Parser<HtmlText> HtmlText =
             CDataHtmlText
