@@ -1,7 +1,8 @@
 # LtGt
 
-[![Build](https://img.shields.io/appveyor/ci/Tyrrrz/LtGt/master.svg)](https://ci.appveyor.com/project/Tyrrrz/LtGt)
-[![Tests](https://img.shields.io/appveyor/tests/Tyrrrz/LtGt/master.svg)](https://ci.appveyor.com/project/Tyrrrz/LtGt)
+[![Build](https://img.shields.io/appveyor/ci/Tyrrrz/LtGt/master.svg)](https://ci.appveyor.com/project/Tyrrrz/LtGt/branch/master)
+[![Tests](https://img.shields.io/appveyor/tests/Tyrrrz/LtGt/master.svg)](https://ci.appveyor.com/project/Tyrrrz/LtGt/branch/master/tests)
+[![Coverage](https://img.shields.io/codecov/c/gh/Tyrrrz/LtGt/master.svg)](https://codecov.io/gh/Tyrrrz/LtGt)
 [![NuGet](https://img.shields.io/nuget/v/LtGt.svg)](https://nuget.org/packages/LtGt)
 [![NuGet](https://img.shields.io/nuget/dt/LtGt.svg)](https://nuget.org/packages/LtGt)
 [![Donate](https://img.shields.io/badge/patreon-donate-yellow.svg)](https://patreon.com/tyrrrz)

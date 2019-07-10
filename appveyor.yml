@@ -9,8 +9,11 @@ before_build:
 build:
   verbosity: minimal
 
+after_test:
+- choco install codecov && codecov -f "LtGt.Tests/bin/%CONFIGURATION%/Coverage.xml" --required
+
 artifacts:
-- path: LtGt\bin\$(configuration)\LtGt*.nupkg
+- path: LtGt/bin/$(configuration)/LtGt*.nupkg
   name: LtGt.nupkg
 
 deploy:
