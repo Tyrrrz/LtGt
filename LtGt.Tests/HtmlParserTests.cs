@@ -110,6 +110,11 @@ namespace LtGt.Tests
 
             yield return new TestCaseData(
                 // language=html
+                "<meta charset=utf-8>",
+                new HtmlElement("meta", new HtmlAttribute("charset", "utf-8")));
+
+            yield return new TestCaseData(
+                // language=html
                 "<div></div>",
                 new HtmlElement("div")
             );

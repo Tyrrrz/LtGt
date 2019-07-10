@@ -43,12 +43,11 @@ namespace LtGt.Internal
 
         /* Attribute */
 
-        private static readonly Parser<string> HtmlAttributeName =
-            Parse.CharExcept(new[] {' ', '\r', '\n', '\'', '"', '=', '>', '/'}).AtLeastOnce().Text().Named("Attribute name");
+        private static readonly Parser<char> NonAttributeCharacter = Parse.WhiteSpace.Or(Parse.Chars('\'', '"', '=', '>', '/'));
 
         // id="main" / id='main'
         private static readonly Parser<HtmlAttribute> QuotedHtmlAttribute =
-            from name in HtmlAttributeName
+            from name in Parse.AnyChar.Except(NonAttributeCharacter).AtLeastOnce().Text()
             from eq in Parse.Char('=').Token()
             from open in Parse.Chars('"', '\'')
             from value in Parse.CharExcept(open).Many().Text().Select(WebUtility.HtmlDecode)
@@ -57,13 +56,14 @@ namespace LtGt.Internal
 
         // id=main
         private static readonly Parser<HtmlAttribute> UnquotedHtmlAttribute =
-            from name in HtmlAttributeName
+            from name in Parse.AnyChar.Except(NonAttributeCharacter).AtLeastOnce().Text()
             from eq in Parse.Char('=').Token()
-            from value in Parse.LetterOrDigit.Many().Text().Select(WebUtility.HtmlDecode)
+            from value in Parse.AnyChar.Except(NonAttributeCharacter).Many().Text().Select(WebUtility.HtmlDecode)
             select new HtmlAttribute(name, value);
 
         // id
-        private static readonly Parser<HtmlAttribute> ValuelessHtmlAttribute = HtmlAttributeName.Select(n => new HtmlAttribute(n));
+        private static readonly Parser<HtmlAttribute> ValuelessHtmlAttribute =
+            Parse.AnyChar.Except(NonAttributeCharacter).AtLeastOnce().Text().Select(n => new HtmlAttribute(n));
 
         public static readonly Parser<HtmlAttribute> HtmlAttribute =
             QuotedHtmlAttribute
@@ -121,12 +121,10 @@ namespace LtGt.Internal
 
         /* Element */
 
-        private static readonly Parser<string> HtmlElementName = Parse.LetterOrDigit.AtLeastOnce().Text().Named("Element name");
-
         // <script> / <style>
         private static readonly Parser<HtmlElement> RawTextHtmlElement =
             from openLt in Parse.Char('<')
-            from name in HtmlElementName.Where(IsRawTextElement)
+            from name in Parse.LetterOrDigit.AtLeastOnce().Text().Where(IsRawTextElement)
             from attributes in HtmlAttribute.Token().Many()
             from openGt in Parse.Char('>').TokenLeft()
             from text in Parse.AnyChar.Except(Parse.String($"</{name}")).Many().Text().Select(t => t.Trim())
@@ -137,7 +135,7 @@ namespace LtGt.Internal
         // <meta> / <meta/> / <br> / <br/>
         private static readonly Parser<HtmlElement> VoidHtmlElement =
             from open in Parse.Char('<')
-            from name in HtmlElementName.Where(IsVoidElement)
+            from name in Parse.LetterOrDigit.AtLeastOnce().Text().Where(IsVoidElement)
             from attributes in HtmlAttribute.Token().Many()
             from slash in Parse.Char('/').Optional().TokenLeft()
             from close in Parse.Char('>')
@@ -146,7 +144,7 @@ namespace LtGt.Internal
         // <div/>
         private static readonly Parser<HtmlElement> SelfClosingHtmlElement =
             from open in Parse.Char('<')
-            from name in HtmlElementName
+            from name in Parse.LetterOrDigit.AtLeastOnce().Text()
             from attributes in HtmlAttribute.Token().Many()
             from close in Parse.String("/>").TokenLeft()
             select new HtmlElement(name, attributes.ToArray());
@@ -154,7 +152,7 @@ namespace LtGt.Internal
         // <div>...</div>
         private static readonly Parser<HtmlElement> NormalHtmlElement =
             from openLt in Parse.Char('<')
-            from name in HtmlElementName
+            from name in Parse.LetterOrDigit.AtLeastOnce().Text()
             from attributes in HtmlAttribute.Token().Many()
             from openGt in Parse.Char('>').TokenLeft()
             from children in ElementChildHtmlNode.Token().Many()
