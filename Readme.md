@@ -110,6 +110,7 @@ var html = HtmlRenderer.Default.RenderNode(element); // <div id="main">Hello wor
 
 - [Sprache](https://github.com/Sprache/Sprache)
 - [NUnit](https://github.com/nunit/nunit)
+- [Coverlet](https://github.com/tonerdo/coverlet)
 
 ## Donate
 
