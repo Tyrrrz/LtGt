@@ -1,0 +1,18 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <OutputType>Exe</OutputType>
+    <TargetFramework>netcoreapp2.2</TargetFramework>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="AngleSharp" Version="0.12.1" />
+    <PackageReference Include="BenchmarkDotNet" Version="0.11.5" />
+    <PackageReference Include="HtmlAgilityPack" Version="1.11.12" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\LtGt\LtGt.csproj" />
+  </ItemGroup>
+
+</Project>
