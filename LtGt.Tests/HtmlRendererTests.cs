@@ -1,4 +1,6 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
+using System.IO;
 using LtGt.Models;
 using NUnit.Framework;
 
@@ -7,6 +9,15 @@ namespace LtGt.Tests
     [TestFixture]
     public class HtmlRendererTests
     {
+        private static string TempDirPath => Path.Combine(TestContext.CurrentContext.TestDirectory, "Temp");
+
+        [TearDown]
+        public void Cleanup()
+        {
+            if (Directory.Exists(TempDirPath))
+                Directory.Delete(TempDirPath, true);
+        }
+
         private static IEnumerable<TestCaseData> GetTestCases_RenderNode()
         {
             yield return new TestCaseData(
@@ -25,6 +36,8 @@ namespace LtGt.Tests
             );
         }
 
+        private static IEnumerable<TestCaseData> GetTestCases_SaveNode() => GetTestCases_RenderNode();
+
         [Test]
         [TestCaseSource(nameof(GetTestCases_RenderNode))]
         public void RenderNode_Test(HtmlNode node)
@@ -32,6 +45,22 @@ namespace LtGt.Tests
             // Act
             var actual = HtmlRenderer.Default.RenderNode(node);
             var roundTrip = HtmlParser.Default.ParseNode(actual);
+
+            // Assert
+            Assert.That(roundTrip, Is.EqualTo(node).Using(HtmlEntity.EqualityComparer));
+        }
+
+        [Test]
+        [TestCaseSource(nameof(GetTestCases_SaveNode))]
+        public void SaveNode_Test(HtmlNode node)
+        {
+            // Arrange
+            Directory.CreateDirectory(TempDirPath);
+            var filePath = Path.Combine(TempDirPath, Guid.NewGuid().ToString());
+
+            // Act
+            HtmlRenderer.Default.SaveNode(node, filePath);
+            var roundTrip = HtmlParser.Default.ParseNode(File.ReadAllText(filePath));
 
             // Assert
             Assert.That(roundTrip, Is.EqualTo(node).Using(HtmlEntity.EqualityComparer));

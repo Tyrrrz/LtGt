@@ -1,4 +1,6 @@
+using System;
 using System.Collections.Generic;
+using System.IO;
 using LtGt.Models;
 using NUnit.Framework;
 
@@ -7,6 +9,15 @@ namespace LtGt.Tests
     [TestFixture]
     public class HtmlParserTests
     {
+        private static string TempDirPath => Path.Combine(TestContext.CurrentContext.TestDirectory, "Temp");
+
+        [TearDown]
+        public void Cleanup()
+        {
+            if (Directory.Exists(TempDirPath))
+                Directory.Delete(TempDirPath, true);
+        }
+
         private static IEnumerable<TestCaseData> GetTestCases_ParseDocument()
         {
             yield return new TestCaseData(
@@ -34,6 +45,8 @@ namespace LtGt.Tests
                                 new HtmlText("Test")))))
             );
         }
+
+        private static IEnumerable<TestCaseData> GetTestCases_LoadDocument() => GetTestCases_ParseDocument();
 
         private static IEnumerable<TestCaseData> GetTestCases_ParseElement()
         {
@@ -162,6 +175,22 @@ namespace LtGt.Tests
         {
             // Act
             var actual = HtmlParser.Default.ParseDocument(source);
+
+            // Assert
+            Assert.That(actual, Is.EqualTo(expected).Using(HtmlEntity.EqualityComparer));
+        }
+
+        [Test]
+        [TestCaseSource(nameof(GetTestCases_LoadDocument))]
+        public void LoadDocument_Test(string source, HtmlDocument expected)
+        {
+            // Arrange
+            Directory.CreateDirectory(TempDirPath);
+            var filePath = Path.Combine(TempDirPath, Guid.NewGuid().ToString());
+            File.WriteAllText(filePath, source);
+
+            // Act
+            var actual = HtmlParser.Default.LoadDocument(filePath);
 
             // Assert
             Assert.That(actual, Is.EqualTo(expected).Using(HtmlEntity.EqualityComparer));
