@@ -3,7 +3,7 @@ using System.Linq;
 
 namespace LtGt.Internal
 {
-    internal class HashCodeBuilder
+    internal partial class HashCodeBuilder
     {
         private int _code = 17;
 
@@ -25,14 +25,17 @@ namespace LtGt.Internal
             return this;
         }
 
-        public HashCodeBuilder Add<T>(T obj, IEqualityComparer<T> comparer) => Add(comparer.GetHashCode(obj));
+        public HashCodeBuilder Add<T>(T obj, IEqualityComparer<T> comparer) =>
+            Add(GetHashCodeSafe(obj, comparer));
 
-        public HashCodeBuilder Add<T>(T obj) => Add(obj, EqualityComparer<T>.Default);
-
-        public HashCodeBuilder AddMany<T>(IEnumerable<T> objs, IEqualityComparer<T> comparer) => Add(objs.Select(comparer.GetHashCode));
-
-        public HashCodeBuilder AddMany<T>(IEnumerable<T> objs) => AddMany(objs, EqualityComparer<T>.Default);
+        public HashCodeBuilder AddMany<T>(IEnumerable<T> objs, IEqualityComparer<T> comparer) =>
+            Add(objs.Select(o => GetHashCodeSafe(o, comparer)));
 
         public int Build() => _code;
+    }
+
+    internal partial class HashCodeBuilder
+    {
+        private static int GetHashCodeSafe<T>(T obj, IEqualityComparer<T> comparer) => obj != null ? comparer.GetHashCode(obj) : 0;
     }
 }
