@@ -1147,7 +1147,89 @@ namespace LtGt.Tests
                     new HtmlElement("p", new HtmlAttribute("class", "test1 test3"))
                 }
             );
+            
+            yield return new TestCaseData(
+                new HtmlElement("div",
+                    new HtmlElement("p", new HtmlAttribute("class", "test1")),
+                    new HtmlElement("div", new HtmlAttribute("class", "test1 test2"),
+                        new HtmlElement("span", new HtmlAttribute("class", "test2"),
+                            new HtmlElement("p", new HtmlAttribute("class", "test1 test3")))),
+                    new HtmlElement("p", new HtmlAttribute("class", "test1 test4"))),
+                "div > div.test2 > span > p",
+                new[]
+                {
+                    new HtmlElement("p", new HtmlAttribute("class", "test1 test3"))
+                }
+            );
+            
+            yield return new TestCaseData(
+                new HtmlElement("div",
+                    new HtmlElement("p", new HtmlAttribute("class", "test1")),
+                    new HtmlElement("div", new HtmlAttribute("class", "test1 test2"),
+                        new HtmlElement("span", new HtmlAttribute("class", "test2"),
+                            new HtmlElement("p", new HtmlAttribute("class", "test1 test3")))),
+                    new HtmlElement("p", new HtmlAttribute("class", "test1 test4"))),
+                "div div.test1 p.test1",
+                new[]
+                {
+                    new HtmlElement("p", new HtmlAttribute("class", "test1 test3"))
+                }
+            );
+            
+            yield return new TestCaseData(
+                new HtmlElement("div",
+                    new HtmlElement("p", new HtmlAttribute("class", "test1")),
+                    new HtmlElement("div", new HtmlAttribute("class", "test1 test2"),
+                        new HtmlElement("span", new HtmlAttribute("class", "test2"),
+                            new HtmlElement("p", new HtmlAttribute("class", "test1 test3")))),
+                    new HtmlElement("p", new HtmlAttribute("class", "test1 test4"))),
+                "p + div + p",
+                new[]
+                {
+                    new HtmlElement("p", new HtmlAttribute("class", "test1 test4"))
+                }
+            );
+            
+            yield return new TestCaseData(
+                new HtmlElement("div",
+                    new HtmlElement("p", new HtmlAttribute("class", "test1")),
+                    new HtmlElement("div", new HtmlAttribute("class", "test1 test2"),
+                        new HtmlElement("span", new HtmlAttribute("class", "test2"),
+                            new HtmlElement("p", new HtmlAttribute("class", "test1 test3")))),
+                    new HtmlElement("p", new HtmlAttribute("class", "test1 test4"))),
+                "p ~ div ~ p",
+                new[]
+                {
+                    new HtmlElement("p", new HtmlAttribute("class", "test1 test4"))
+                }
+            );
+            
+            yield return new TestCaseData(
+                new HtmlElement("div",
+                    new HtmlElement("p", new HtmlAttribute("class", "test1")),
+                    new HtmlElement("div", new HtmlAttribute("class", "test1 test2"),
+                        new HtmlElement("span", new HtmlAttribute("class", "test2"),
+                            new HtmlElement("p", new HtmlAttribute("class", "test1 test3")))),
+                    new HtmlElement("p", new HtmlAttribute("class", "test1 test4"))),
+                "div span.test2 > p",
+                new[]
+                {
+                    new HtmlElement("p", new HtmlAttribute("class", "test1 test3"))
+                }
+            );
+            
+            // Escaped identifiers
 
+            yield return new TestCaseData(
+                new HtmlElement("div",
+                    new HtmlElement("p", new HtmlAttribute("class", "foo(bar)"))),
+                "p.foo\\(bar\\)",
+                new[]
+                {
+                    new HtmlElement("p", new HtmlAttribute("class", "foo(bar)"))
+                }
+            );
+            
             // Malformed
 
             yield return new TestCaseData(
