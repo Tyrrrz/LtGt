@@ -1270,7 +1270,7 @@ namespace LtGt.Tests
             var actual = container.GetInnerText();
 
             // Assert
-            Assert.That(actual, Is.EqualTo(expected).Using(HtmlEntity.EqualityComparer));
+            Assert.That(actual, Is.EqualTo(expected));
         }
     }
 }
