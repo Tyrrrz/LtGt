@@ -28,6 +28,11 @@ _Currently, the object model in LtGt is immutable so it cannot be used to manipu
 - Easily extensible with custom methods
 - Targets .NET Framework 4.5+ and .NET Standard 1.0+
 
+## Screenshots
+
+![dom](.screenshots/dom.png)
+![css selectors](.screenshots/css-selectors.png)
+
 ## Usage
 
 ### Parse a document
@@ -109,9 +114,12 @@ var html = HtmlRenderer.Default.RenderNode(element); // <div id="main">Hello wor
 ## Libraries used
 
 - [Sprache](https://github.com/Sprache/Sprache)
+- [GalaSoft.MVVMLight](http://www.mvvmlight.net)
+- [MaterialDesignInXamlToolkit](https://github.com/ButchersBoy/MaterialDesignInXamlToolkit)
 - [NUnit](https://github.com/nunit/nunit)
 - [BenchmarkDotNet](https://github.com/dotnet/BenchmarkDotNet)
 - [Coverlet](https://github.com/tonerdo/coverlet)
+- [Tyrrrz.Extensions](https://github.com/Tyrrrz/Extensions)
 
 ## Donate
 
