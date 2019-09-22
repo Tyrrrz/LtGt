@@ -14,9 +14,9 @@ namespace LtGt.DemoWpf.ViewModels
 
         private string _documentUrl;
         private HtmlDocument _document;
-        private bool _isBusy;
         private IReadOnlyList<HtmlNode> _topLevelNodes;
         private string _selector;
+        private bool _isBusy;
 
         public string DocumentUrl
         {
@@ -43,7 +43,11 @@ namespace LtGt.DemoWpf.ViewModels
         public IReadOnlyList<HtmlNode> TopLevelNodes
         {
             get => _topLevelNodes;
-            private set => Set(ref _topLevelNodes, value);
+            private set
+            {
+                Set(ref _topLevelNodes, value);
+                RaisePropertyChanged(() => IsFiltered);
+            }
         }
 
         public string Selector
@@ -100,11 +104,12 @@ namespace LtGt.DemoWpf.ViewModels
 
         private void ApplySelector()
         {
+            if (Document == null)
+                return;
+
             TopLevelNodes = Selector.IsNullOrWhiteSpace()
                 ? Document.Children
                 : Document.GetElementsBySelector(Selector).ToArray();
-
-            RaisePropertyChanged(() => IsFiltered);
         }
     }
 }

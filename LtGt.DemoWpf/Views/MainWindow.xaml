@@ -62,12 +62,12 @@
         <!--  Selector  -->
         <Popup
             x:Name="SelectorPopup"
-            Width="200"
+            Width="300"
             AllowsTransparency="True"
             Opened="SelectorPopup_OnOpened"
             Placement="Left"
             PopupAnimation="Fade"
-            StaysOpen="{Binding IsFiltered}"
+            StaysOpen="False"
             VerticalOffset="20">
             <materialDesign:Card Margin="6" Padding="4">
                 <Grid>
@@ -123,10 +123,12 @@
                 <!--  HTML Element  -->
                 <HierarchicalDataTemplate DataType="{x:Type models:HtmlElement}" ItemsSource="{Binding Children}">
                     <WrapPanel Orientation="Horizontal">
+                        <!--  Opening bracket and tag name  -->
                         <TextBlock TextWrapping="Wrap">
                             <Run Text="&lt;" /><Run Foreground="#529d7f" Text="{Binding Name, Mode=OneWay}" />
                         </TextBlock>
 
+                        <!--  Attributes  -->
                         <ItemsControl ItemsSource="{Binding Attributes}">
                             <ItemsControl.ItemsPanel>
                                 <ItemsPanelTemplate>
@@ -135,6 +137,7 @@
                             </ItemsControl.ItemsPanel>
                             <ItemsControl.ItemTemplate>
                                 <DataTemplate>
+                                    <!--  Attribute name and value  -->
                                     <TextBlock TextWrapping="Wrap">
                                         <Run Text=" " /><Run Foreground="#e4b24e" Text="{Binding Name, Mode=OneWay}" /><Run Text="=&quot;" /><Run Foreground="#c8c067" Text="{Binding Value, Mode=OneWay}" /><Run Text="&quot;" />
                                     </TextBlock>
@@ -142,6 +145,7 @@
                             </ItemsControl.ItemTemplate>
                         </ItemsControl>
 
+                        <!--  Closing bracket  -->
                         <TextBlock
                             VerticalAlignment="Bottom"
                             Text="&gt;"

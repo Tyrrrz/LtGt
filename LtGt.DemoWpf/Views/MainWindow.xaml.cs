@@ -15,8 +15,10 @@ namespace LtGt.DemoWpf.Views
         {
             if (e.Key == Key.F && e.KeyboardDevice.Modifiers == ModifierKeys.Control)
             {
-                SelectorPopup.IsOpen = true;
-                SelectorTextBox.Focus();
+                SelectorPopup.IsOpen = !SelectorPopup.IsOpen;
+
+                if (SelectorPopup.IsOpen)
+                    SelectorTextBox.Focus();
             }
         }
 
