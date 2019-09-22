@@ -1,0 +1,128 @@
+﻿<Window
+    x:Class="LtGt.DemoWpf.Views.MainWindow"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:converters="clr-namespace:LtGt.DemoWpf.Converters"
+    xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
+    xmlns:models="clr-namespace:LtGt.Models;assembly=LtGt"
+    Title="LtGt Demo"
+    Width="750"
+    Height="500"
+    Background="{DynamicResource MaterialDesignPaper}"
+    DataContext="{Binding MainViewModel, Source={StaticResource Locator}}"
+    FocusManager.FocusedElement="{Binding ElementName=DocumentUrlTextBox}"
+    Icon="/LtGt.DemoWpf;component/favicon.ico"
+    Style="{DynamicResource MaterialDesignRoot}"
+    WindowStartupLocation="CenterScreen">
+    <DockPanel>
+        <!--  Toolbar  -->
+        <Border
+            Background="{DynamicResource PrimaryHueMidBrush}"
+            DockPanel.Dock="Top"
+            TextElement.Foreground="{DynamicResource SecondaryInverseTextBrush}">
+            <StackPanel Orientation="Vertical">
+                <!--  Document URL  -->
+                <materialDesign:Card Margin="12">
+                    <Grid>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="*" />
+                            <ColumnDefinition Width="Auto" />
+                        </Grid.ColumnDefinitions>
+
+                        <TextBox
+                            x:Name="DocumentUrlTextBox"
+                            Grid.Column="0"
+                            Margin="6"
+                            materialDesign:HintAssist.Hint="URL of a web page"
+                            materialDesign:TextFieldAssist.DecorationVisibility="Hidden"
+                            BorderThickness="0"
+                            FontSize="16"
+                            Text="{Binding DocumentUrl, UpdateSourceTrigger=PropertyChanged}" />
+                        <Button
+                            Grid.Column="1"
+                            Margin="0,6,6,6"
+                            Padding="4"
+                            Command="{Binding GetDocumentCommand}"
+                            IsDefault="True"
+                            Style="{DynamicResource MaterialDesignFlatButton}">
+                            <materialDesign:PackIcon
+                                Width="24"
+                                Height="24"
+                                Kind="ArrowRight" />
+                        </Button>
+                    </Grid>
+                </materialDesign:Card>
+
+                <!--  Progress  -->
+                <ProgressBar Background="Transparent" IsIndeterminate="{Binding IsBusy}" />
+            </StackPanel>
+        </Border>
+
+        <!--  Document  -->
+        <TreeView
+            Padding="0,8,0,16"
+            Background="#1E2125"
+            FontFamily="Fira Code, Consolas, Courier"
+            Foreground="{DynamicResource SecondaryInverseTextBrush}"
+            ItemsSource="{Binding Document.Children}"
+            ScrollViewer.HorizontalScrollBarVisibility="Disabled"
+            ScrollViewer.VerticalScrollBarVisibility="Auto"
+            Visibility="{Binding IsDataAvailable, Converter={x:Static converters:BoolToVisibilityConverter.Instance}}">
+            <TreeView.ItemContainerStyle>
+                <Style BasedOn="{StaticResource {x:Type TreeViewItem}}" TargetType="{x:Type TreeViewItem}">
+                    <Setter Property="Padding" Value="2" />
+                </Style>
+            </TreeView.ItemContainerStyle>
+            <TreeView.Resources>
+                <!--  HTML Element  -->
+                <HierarchicalDataTemplate DataType="{x:Type models:HtmlElement}" ItemsSource="{Binding Children}">
+                    <WrapPanel Orientation="Horizontal">
+                        <TextBlock TextWrapping="Wrap">
+                            <Run Text="&lt;" /><Run Foreground="#529d7f" Text="{Binding Name, Mode=OneWay}" />
+                        </TextBlock>
+
+                        <ItemsControl ItemsSource="{Binding Attributes}">
+                            <ItemsControl.ItemsPanel>
+                                <ItemsPanelTemplate>
+                                    <WrapPanel Orientation="Horizontal" />
+                                </ItemsPanelTemplate>
+                            </ItemsControl.ItemsPanel>
+                            <ItemsControl.ItemTemplate>
+                                <DataTemplate>
+                                    <TextBlock TextWrapping="Wrap">
+                                        <Run Text=" " /><Run Foreground="#e4b24e" Text="{Binding Name, Mode=OneWay}" /><Run Text="=&quot;" /><Run Foreground="#c8c067" Text="{Binding Value, Mode=OneWay}" /><Run Text="&quot;" />
+                                    </TextBlock>
+                                </DataTemplate>
+                            </ItemsControl.ItemTemplate>
+                        </ItemsControl>
+
+                        <TextBlock
+                            VerticalAlignment="Bottom"
+                            Text="&gt;"
+                            TextWrapping="Wrap" />
+                    </WrapPanel>
+                </HierarchicalDataTemplate>
+
+                <!--  HTML Text  -->
+                <DataTemplate DataType="{x:Type models:HtmlText}">
+                    <TextBlock
+                        Foreground="{DynamicResource PrimaryInverseTextBrush}"
+                        Text="{Binding Value}"
+                        TextWrapping="Wrap" />
+                </DataTemplate>
+
+                <!--  HTML Comment  -->
+                <DataTemplate DataType="{x:Type models:HtmlComment}">
+                    <TextBlock
+                        FontStyle="Italic"
+                        Foreground="Gray"
+                        TextWrapping="Wrap">
+                        <Run Text="&lt;!--" />
+                        <Run Text="{Binding Value, Mode=OneWay}" />
+                        <Run Text="--&gt;" />
+                    </TextBlock>
+                </DataTemplate>
+            </TreeView.Resources>
+        </TreeView>
+    </DockPanel>
+</Window>
