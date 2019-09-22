@@ -12,6 +12,7 @@
     DataContext="{Binding MainViewModel, Source={StaticResource Locator}}"
     FocusManager.FocusedElement="{Binding ElementName=DocumentUrlTextBox}"
     Icon="/LtGt.DemoWpf;component/favicon.ico"
+    PreviewKeyDown="MainWindow_OnPreviewKeyDown"
     Style="{DynamicResource MaterialDesignRoot}"
     WindowStartupLocation="CenterScreen">
     <DockPanel>
@@ -58,13 +59,58 @@
             </StackPanel>
         </Border>
 
-        <!--  Document  -->
+        <!--  Selector  -->
+        <Popup
+            x:Name="SelectorPopup"
+            Width="200"
+            AllowsTransparency="True"
+            Opened="SelectorPopup_OnOpened"
+            Placement="Left"
+            PopupAnimation="Fade"
+            StaysOpen="{Binding IsFiltered}"
+            VerticalOffset="20">
+            <materialDesign:Card Margin="6" Padding="4">
+                <Grid>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="*" />
+                        <ColumnDefinition Width="Auto" />
+                    </Grid.ColumnDefinitions>
+
+                    <TextBox
+                        x:Name="SelectorTextBox"
+                        VerticalAlignment="Center"
+                        materialDesign:HintAssist.Hint="CSS selector"
+                        materialDesign:TextFieldAssist.DecorationVisibility="Hidden"
+                        BorderThickness="0"
+                        FontFamily="Fira Code, Consolas, Courier"
+                        Text="{Binding Selector, UpdateSourceTrigger=PropertyChanged}">
+                        <TextBox.InputBindings>
+                            <KeyBinding Key="Enter" Command="{Binding ApplySelectorCommand}" />
+                        </TextBox.InputBindings>
+                    </TextBox>
+                    <Button
+                        Grid.Column="1"
+                        Margin="4,0,0,0"
+                        Padding="4"
+                        Command="{Binding ApplySelectorCommand}"
+                        Style="{DynamicResource MaterialDesignFlatButton}">
+                        <materialDesign:PackIcon
+                            Width="16"
+                            Height="16"
+                            Kind="Search" />
+                    </Button>
+                </Grid>
+            </materialDesign:Card>
+        </Popup>
+
+        <!--  Nodes  -->
         <TreeView
-            Padding="0,8,0,16"
+            x:Name="NodesTreeView"
+            Padding="0,8"
             Background="#1E2125"
             FontFamily="Fira Code, Consolas, Courier"
             Foreground="{DynamicResource SecondaryInverseTextBrush}"
-            ItemsSource="{Binding Document.Children}"
+            ItemsSource="{Binding TopLevelNodes}"
             ScrollViewer.HorizontalScrollBarVisibility="Disabled"
             ScrollViewer.VerticalScrollBarVisibility="Auto"
             Visibility="{Binding IsDataAvailable, Converter={x:Static converters:BoolToVisibilityConverter.Instance}}">

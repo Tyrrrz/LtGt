@@ -1,4 +1,6 @@
-﻿using System.Net.Http;
+﻿using System.Collections.Generic;
+using System.Linq;
+using System.Net.Http;
 using GalaSoft.MvvmLight;
 using GalaSoft.MvvmLight.CommandWpf;
 using LtGt.Models;
@@ -13,6 +15,8 @@ namespace LtGt.DemoWpf.ViewModels
         private string _documentUrl;
         private HtmlDocument _document;
         private bool _isBusy;
+        private IReadOnlyList<HtmlNode> _topLevelNodes;
+        private string _selector;
 
         public string DocumentUrl
         {
@@ -36,6 +40,24 @@ namespace LtGt.DemoWpf.ViewModels
 
         public bool IsDataAvailable => Document != null;
 
+        public IReadOnlyList<HtmlNode> TopLevelNodes
+        {
+            get => _topLevelNodes;
+            private set => Set(ref _topLevelNodes, value);
+        }
+
+        public string Selector
+        {
+            get => _selector;
+            set
+            {
+                Set(ref _selector, value);
+                ApplySelectorCommand.RaiseCanExecuteChanged();
+            }
+        }
+
+        public bool IsFiltered => IsDataAvailable && !ReferenceEquals(TopLevelNodes, Document.Children);
+
         public bool IsBusy
         {
             get => _isBusy;
@@ -43,16 +65,19 @@ namespace LtGt.DemoWpf.ViewModels
             {
                 Set(ref _isBusy, value);
                 GetDocumentCommand.RaiseCanExecuteChanged();
+                ApplySelectorCommand.RaiseCanExecuteChanged();
             }
         }
 
         // Commands
         public RelayCommand GetDocumentCommand { get; }
+        public RelayCommand ApplySelectorCommand { get; }
 
         public MainViewModel()
         {
             // Commands
             GetDocumentCommand = new RelayCommand(GetDocument, () => !IsBusy && !DocumentUrl.IsNullOrWhiteSpace());
+            ApplySelectorCommand = new RelayCommand(ApplySelector, () => !IsBusy);
         }
 
         private async void GetDocument()
@@ -63,14 +88,23 @@ namespace LtGt.DemoWpf.ViewModels
             {
                 DocumentUrl = DocumentUrl.ToUri().ToString();
 
-                // Download and parse document
                 var raw = await _httpClient.GetStringAsync(DocumentUrl);
                 Document = HtmlParser.Default.ParseDocument(raw);
+                TopLevelNodes = Document.Children;
             }
             finally
             {
                 IsBusy = false;
             }
+        }
+
+        private void ApplySelector()
+        {
+            TopLevelNodes = Selector.IsNullOrWhiteSpace()
+                ? Document.Children
+                : Document.GetElementsBySelector(Selector).ToArray();
+
+            RaisePropertyChanged(() => IsFiltered);
         }
     }
 }
