@@ -15,7 +15,6 @@
     <RepositoryUrl>https://github.com/Tyrrrz/LtGt</RepositoryUrl>
     <RepositoryType>git</RepositoryType>
     <PackageRequireLicenseAcceptance>False</PackageRequireLicenseAcceptance>
-    <GeneratePackageOnBuild>True</GeneratePackageOnBuild>
     <DocumentationFile>bin/$(Configuration)/$(TargetFramework)/$(AssemblyName).xml</DocumentationFile>
   </PropertyGroup>
 
@@ -25,6 +24,7 @@
 
   <ItemGroup>
     <PackageReference Include="Sprache" Version="2.2.0" />
+    <PackageReference Include="Microsoft.NETFramework.ReferenceAssemblies" PrivateAssets="all" Version="1.0.0-preview.2" />
   </ItemGroup>
 
 </Project>
