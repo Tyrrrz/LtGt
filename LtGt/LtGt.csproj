@@ -22,6 +22,10 @@
     <None Include="../favicon.png" Pack="True" PackagePath="" />
   </ItemGroup>
 
+  <ItemGroup Condition="'$(TargetFramework)' == 'net45'">
+    <Reference Include="System.Net.Http" />
+  </ItemGroup>
+
   <ItemGroup>
     <PackageReference Include="Sprache" Version="2.2.0" />
     <PackageReference Include="Microsoft.NETFramework.ReferenceAssemblies" PrivateAssets="all" Version="1.0.0-preview.2" />

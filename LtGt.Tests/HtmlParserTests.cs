@@ -1,6 +1,9 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
+using System.Net.Http;
+using System.Threading.Tasks;
 using LtGt.Models;
 using NUnit.Framework;
 
@@ -216,6 +219,35 @@ namespace LtGt.Tests
 
             // Assert
             Assert.That(actual, Is.EqualTo(expected).Using(HtmlEntity.EqualityComparer));
+        }
+
+        [Test]
+        [TestCase("https://google.com")]
+        public async Task ReadAsHtmlDocumentAsync_Test(string uri)
+        {
+            // Arrange
+            using var httpClient = new HttpClient();
+
+            // Act
+            using var response = await httpClient.GetAsync(uri);
+            var htmlDocument = await response.Content.ReadAsHtmlDocumentAsync();
+
+            // Assert
+            Assert.That(htmlDocument.GetDescendants().Count(), Is.AtLeast(10), "Descendant count");
+        }
+
+        [Test]
+        [TestCase("https://google.com")]
+        public async Task GetHtmlDocumentAsync_Test(string uri)
+        {
+            // Arrange
+            using var httpClient = new HttpClient();
+
+            // Act
+            var htmlDocument = await httpClient.GetHtmlDocumentAsync(uri);
+
+            // Assert
+            Assert.That(htmlDocument.GetDescendants().Count(), Is.AtLeast(10), "Descendant count");
         }
     }
 }

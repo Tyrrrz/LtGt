@@ -97,6 +97,15 @@ var xmlDocument = htmlDocument.ToXDocument();
 var elements = xmlDocument.XPathSelectElements("//input[@type=\"submit\"]");
 ```
 
+### Extensions for HttpClient
+
+There are convenience extension methods for `HttpClient` which you can use to send a GET request and parse HTML document in one operation.
+
+```c#
+var httpClient = new HttpClient();
+var htmlDocument = await httpClient.GetHtmlDocumentAsync("https://wikipedia.org");
+```
+
 ### Render nodes
 
 You can turn any node or hierarchy of nodes to HTML code.
