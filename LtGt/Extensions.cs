@@ -1,5 +1,4 @@
 ﻿using System.IO;
-using LtGt.Internal;
 using LtGt.Models;
 
 #if !NETSTANDARD1_0
@@ -19,11 +18,7 @@ namespace LtGt
         /// </summary>
         public static HtmlDocument LoadDocument(this IHtmlParser parser, TextReader reader)
         {
-            parser.GuardNotNull(nameof(parser));
-            reader.GuardNotNull(nameof(reader));
-
             var source = reader.ReadToEnd();
-
             return parser.ParseDocument(source);
         }
 
@@ -32,10 +27,6 @@ namespace LtGt
         /// </summary>
         public static void SaveNode(this IHtmlRenderer renderer, HtmlNode node, TextWriter writer)
         {
-            renderer.GuardNotNull(nameof(renderer));
-            node.GuardNotNull(nameof(node));
-            writer.GuardNotNull(nameof(writer));
-
             var source = renderer.RenderNode(node);
             writer.Write(source);
         }
@@ -46,11 +37,8 @@ namespace LtGt
         /// </summary>
         public static HtmlDocument LoadDocument(this IHtmlParser parser, string filePath)
         {
-            parser.GuardNotNull(nameof(parser));
-            filePath.GuardNotNull(nameof(filePath));
-
-            using (var reader = File.OpenText(filePath))
-                return parser.LoadDocument(reader);
+            using var reader = File.OpenText(filePath);
+            return parser.LoadDocument(reader);
         }
 
         /// <summary>
@@ -58,12 +46,8 @@ namespace LtGt
         /// </summary>
         public static void SaveNode(this IHtmlRenderer renderer, HtmlNode node, string filePath)
         {
-            renderer.GuardNotNull(nameof(renderer));
-            node.GuardNotNull(nameof(node));
-            filePath.GuardNotNull(nameof(filePath));
-
-            using (var writer = File.CreateText(filePath))
-                renderer.SaveNode(node, writer);
+            using var writer = File.CreateText(filePath);
+            renderer.SaveNode(node, writer);
         }
 
         /// <summary>
@@ -86,11 +70,9 @@ namespace LtGt
         /// </summary>
         public static async Task<HtmlDocument> GetHtmlDocumentAsync(this HttpClient httpClient, string requestUri, IHtmlParser parser)
         {
-            using (var response = await httpClient.GetAsync(requestUri, HttpCompletionOption.ResponseHeadersRead).ConfigureAwait(false))
-            {
-                response.EnsureSuccessStatusCode();
-                return await response.Content.ReadAsHtmlDocumentAsync(parser);
-            }
+            using var response = await httpClient.GetAsync(requestUri, HttpCompletionOption.ResponseHeadersRead).ConfigureAwait(false);
+            response.EnsureSuccessStatusCode();
+            return await response.Content.ReadAsHtmlDocumentAsync(parser);
         }
 
         /// <summary>

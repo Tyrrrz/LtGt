@@ -1,6 +1,5 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
-using LtGt.Internal;
 
 namespace LtGt.Models
 {
@@ -25,8 +24,8 @@ namespace LtGt.Models
         public HtmlElement(string name, IReadOnlyList<HtmlAttribute> attributes, IReadOnlyList<HtmlNode> children)
             : base(children)
         {
-            Name = name.GuardNotNull(nameof(name));
-            Attributes = attributes.GuardNotNull(nameof(attributes));
+            Name = name;
+            Attributes = attributes;
 
             // Update contextual information on attributes
             for (var i = 0; i < Attributes.Count; i++)

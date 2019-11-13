@@ -8,7 +8,7 @@ namespace LtGt.Internal
 {
     internal static partial class HtmlGrammar
     {
-        public static bool IsVoidElement(string elementName) =>
+        public static bool IsVoidElementName(string? elementName) =>
             string.Equals(elementName, "area", StringComparison.OrdinalIgnoreCase) ||
             string.Equals(elementName, "base", StringComparison.OrdinalIgnoreCase) ||
             string.Equals(elementName, "br", StringComparison.OrdinalIgnoreCase) ||
@@ -24,7 +24,7 @@ namespace LtGt.Internal
             string.Equals(elementName, "track", StringComparison.OrdinalIgnoreCase) ||
             string.Equals(elementName, "wbr", StringComparison.OrdinalIgnoreCase);
 
-        public static bool IsRawTextElement(string elementName) =>
+        public static bool IsRawTextElementName(string? elementName) =>
             string.Equals(elementName, "script", StringComparison.OrdinalIgnoreCase) ||
             string.Equals(elementName, "style", StringComparison.OrdinalIgnoreCase);
     }
@@ -124,7 +124,7 @@ namespace LtGt.Internal
         // <script> / <style>
         private static readonly Parser<HtmlElement> RawTextHtmlElement =
             from openLt in Parse.Char('<')
-            from name in Parse.LetterOrDigit.AtLeastOnce().Text().Where(IsRawTextElement)
+            from name in Parse.LetterOrDigit.AtLeastOnce().Text().Where(IsRawTextElementName)
             from attributes in HtmlAttribute.Token().Many()
             from openGt in Parse.Char('>').TokenLeft()
             from text in Parse.AnyChar.Except(Parse.String($"</{name}")).Many().Text().Select(t => t.Trim())
@@ -135,7 +135,7 @@ namespace LtGt.Internal
         // <meta> / <meta/> / <br> / <br/>
         private static readonly Parser<HtmlElement> VoidHtmlElement =
             from open in Parse.Char('<')
-            from name in Parse.LetterOrDigit.AtLeastOnce().Text().Where(IsVoidElement)
+            from name in Parse.LetterOrDigit.AtLeastOnce().Text().Where(IsVoidElementName)
             from attributes in HtmlAttribute.Token().Many()
             from slash in Parse.Char('/').Optional().TokenLeft()
             from close in Parse.Char('>')

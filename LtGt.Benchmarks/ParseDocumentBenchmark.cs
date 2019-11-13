@@ -14,8 +14,8 @@ namespace LtGt.Benchmarks
         [GlobalSetup]
         public async Task Setup()
         {
-            using (var httpClient = new HttpClient())
-                _source = await httpClient.GetStringAsync("https://youtube.com/watch?v=9bZkp7q19f0");
+            using var httpClient = new HttpClient();
+            _source = await httpClient.GetStringAsync("https://youtube.com/watch?v=9bZkp7q19f0");
         }
 
         [Benchmark(Description = "LtGt", Baseline = true)]

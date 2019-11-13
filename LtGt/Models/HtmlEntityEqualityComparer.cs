@@ -98,8 +98,6 @@ namespace LtGt.Models
         /// <inheritdoc />
         public int GetHashCode(HtmlEntity obj)
         {
-            obj.GuardNotNull(nameof(obj));
-
             if (obj is HtmlDeclaration declaration)
                 return GetHashCode(declaration);
 

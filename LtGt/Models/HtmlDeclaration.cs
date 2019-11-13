@@ -1,6 +1,4 @@
-﻿using LtGt.Internal;
-
-namespace LtGt.Models
+﻿namespace LtGt.Models
 {
     /// <summary>
     /// Represents a declaration entity in HTML document object model.
@@ -22,8 +20,8 @@ namespace LtGt.Models
         /// </summary>
         public HtmlDeclaration(string name, string value)
         {
-            Name = name.GuardNotNull(nameof(name));
-            Value = value.GuardNotNull(nameof(value));
+            Name = name;
+            Value = value;
         }
 
         /// <summary>

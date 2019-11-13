@@ -9,12 +9,7 @@ namespace LtGt
     public partial class HtmlRenderer : IHtmlRenderer
     {
         /// <inheritdoc />
-        public string RenderNode(HtmlNode node)
-        {
-            node.GuardNotNull(nameof(node));
-
-            return new HtmlStringBuilder().Append(node).ToString();
-        }
+        public string RenderNode(HtmlNode node) => new HtmlStringBuilder().Append(node).ToString();
     }
 
     public partial class HtmlRenderer

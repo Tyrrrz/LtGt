@@ -1,6 +1,5 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
-using LtGt.Internal;
 
 namespace LtGt.Models
 {
@@ -19,7 +18,7 @@ namespace LtGt.Models
         /// </summary>
         protected HtmlContainer(IReadOnlyList<HtmlNode> children)
         {
-            Children = children.GuardNotNull(nameof(children));
+            Children = children;
 
             // Update contextual information on children
             for (var i = 0; i < Children.Count; i++)

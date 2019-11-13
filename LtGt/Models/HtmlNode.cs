@@ -8,16 +8,16 @@
         /// <summary>
         /// Parent of this <see cref="HtmlNode"/>.
         /// </summary>
-        public HtmlContainer Parent { get; internal set; }
+        public HtmlContainer? Parent { get; internal set; }
 
         /// <summary>
         /// Previous sibling of this <see cref="HtmlNode"/>.
         /// </summary>
-        public HtmlNode Previous { get; internal set; }
+        public HtmlNode? Previous { get; internal set; }
 
         /// <summary>
         /// Next sibling of this <see cref="HtmlNode"/>.
         /// </summary>
-        public HtmlNode Next { get; internal set; }
+        public HtmlNode? Next { get; internal set; }
     }
 }

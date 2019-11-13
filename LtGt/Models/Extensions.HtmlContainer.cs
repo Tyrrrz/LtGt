@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
-using LtGt.Internal;
 using LtGt.Internal.Selectors;
 using Sprache;
 
@@ -15,8 +14,6 @@ namespace LtGt.Models
         /// </summary>
         public static IEnumerable<HtmlNode> GetDescendants(this HtmlContainer container)
         {
-            container.GuardNotNull(nameof(container));
-
             foreach (var child in container.Children)
             {
                 yield return child;
@@ -33,15 +30,10 @@ namespace LtGt.Models
         /// Gets the first descendant element in this <see cref="HtmlContainer"/> that has specified id or null if it's not found.
         /// Element ID comparison is case sensitive.
         /// </summary>
-        public static HtmlElement GetElementById(this HtmlContainer container, string id)
-        {
-            container.GuardNotNull(nameof(container));
-            id.GuardNotNull(nameof(id));
-
-            return container.GetDescendants()
+        public static HtmlElement? GetElementById(this HtmlContainer container, string id) =>
+            container.GetDescendants()
                 .OfType<HtmlElement>()
                 .FirstOrDefault(e => string.Equals(e.GetId(), id, StringComparison.Ordinal));
-        }
 
         /// <summary>
         /// Gets all descendant elements in this <see cref="HtmlContainer"/> that have specified tag name.
@@ -49,9 +41,6 @@ namespace LtGt.Models
         /// </summary>
         public static IEnumerable<HtmlElement> GetElementsByTagName(this HtmlContainer container, string tagName)
         {
-            container.GuardNotNull(nameof(container));
-            tagName.GuardNotNull(nameof(tagName));
-
             // Mimic JS behavior
             if (string.Equals(tagName, "*", StringComparison.OrdinalIgnoreCase))
                 return container.GetDescendants().OfType<HtmlElement>();
@@ -65,15 +54,10 @@ namespace LtGt.Models
         /// Gets all descendant elements in this <see cref="HtmlContainer"/> that match specified class name.
         /// Element class name comparison is case sensitive.
         /// </summary>
-        public static IEnumerable<HtmlElement> GetElementsByClassName(this HtmlContainer container, string className)
-        {
-            container.GuardNotNull(nameof(container));
-            className.GuardNotNull(nameof(className));
-
-            return container.GetDescendants()
+        public static IEnumerable<HtmlElement> GetElementsByClassName(this HtmlContainer container, string className) =>
+            container.GetDescendants()
                 .OfType<HtmlElement>()
                 .Where(e => e.MatchesClassName(className));
-        }
 
         /// <summary>
         /// Gets all descendant elements in this <see cref="HtmlContainer"/> that match specified CSS selector.
@@ -81,9 +65,6 @@ namespace LtGt.Models
         /// </summary>
         public static IEnumerable<HtmlElement> GetElementsBySelector(this HtmlContainer container, string selector)
         {
-            container.GuardNotNull(nameof(container));
-            selector.GuardNotNull(nameof(selector));
-
             var selectorParseResult = SelectorGrammar.Selector.TryParse(selector);
 
             // JS doesn't fail on invalid selectors so neither should we
@@ -144,11 +125,6 @@ namespace LtGt.Models
         /// <summary>
         /// Gets the text representation of descendants of this <see cref="HtmlContainer"/>.
         /// </summary>
-        public static string GetInnerText(this HtmlContainer container)
-        {
-            container.GuardNotNull(nameof(container));
-
-            return container.GetTextRepresentation();
-        }
+        public static string GetInnerText(this HtmlContainer container) => container.GetTextRepresentation();
     }
 }

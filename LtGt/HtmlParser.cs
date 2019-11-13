@@ -10,28 +10,13 @@ namespace LtGt
     public partial class HtmlParser : IHtmlParser
     {
         /// <inheritdoc />
-        public HtmlDocument ParseDocument(string source)
-        {
-            source.GuardNotNull(nameof(source));
-
-            return HtmlGrammar.HtmlDocument.Parse(source);
-        }
+        public HtmlDocument ParseDocument(string source) => HtmlGrammar.HtmlDocument.Parse(source);
 
         /// <inheritdoc />
-        public HtmlElement ParseElement(string source)
-        {
-            source.GuardNotNull(nameof(source));
-
-            return HtmlGrammar.HtmlElement.Parse(source);
-        }
+        public HtmlElement ParseElement(string source) => HtmlGrammar.HtmlElement.Parse(source);
 
         /// <inheritdoc />
-        public HtmlNode ParseNode(string source)
-        {
-            source.GuardNotNull(nameof(source));
-
-            return HtmlGrammar.HtmlNode.Parse(source);
-        }
+        public HtmlNode ParseNode(string source) => HtmlGrammar.HtmlNode.Parse(source);
     }
 
     public partial class HtmlParser

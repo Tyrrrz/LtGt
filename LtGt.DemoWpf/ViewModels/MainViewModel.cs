@@ -12,13 +12,13 @@ namespace LtGt.DemoWpf.ViewModels
     {
         private readonly HttpClient _httpClient = new HttpClient();
 
-        private string _documentUrl;
-        private HtmlDocument _document;
-        private IReadOnlyList<HtmlNode> _topLevelNodes;
-        private string _selector;
+        private string? _documentUrl;
+        private HtmlDocument? _document;
+        private IReadOnlyList<HtmlNode>? _topLevelNodes;
+        private string? _selector;
         private bool _isBusy;
 
-        public string DocumentUrl
+        public string? DocumentUrl
         {
             get => _documentUrl;
             set
@@ -28,7 +28,7 @@ namespace LtGt.DemoWpf.ViewModels
             }
         }
 
-        public HtmlDocument Document
+        public HtmlDocument? Document
         {
             get => _document;
             private set
@@ -40,7 +40,7 @@ namespace LtGt.DemoWpf.ViewModels
 
         public bool IsDataAvailable => Document != null;
 
-        public IReadOnlyList<HtmlNode> TopLevelNodes
+        public IReadOnlyList<HtmlNode>? TopLevelNodes
         {
             get => _topLevelNodes;
             private set
@@ -50,7 +50,7 @@ namespace LtGt.DemoWpf.ViewModels
             }
         }
 
-        public string Selector
+        public string? Selector
         {
             get => _selector;
             set
@@ -60,7 +60,7 @@ namespace LtGt.DemoWpf.ViewModels
             }
         }
 
-        public bool IsFiltered => IsDataAvailable && !ReferenceEquals(TopLevelNodes, Document.Children);
+        public bool IsFiltered => Document != null && !ReferenceEquals(TopLevelNodes, Document.Children);
 
         public bool IsBusy
         {
@@ -107,7 +107,7 @@ namespace LtGt.DemoWpf.ViewModels
             if (Document == null)
                 return;
 
-            TopLevelNodes = Selector.IsNullOrWhiteSpace()
+            TopLevelNodes = string.IsNullOrWhiteSpace(Selector)
                 ? Document.Children
                 : Document.GetElementsBySelector(Selector).ToArray();
         }

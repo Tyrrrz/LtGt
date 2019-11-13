@@ -1,5 +1,4 @@
 ﻿using System.Xml.Linq;
-using LtGt.Internal;
 
 namespace LtGt.Models
 {
@@ -8,11 +7,6 @@ namespace LtGt.Models
         /// <summary>
         /// Converts this <see cref="HtmlText"/> to an instance of <see cref="XText"/>.
         /// </summary>
-        public static XText ToXText(this HtmlText text)
-        {
-            text.GuardNotNull(nameof(text));
-
-            return new XText(text.Value);
-        }
+        public static XText ToXText(this HtmlText text) => new XText(text.Value);
     }
 }

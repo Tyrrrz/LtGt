@@ -17,13 +17,12 @@ namespace LtGt.Benchmarks
         [GlobalSetup]
         public async Task Setup()
         {
-            using (var httpClient = new HttpClient())
-            {
-                var source = await httpClient.GetStringAsync("https://youtube.com/watch?v=9bZkp7q19f0");
+            using var httpClient = new HttpClient();
 
-                _ltGtDocument = HtmlParser.Default.ParseDocument(source);
-                _angleSharpDocument = new AngleSharp.Html.Parser.HtmlParser().ParseDocument(source);
-            }
+            var source = await httpClient.GetStringAsync("https://youtube.com/watch?v=9bZkp7q19f0");
+
+            _ltGtDocument = HtmlParser.Default.ParseDocument(source);
+            _angleSharpDocument = new AngleSharp.Html.Parser.HtmlParser().ParseDocument(source);
         }
 
         private const string CssSelector = "div#player";

@@ -1,6 +1,4 @@
-﻿using LtGt.Internal;
-
-namespace LtGt.Models
+﻿namespace LtGt.Models
 {
     /// <summary>
     /// Represents an attribute entity in HTML document object model.
@@ -15,30 +13,30 @@ namespace LtGt.Models
         /// <summary>
         /// Value of this <see cref="HtmlAttribute"/>.
         /// </summary>
-        public string Value { get; }
+        public string? Value { get; }
 
         /// <summary>
         /// Parent of this <see cref="HtmlAttribute"/>.
         /// </summary>
-        public HtmlElement Parent { get; internal set; }
+        public HtmlElement? Parent { get; internal set; }
 
         /// <summary>
         /// Previous sibling of this <see cref="HtmlAttribute"/>.
         /// </summary>
-        public HtmlAttribute Previous { get; internal set; }
+        public HtmlAttribute? Previous { get; internal set; }
 
         /// <summary>
         /// Next sibling of this <see cref="HtmlAttribute"/>.
         /// </summary>
-        public HtmlAttribute Next { get; internal set; }
+        public HtmlAttribute? Next { get; internal set; }
 
         /// <summary>
         /// Initializes an instance of <see cref="HtmlAttribute"/>.
         /// </summary>
-        public HtmlAttribute(string name, string value)
+        public HtmlAttribute(string name, string? value)
         {
-            Name = name.GuardNotNull(nameof(name));
-            Value = value; // value can be null
+            Name = name;
+            Value = value;
         }
 
         /// <summary>
@@ -61,6 +59,6 @@ namespace LtGt.Models
         public override HtmlEntity Clone() => new HtmlAttribute(this);
 
         /// <inheritdoc />
-        public override string ToString() => !Value.IsNullOrWhiteSpace() ? $"{Name}=\"{Value}\"" : Name;
+        public override string ToString() => !string.IsNullOrWhiteSpace(Value) ? $"{Name}=\"{Value}\"" : Name;
     }
 }

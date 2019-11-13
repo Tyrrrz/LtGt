@@ -1,6 +1,5 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
-using LtGt.Internal;
 
 namespace LtGt.Models
 {
@@ -20,7 +19,7 @@ namespace LtGt.Models
         public HtmlDocument(HtmlDeclaration declaration, IReadOnlyList<HtmlNode> children)
             : base(children)
         {
-            Declaration = declaration.GuardNotNull(nameof(declaration));
+            Declaration = declaration;
         }
 
         /// <summary>

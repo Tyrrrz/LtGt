@@ -1,6 +1,4 @@
-﻿using LtGt.Internal;
-
-namespace LtGt.Models
+﻿namespace LtGt.Models
 {
     /// <summary>
     /// Represents a text node in HTML document object model.
@@ -17,7 +15,7 @@ namespace LtGt.Models
         /// </summary>
         public HtmlText(string value)
         {
-            Value = value.GuardNotNull(nameof(value));
+            Value = value;
         }
 
         /// <summary>

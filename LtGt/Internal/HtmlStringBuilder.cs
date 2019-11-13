@@ -43,7 +43,7 @@ namespace LtGt.Internal
             Append("<!-- ").Append(comment.Value).Append(" -->");
 
         private HtmlStringBuilder Append(HtmlText text) =>
-            HtmlGrammar.IsRawTextElement((text.Parent as HtmlElement)?.Name)
+            HtmlGrammar.IsRawTextElementName((text.Parent as HtmlElement)?.Name)
                 ? Append(text.Value)
                 : Append(WebUtility.HtmlEncode(text.Value));
 
@@ -56,7 +56,7 @@ namespace LtGt.Internal
 
             Append('>');
 
-            if (HtmlGrammar.IsVoidElement(element.Name) && !element.Children.Any())
+            if (HtmlGrammar.IsVoidElementName(element.Name) && !element.Children.Any())
                 return this;
 
             _depth++;

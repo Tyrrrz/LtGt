@@ -1,5 +1,4 @@
 ﻿using System.Xml.Linq;
-using LtGt.Internal;
 
 namespace LtGt.Models
 {
@@ -8,11 +7,6 @@ namespace LtGt.Models
         /// <summary>
         /// Converts this <see cref="HtmlComment"/> to an instance of <see cref="XComment"/>.
         /// </summary>
-        public static XComment ToXComment(this HtmlComment comment)
-        {
-            comment.GuardNotNull(nameof(comment));
-
-            return new XComment(comment.Value);
-        }
+        public static XComment ToXComment(this HtmlComment comment) => new XComment(comment.Value);
     }
 }

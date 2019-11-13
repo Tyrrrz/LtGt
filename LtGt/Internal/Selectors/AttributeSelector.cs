@@ -7,11 +7,11 @@ namespace LtGt.Internal.Selectors
     {
         public string AttributeName { get; }
 
-        public string AttributeValue { get; }
+        public string? AttributeValue { get; }
 
-        public StringComparisonTerm StringComparisonTerm { get; }
+        public StringComparisonTerm? StringComparisonTerm { get; }
 
-        public AttributeSelector(string attributeName, string attributeValue, StringComparisonTerm stringComparisonTerm)
+        public AttributeSelector(string attributeName, string? attributeValue, StringComparisonTerm? stringComparisonTerm)
         {
             AttributeName = attributeName;
             AttributeValue = attributeValue;

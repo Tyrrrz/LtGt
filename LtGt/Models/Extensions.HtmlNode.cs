@@ -1,8 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Xml.Linq;
-using LtGt.Internal;
 
 namespace LtGt.Models
 {
@@ -13,8 +11,6 @@ namespace LtGt.Models
         /// </summary>
         public static XNode ToXNode(this HtmlNode node)
         {
-            node.GuardNotNull(nameof(node));
-
             if (node is HtmlComment comment)
                 return comment.ToXComment();
 
@@ -35,8 +31,6 @@ namespace LtGt.Models
         /// </summary>
         public static IEnumerable<HtmlContainer> GetAncestors(this HtmlNode node)
         {
-            node.GuardNotNull(nameof(node));
-
             while (node.Parent != null)
             {
                 yield return node.Parent;
@@ -49,8 +43,6 @@ namespace LtGt.Models
         /// </summary>
         public static IEnumerable<HtmlNode> GetSiblings(this HtmlNode node)
         {
-            node.GuardNotNull(nameof(node));
-
             if (node.Parent == null)
                 yield break;
 
@@ -66,8 +58,6 @@ namespace LtGt.Models
         /// </summary>
         public static IEnumerable<HtmlNode> GetPreviousSiblings(this HtmlNode node)
         {
-            node.GuardNotNull(nameof(node));
-
             while (node.Previous != null)
             {
                 yield return node.Previous;
@@ -80,8 +70,6 @@ namespace LtGt.Models
         /// </summary>
         public static IEnumerable<HtmlNode> GetNextSiblings(this HtmlNode node)
         {
-            node.GuardNotNull(nameof(node));
-
             while (node.Next != null)
             {
                 yield return node.Next;
