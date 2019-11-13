@@ -126,7 +126,6 @@ var html = HtmlRenderer.Default.RenderNode(element); // <div id="main">Hello wor
 - [NUnit](https://github.com/nunit/nunit)
 - [BenchmarkDotNet](https://github.com/dotnet/BenchmarkDotNet)
 - [Coverlet](https://github.com/tonerdo/coverlet)
-- [Tyrrrz.Extensions](https://github.com/Tyrrrz/Extensions)
 
 ## Donate
 

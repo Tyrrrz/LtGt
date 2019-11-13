@@ -1,10 +1,10 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Net.Http;
 using GalaSoft.MvvmLight;
 using GalaSoft.MvvmLight.CommandWpf;
 using LtGt.Models;
-using Tyrrrz.Extensions;
 
 namespace LtGt.DemoWpf.ViewModels
 {
@@ -80,7 +80,7 @@ namespace LtGt.DemoWpf.ViewModels
         public MainViewModel()
         {
             // Commands
-            GetDocumentCommand = new RelayCommand(GetDocument, () => !IsBusy && !DocumentUrl.IsNullOrWhiteSpace());
+            GetDocumentCommand = new RelayCommand(GetDocument, () => !IsBusy && !string.IsNullOrWhiteSpace(DocumentUrl));
             ApplySelectorCommand = new RelayCommand(ApplySelector, () => !IsBusy);
         }
 
@@ -90,7 +90,7 @@ namespace LtGt.DemoWpf.ViewModels
 
             try
             {
-                DocumentUrl = DocumentUrl.ToUri().ToString();
+                DocumentUrl = new UriBuilder(DocumentUrl!).Uri.ToString();
 
                 var raw = await _httpClient.GetStringAsync(DocumentUrl);
                 Document = HtmlParser.Default.ParseDocument(raw);
