@@ -4,8 +4,7 @@
 [![Coverage](https://codecov.io/gh/Tyrrrz/LtGt/branch/master/graph/badge.svg)](https://codecov.io/gh/Tyrrrz/LtGt)
 [![Version](https://img.shields.io/nuget/v/LtGt.svg)](https://nuget.org/packages/LtGt)
 [![Downloads](https://img.shields.io/nuget/dt/LtGt.svg)](https://nuget.org/packages/LtGt)
-[![Donate](https://img.shields.io/badge/patreon-donate-yellow.svg)](https://patreon.com/tyrrrz)
-[![Donate](https://img.shields.io/badge/buymeacoffee-donate-yellow.svg)](https://buymeacoffee.com/tyrrrz)
+[![Donate](https://img.shields.io/badge/donate-$$$-purple.svg)](https://tyrrrz.me/donate)
 
 LtGt is a minimalistic library for working with HTML. It can parse any HTML5-compliant code into an object model which you can use to traverse nodes or locate specific elements. The library establishes itself as a foundation that you can build upon, and comes with a lot of extension methods that can help navigate the DOM easily. It also supports HTML rendering, so you can turn any HTML object tree to code.
 
@@ -126,7 +125,3 @@ var html = HtmlRenderer.Default.RenderNode(element); // <div id="main">Hello wor
 - [NUnit](https://github.com/nunit/nunit)
 - [BenchmarkDotNet](https://github.com/dotnet/BenchmarkDotNet)
 - [Coverlet](https://github.com/tonerdo/coverlet)
-
-## Donate
-
-If you really like my projects and want to support me, consider donating to me on [Patreon](https://patreon.com/tyrrrz) or [BuyMeACoffee](https://buymeacoffee.com/tyrrrz). All donations are optional and are greatly appreciated. 🙏
