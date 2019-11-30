@@ -116,12 +116,3 @@ var element = new HtmlElement("div",
 
 var html = HtmlRenderer.Default.RenderNode(element); // <div id="main">Hello world</div>
 ```
-
-## Libraries used
-
-- [Sprache](https://github.com/Sprache/Sprache)
-- [GalaSoft.MVVMLight](http://www.mvvmlight.net)
-- [MaterialDesignInXamlToolkit](https://github.com/ButchersBoy/MaterialDesignInXamlToolkit)
-- [NUnit](https://github.com/nunit/nunit)
-- [BenchmarkDotNet](https://github.com/dotnet/BenchmarkDotNet)
-- [Coverlet](https://github.com/tonerdo/coverlet)
