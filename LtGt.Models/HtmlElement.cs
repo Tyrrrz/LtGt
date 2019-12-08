@@ -39,6 +39,14 @@ namespace LtGt.Models
         /// <summary>
         /// Initializes an instance of <see cref="HtmlElement"/>.
         /// </summary>
+        public HtmlElement(string name, IReadOnlyList<HtmlAttribute> attributes, HtmlNode child)
+            : this(name, attributes, new[] {child})
+        {
+        }
+
+        /// <summary>
+        /// Initializes an instance of <see cref="HtmlElement"/>.
+        /// </summary>
         public HtmlElement(string name, IReadOnlyList<HtmlAttribute> attributes)
             : this(name, attributes, new HtmlNode[0])
         {

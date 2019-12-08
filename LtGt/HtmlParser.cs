@@ -1,5 +1,6 @@
 ﻿using LtGt.Internal;
 using LtGt.Models;
+using LtGt.Parser;
 using Sprache;
 
 namespace LtGt
@@ -10,13 +11,13 @@ namespace LtGt
     public partial class HtmlParser : IHtmlParser
     {
         /// <inheritdoc />
-        public HtmlDocument ParseDocument(string source) => HtmlGrammar.HtmlDocument.Parse(source);
+        public HtmlDocument ParseDocument(string source) => Parser.HtmlParser.ParseDocument(source);
 
         /// <inheritdoc />
-        public HtmlElement ParseElement(string source) => HtmlGrammar.HtmlElement.Parse(source);
+        public HtmlElement ParseElement(string source) => Parser.HtmlParser.ParseElement(source);
 
         /// <inheritdoc />
-        public HtmlNode ParseNode(string source) => HtmlGrammar.HtmlNode.Parse(source);
+        public HtmlNode ParseNode(string source) => Parser.HtmlParser.ParseNode(source);
     }
 
     public partial class HtmlParser

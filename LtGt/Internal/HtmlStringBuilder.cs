@@ -8,6 +8,26 @@ namespace LtGt.Internal
 {
     internal class HtmlStringBuilder
     {
+        private static bool IsVoidElementName(string? elementName) =>
+            string.Equals(elementName, "area", StringComparison.OrdinalIgnoreCase) ||
+            string.Equals(elementName, "base", StringComparison.OrdinalIgnoreCase) ||
+            string.Equals(elementName, "br", StringComparison.OrdinalIgnoreCase) ||
+            string.Equals(elementName, "col", StringComparison.OrdinalIgnoreCase) ||
+            string.Equals(elementName, "embed", StringComparison.OrdinalIgnoreCase) ||
+            string.Equals(elementName, "hr", StringComparison.OrdinalIgnoreCase) ||
+            string.Equals(elementName, "img", StringComparison.OrdinalIgnoreCase) ||
+            string.Equals(elementName, "input", StringComparison.OrdinalIgnoreCase) ||
+            string.Equals(elementName, "link", StringComparison.OrdinalIgnoreCase) ||
+            string.Equals(elementName, "meta", StringComparison.OrdinalIgnoreCase) ||
+            string.Equals(elementName, "param", StringComparison.OrdinalIgnoreCase) ||
+            string.Equals(elementName, "source", StringComparison.OrdinalIgnoreCase) ||
+            string.Equals(elementName, "track", StringComparison.OrdinalIgnoreCase) ||
+            string.Equals(elementName, "wbr", StringComparison.OrdinalIgnoreCase);
+
+        private static bool IsRawTextElementName(string? elementName) =>
+            string.Equals(elementName, "script", StringComparison.OrdinalIgnoreCase) ||
+            string.Equals(elementName, "style", StringComparison.OrdinalIgnoreCase);
+
         private readonly StringBuilder _internalBuilder = new StringBuilder();
 
         private int _depth;
@@ -43,7 +63,7 @@ namespace LtGt.Internal
             Append("<!-- ").Append(comment.Value).Append(" -->");
 
         private HtmlStringBuilder Append(HtmlText text) =>
-            HtmlGrammar.IsRawTextElementName((text.Parent as HtmlElement)?.Name)
+            IsRawTextElementName((text.Parent as HtmlElement)?.Name)
                 ? Append(text.Value)
                 : Append(WebUtility.HtmlEncode(text.Value));
 
@@ -56,7 +76,7 @@ namespace LtGt.Internal
 
             Append('>');
 
-            if (HtmlGrammar.IsVoidElementName(element.Name) && !element.Children.Any())
+            if (IsVoidElementName(element.Name) && !element.Children.Any())
                 return this;
 
             _depth++;

@@ -2,7 +2,7 @@
   <Import Project="../LtGt.props" />
 
   <PropertyGroup>
-    <TargetFrameworks>net45;netstandard1.0;netstandard2.0</TargetFrameworks>
+    <TargetFrameworks>net45;netstandard2.0</TargetFrameworks>
     <Authors>$(Company)</Authors>
     <Description>Lightweight HTML processor</Description>
     <PackageTags>html parser net core</PackageTags>
@@ -27,9 +27,14 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\LtGt.Models\LtGt.Models.csproj" />
+    <ProjectReference Include="..\LtGt.Parser\LtGt.Parser.fsproj" />
+  </ItemGroup>
+
+  <ItemGroup>
     <PackageReference Include="Sprache" Version="2.2.0" />
     <PackageReference Include="Microsoft.NETFramework.ReferenceAssemblies" Version="1.0.0-preview.2" PrivateAssets="all" />
-    <PackageReference Include="Microsoft.SourceLink.GitHub" Version="1.0.0-beta2-19554-01" PrivateAssets="all"/>
+    <PackageReference Include="Microsoft.SourceLink.GitHub" Version="1.0.0-beta2-19554-01" PrivateAssets="all" />
     <PackageReference Include="Nullable" Version="1.1.1" PrivateAssets="all" />
   </ItemGroup>
 

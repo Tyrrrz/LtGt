@@ -18,6 +18,10 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "LtGt.Benchmarks", "LtGt.Ben
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "LtGt.DemoWpf", "LtGt.DemoWpf\LtGt.DemoWpf.csproj", "{574F4D01-6EDE-4D0D-8B0F-2CA3F20F9799}"
 EndProject
+Project("{F2A71F9B-5D33-465A-A702-920D77279786}") = "LtGt.Parser", "LtGt.Parser\LtGt.Parser.fsproj", "{18ECEA29-D244-4EBD-8D2C-D3E7394E2E70}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "LtGt.Models", "LtGt.Models\LtGt.Models.csproj", "{354A6647-A7D3-44B5-AB99-50D07F0E68F6}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -40,6 +44,14 @@ Global
 		{574F4D01-6EDE-4D0D-8B0F-2CA3F20F9799}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{574F4D01-6EDE-4D0D-8B0F-2CA3F20F9799}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{574F4D01-6EDE-4D0D-8B0F-2CA3F20F9799}.Release|Any CPU.Build.0 = Release|Any CPU
+		{18ECEA29-D244-4EBD-8D2C-D3E7394E2E70}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{18ECEA29-D244-4EBD-8D2C-D3E7394E2E70}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{18ECEA29-D244-4EBD-8D2C-D3E7394E2E70}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{18ECEA29-D244-4EBD-8D2C-D3E7394E2E70}.Release|Any CPU.Build.0 = Release|Any CPU
+		{354A6647-A7D3-44B5-AB99-50D07F0E68F6}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{354A6647-A7D3-44B5-AB99-50D07F0E68F6}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{354A6647-A7D3-44B5-AB99-50D07F0E68F6}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{354A6647-A7D3-44B5-AB99-50D07F0E68F6}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
