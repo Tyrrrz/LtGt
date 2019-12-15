@@ -4,49 +4,49 @@ open FParsec
 open LtGt.Models
 open LtGt.Parsers.Shared
 
-// -- Helper functions
-
 let private upcastNode x = x :> HtmlNode
 
-// -- Text
+// ---------------------------------
+// Text
+// ---------------------------------
 
+// * CDATA *
 // <![CDATA[content]]>
-let private cdataText =
-    manyCharsBetween anyChar (skipString "<![CDATA[") (skipString "]]>") .>> spaces
+let private cdata =
+    manyCharsBetween (skipString "<![CDATA[") anyChar (skipString "]]>") .>> spaces
     |>> HtmlText
 
-let private normalText =
-    many1Chars (noneOf "<") .>> spaces
+// * Normal text *
+let private text =
+    many1Chars (noneOf "<")
     |>> htmlDecode
     |>> trim
     |>> HtmlText
         
-let private text =
-    choice [
-        attempt cdataText
-        attempt normalText
-    ]
+// ---------------------------------
+// Comment
+// ---------------------------------
 
-// -- Comments
-
+// * Normal comment *
 // <!-- content -->
 let private normalComment =
-    manyCharsBetween anyChar (skipString "<!--") (skipString "-->") .>> spaces
+    manyCharsBetween (skipString "<!--") anyChar (skipString "-->") .>> spaces
     |>> trim
     |>> HtmlComment
 
-// Unexpected xml directives are treated as comments (Chrome's behavior)
+// * Unexpected XML directive *
+// -- treated as comment
 // <?xml version="1.0"?>
 let private unexpectedDirectiveComment =
-    manyCharsBetween anyChar (skipString "<?") (skipString "?>") .>> spaces
+    manyCharsBetween (skipString "<?") anyChar (skipString "?>") .>> spaces
     |>> trim
     |>> HtmlComment
 
-// Unexpected html declarations are treated as comments (Chrome's behavior)
+// * Unexpected HTML declaration *
+// -- treated as comment
 // <!doctype html>
 let private unexpectedDeclarationComment =
-    skipString "<!" >>. many1Chars letterOrDigit .>> spaces .>>. manyCharsTill anyChar (skipChar '>') .>> spaces
-    |>> fun (name, value) -> name + value
+    manyCharsBetween (skipString "<!") anyChar (skipChar '>') .>> spaces
     |>> trim
     |>> HtmlComment
 
@@ -57,29 +57,35 @@ let private comment =
         attempt unexpectedDeclarationComment
     ]
 
-// -- Attributes
+// ---------------------------------
+// Attribute
+// ---------------------------------
 
 let private attributeName = many1Satisfy (isNotSpace <&> isNoneOf ">'\"=/") .>> spaces
 
+// * Doubly-quoted attribute *
 // id="main"
 let private doublyQuotedAttribute =
-    attributeName .>> skipChar '=' .>> spaces .>>. manyCharsBetween anyChar (skipChar '"') (skipChar '"') .>> spaces
+    attributeName .>> skipChar '=' .>> spaces .>>. manyCharsBetween (skipChar '"') anyChar (skipChar '"') .>> spaces
     |>> fun (name, value) -> (name, htmlDecode value)
     |>> HtmlAttribute
 
-// id='main'
+// * Singly-quoted attribute *
+// id="main"
 let private singlyQuotedAttribute =
-    attributeName .>> skipChar '=' .>> spaces .>>. manyCharsBetween anyChar (skipChar ''') (skipChar ''') .>> spaces
+    attributeName .>> skipChar '=' .>> spaces .>>. manyCharsBetween (skipChar ''') anyChar (skipChar ''') .>> spaces
     |>> fun (name, value) -> (name, htmlDecode value)
     |>> HtmlAttribute
 
+// * Unquoted attribute *
 // id=main
 let private unquotedAttribute =
     attributeName .>> skipChar '=' .>> spaces .>>. attributeName .>> spaces
     |>> HtmlAttribute
 
+// * Void attribute *
 // id
-let private valuelessAttribute =
+let private voidAttribute =
     attributeName
     |>> HtmlAttribute
 
@@ -88,21 +94,45 @@ let private attribute =
         attempt doublyQuotedAttribute
         attempt singlyQuotedAttribute
         attempt unquotedAttribute
-        attempt valuelessAttribute
+        attempt voidAttribute
     ]
 
-// -- Element
+// ---------------------------------
+// Element
+// ---------------------------------
 
-// Elements that can only contain text inside
-// (ordered from most common to least common to avoid backtracking)
+let private elementName = many1Chars letterOrDigit .>> spaces
+
+// * Raw text element *
+// -- element that can only contain text inside
+// -- <script> and <style>
+
 let private rawTextElementName =
     choice [
         attempt (pstringCI "script")
         attempt (pstringCI "style")
     ] .>> spaces
 
-// Elements that should not have a closing tag
-// (ordered from most common to least common to avoid backtracking)
+let private rawTextElement =
+    parse {
+        // <script ...>
+        do! skipChar '<'
+        let! name = rawTextElementName
+        let! attributes = many attribute
+        do! skipChar '>'
+        do! spaces
+
+        // ...</script>
+        let! text = (manyCharsTill anyChar (skipString (sprintf "</%s>" name))) |>> trim |>> HtmlText
+        do! spaces
+
+        return HtmlElement(name, attributes, text)
+    }
+
+// * Void element *
+// -- element that never has children and should not have a closing tag
+// -- <meta>, <br>, etc
+
 let private voidElementName =
     choice [
         attempt (pstringCI "meta")
@@ -121,45 +151,31 @@ let private voidElementName =
         attempt (pstringCI "wbr")
     ] .>> spaces
 
-let private normalElementName = many1Chars letterOrDigit .>> spaces
-
-// Element child parser is recursive as it can also contain other elements
-let private elementChild, private elementChildRef = createParserForwardedToRef<HtmlNode, unit>()
-
-// <script> / <style>
-let private rawTextElement =
-    parse {
-        // <script ...>
-        do! skipChar '<'
-        let! name = rawTextElementName
-        let! attributes = many attribute
-        do! spaces
-        do! skipChar '>'
-        do! spaces
-
-        // ...</script>
-        let! text = (manyCharsTill anyChar (skipString (sprintf "</%s>" name))) |>> trim |>> HtmlText
-        do! spaces
-
-        return name, attributes, text
-    } |>> HtmlElement
-
-// <meta> / <meta/> / <br> / <br/>
 let private voidElement =
     skipChar '<' >>. voidElementName .>>. many attribute .>> spaces .>> optional (skipChar '/') .>> skipChar '>' .>> spaces
     |>> HtmlElement
 
-// <div/>
+// * Self-closing element *
+// -- element that doesn't have children and doesn't have a closing tag
+// -- this element is illegal in HTML but nobody really cares
+// -- <div />, <span />
+
 let private selfClosingElement =
-    skipChar '<' >>. normalElementName .>>. many attribute .>> spaces .>> skipString "/>" .>> spaces
+    skipChar '<' >>. elementName .>>. many attribute .>> spaces .>> skipString "/>" .>> spaces
     |>> HtmlElement
 
-// <div>...</div>
+// * Normal element *
+// -- element that may have children and has a closing tag
+// -- <div>, <span>, etc
+
+// Element child parser is recursive as it can also contain other elements
+let private elementChild, private elementChildRef = createParserForwardedToRef<HtmlNode, unit>()
+
 let private normalElement =
     parse {
         // <div ...>
         do! skipChar '<'
-        let! name = normalElementName
+        let! name = elementName
         let! attributes = many attribute
         do! skipChar '>'
         do! spaces
@@ -171,8 +187,8 @@ let private normalElement =
         do! skipString (sprintf "</%s>" name)
         do! spaces
 
-        return name, attributes, children
-    } |>> HtmlElement
+        return HtmlElement(name, attributes, children)
+    }
 
 let private element =
     choice [
@@ -185,13 +201,15 @@ let private element =
 do elementChildRef :=
     choice [
         attempt element |>> upcastNode
+        attempt cdata |>> upcastNode
         attempt comment |>> upcastNode
         attempt text |>> upcastNode
     ]
 
-// -- Document
-    
-// <!doctype html>
+// ---------------------------------
+// Document
+// ---------------------------------
+
 let private declaration =
     skipString "<!" >>. many1Chars letterOrDigit .>> spaces .>>. manyCharsTill anyChar (skipChar '>') .>> spaces
     |>> HtmlDeclaration
@@ -200,7 +218,9 @@ let private document =
     declaration .>>. many elementChild .>> spaces
     |>> HtmlDocument
 
-// -- Nodes
+// ---------------------------------
+// Node
+// ---------------------------------
 
 let private node =
     choice [
@@ -208,15 +228,17 @@ let private node =
         attempt elementChild |>> upcastNode
     ]
 
-// -- Entry points
+// ---------------------------------
+// Entry points
+// ---------------------------------
 
 let private runOrRaise parser source =
     match run parser source with
     | Success (r, _, _) -> r
     | Failure (e, _, _) -> raise (System.InvalidOperationException(e))
 
-let public ParseElement source = runOrRaise element source
+let public ParseElement source = runOrRaise (element .>> eof) source
 
-let public ParseDocument source = runOrRaise document source
+let public ParseDocument source = runOrRaise (document .>> eof) source
 
-let public ParseNode source = runOrRaise node source
+let public ParseNode source = runOrRaise (node .>> eof) source

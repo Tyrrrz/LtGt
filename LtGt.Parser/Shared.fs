@@ -4,7 +4,7 @@ open FParsec
 
 let (<&>) f g = (fun x -> f x && g x)
 
-let isSpace = System.Char.IsWhiteSpace
+let isSpace = FParsec.Text.IsWhitespace
 
 let isNotSpace = isSpace >> not
 
@@ -18,5 +18,5 @@ let letterOrDigit : Parser<char, unit> =
         digit
     ]
 
-let manyCharsBetween pchar popen pclose =
+let manyCharsBetween popen pchar pclose =
     popen >>. manyCharsTill pchar pclose
