@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using LtGt.Models;
 using NUnit.Framework;
 
 namespace LtGt.Tests
@@ -30,23 +29,6 @@ namespace LtGt.Tests
 
         private static IEnumerable<TestCaseData> GetTestCases_GetElementsByTagName()
         {
-            yield return new TestCaseData(
-                new HtmlElement("div",
-                    new HtmlElement("a"),
-                    new HtmlElement("span",
-                        new HtmlElement("p")),
-                    new HtmlElement("p")),
-                "*",
-                new[]
-                {
-                    new HtmlElement("a"),
-                    new HtmlElement("span",
-                        new HtmlElement("p")),
-                    new HtmlElement("p"),
-                    new HtmlElement("p")
-                }
-            );
-
             yield return new TestCaseData(
                 new HtmlElement("div",
                     new HtmlElement("a"),
@@ -138,7 +120,7 @@ namespace LtGt.Tests
             );
         }
 
-        private static IEnumerable<TestCaseData> GetTestCases_GetElementsBySelector()
+        private static IEnumerable<TestCaseData> GetTestCases_QuerySelectorAll()
         {
             // Any
 
@@ -372,7 +354,7 @@ namespace LtGt.Tests
             // Root
 
             yield return new TestCaseData(
-                new HtmlDocument(HtmlDeclaration.DoctypeHtml,
+                new HtmlDocument(new HtmlDeclaration("doctype html"),
                     new HtmlElement("div",
                         new HtmlElement("p", new HtmlAttribute("id", "test1")),
                         new HtmlElement("div",
@@ -1147,7 +1129,7 @@ namespace LtGt.Tests
                     new HtmlElement("p", new HtmlAttribute("class", "test1 test3"))
                 }
             );
-            
+
             yield return new TestCaseData(
                 new HtmlElement("div",
                     new HtmlElement("p", new HtmlAttribute("class", "test1")),
@@ -1161,7 +1143,7 @@ namespace LtGt.Tests
                     new HtmlElement("p", new HtmlAttribute("class", "test1 test3"))
                 }
             );
-            
+
             yield return new TestCaseData(
                 new HtmlElement("div",
                     new HtmlElement("p", new HtmlAttribute("class", "test1")),
@@ -1175,7 +1157,7 @@ namespace LtGt.Tests
                     new HtmlElement("p", new HtmlAttribute("class", "test1 test3"))
                 }
             );
-            
+
             yield return new TestCaseData(
                 new HtmlElement("div",
                     new HtmlElement("p", new HtmlAttribute("class", "test1")),
@@ -1189,7 +1171,7 @@ namespace LtGt.Tests
                     new HtmlElement("p", new HtmlAttribute("class", "test1 test4"))
                 }
             );
-            
+
             yield return new TestCaseData(
                 new HtmlElement("div",
                     new HtmlElement("p", new HtmlAttribute("class", "test1")),
@@ -1203,7 +1185,7 @@ namespace LtGt.Tests
                     new HtmlElement("p", new HtmlAttribute("class", "test1 test4"))
                 }
             );
-            
+
             yield return new TestCaseData(
                 new HtmlElement("div",
                     new HtmlElement("p", new HtmlAttribute("class", "test1")),
@@ -1217,7 +1199,7 @@ namespace LtGt.Tests
                     new HtmlElement("p", new HtmlAttribute("class", "test1 test3"))
                 }
             );
-            
+
             // Escaped identifiers
 
             yield return new TestCaseData(
@@ -1229,7 +1211,7 @@ namespace LtGt.Tests
                     new HtmlElement("p", new HtmlAttribute("class", "foo(bar)"))
                 }
             );
-            
+
             // Malformed
 
             yield return new TestCaseData(
@@ -1308,7 +1290,7 @@ namespace LtGt.Tests
             var actual = container.GetElementById(id);
 
             // Assert
-            Assert.That(actual, Is.EqualTo(expected).Using(HtmlEntity.EqualityComparer));
+            Assert.That(actual, Is.EqualTo(expected).Using(HtmlEntityEqualityComparer.Instance));
         }
 
         [Test]
@@ -1319,7 +1301,7 @@ namespace LtGt.Tests
             var actual = container.GetElementsByTagName(tagName).ToArray();
 
             // Assert
-            Assert.That(actual, Is.EqualTo(expected).Using(HtmlEntity.EqualityComparer));
+            Assert.That(actual, Is.EqualTo(expected).Using(HtmlEntityEqualityComparer.Instance));
         }
 
         [Test]
@@ -1330,18 +1312,18 @@ namespace LtGt.Tests
             var actual = container.GetElementsByClassName(className).ToArray();
 
             // Assert
-            Assert.That(actual, Is.EqualTo(expected).Using(HtmlEntity.EqualityComparer));
+            Assert.That(actual, Is.EqualTo(expected).Using(HtmlEntityEqualityComparer.Instance));
         }
 
         [Test]
-        [TestCaseSource(nameof(GetTestCases_GetElementsBySelector))]
-        public void GetElementsBySelector_Test(HtmlContainer container, string selector, IReadOnlyList<HtmlElement> expected)
+        [TestCaseSource(nameof(GetTestCases_QuerySelectorAll))]
+        public void QuerySelectorAll_Test(HtmlContainer container, string selector, IReadOnlyList<HtmlElement> expected)
         {
             // Act
-            var actual = container.GetElementsBySelector(selector).ToArray();
+            var actual = container.QuerySelectorAll(selector).ToArray();
 
             // Assert
-            Assert.That(actual, Is.EqualTo(expected).Using(HtmlEntity.EqualityComparer));
+            Assert.That(actual, Is.EqualTo(expected).Using(HtmlEntityEqualityComparer.Instance));
         }
 
         [Test]

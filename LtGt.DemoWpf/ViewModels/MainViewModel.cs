@@ -4,7 +4,6 @@ using System.Linq;
 using System.Net.Http;
 using GalaSoft.MvvmLight;
 using GalaSoft.MvvmLight.CommandWpf;
-using LtGt.Models;
 
 namespace LtGt.DemoWpf.ViewModels
 {
@@ -93,7 +92,7 @@ namespace LtGt.DemoWpf.ViewModels
                 DocumentUrl = new UriBuilder(DocumentUrl!).Uri.ToString();
 
                 var raw = await _httpClient.GetStringAsync(DocumentUrl);
-                Document = HtmlParser.Default.ParseDocument(raw);
+                Document = Html.ParseDocument(raw);
                 TopLevelNodes = Document.Children;
             }
             finally
@@ -109,7 +108,7 @@ namespace LtGt.DemoWpf.ViewModels
 
             TopLevelNodes = string.IsNullOrWhiteSpace(Selector)
                 ? Document.Children
-                : Document.GetElementsBySelector(Selector).ToArray();
+                : Document.QuerySelectorAll(Selector).ToArray();
         }
     }
 }

@@ -1,44 +1,17 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
-using System.Xml.Linq;
-using LtGt.Models;
 using NUnit.Framework;
 
 namespace LtGt.Tests
 {
     public class HtmlNodeTests
     {
-        private static IEnumerable<TestCaseData> GetTestCases_ToXNode()
-        {
-            yield return new TestCaseData(
-                new HtmlComment("test"),
-                new XComment("test")
-            );
-
-            yield return new TestCaseData(
-                new HtmlText("test"),
-                new XText("test")
-            );
-
-            yield return new TestCaseData(
-                new HtmlElement("test"),
-                new XElement("test")
-            );
-
-            yield return new TestCaseData(
-                new HtmlDocument(HtmlDeclaration.DoctypeHtml,
-                    new HtmlElement("test")),
-                new XDocument(
-                    new XElement("test"))
-            );
-        }
-
         private static IEnumerable<TestCaseData> GetTestCases_GetAncestors()
         {
             HtmlNode node;
 
             // ReSharper disable once ObjectCreationAsStatement
-            new HtmlDocument(HtmlDeclaration.DoctypeHtml,
+            new HtmlDocument(new HtmlDeclaration("doctype html"),
                 new HtmlElement("html",
                     new HtmlElement("head",
                         new HtmlElement("title", new HtmlText("Test document"))),
@@ -58,7 +31,7 @@ namespace LtGt.Tests
                         new HtmlElement("body",
                             new HtmlElement("div"))),
 
-                    new HtmlDocument(HtmlDeclaration.DoctypeHtml,
+                    new HtmlDocument(new HtmlDeclaration("doctype html"),
                         new HtmlElement("html",
                             new HtmlElement("head",
                                 new HtmlElement("title", new HtmlText("Test document"))),
@@ -232,17 +205,6 @@ namespace LtGt.Tests
         }
 
         [Test]
-        [TestCaseSource(nameof(GetTestCases_ToXNode))]
-        public void ToXNode_Test(HtmlNode node, XNode expected)
-        {
-            // Act
-            var actual = node.ToXNode();
-
-            // Assert
-            Assert.That(actual, Is.EqualTo(expected).Using<XNode>(XNode.EqualityComparer));
-        }
-
-        [Test]
         [TestCaseSource(nameof(GetTestCases_GetAncestors))]
         public void GetAncestors_Test(HtmlNode node, IReadOnlyList<HtmlContainer> expected)
         {
@@ -250,7 +212,7 @@ namespace LtGt.Tests
             var actual = node.GetAncestors().ToArray();
 
             // Assert
-            Assert.That(actual, Is.EqualTo(expected).Using(HtmlEntity.EqualityComparer));
+            Assert.That(actual, Is.EqualTo(expected).Using(HtmlEntityEqualityComparer.Instance));
         }
 
         [Test]
@@ -261,7 +223,7 @@ namespace LtGt.Tests
             var actual = node.GetSiblings().ToArray();
 
             // Assert
-            Assert.That(actual, Is.EqualTo(expected).Using(HtmlEntity.EqualityComparer));
+            Assert.That(actual, Is.EqualTo(expected).Using(HtmlEntityEqualityComparer.Instance));
         }
 
         [Test]
@@ -272,7 +234,7 @@ namespace LtGt.Tests
             var actual = node.GetPreviousSiblings().ToArray();
 
             // Assert
-            Assert.That(actual, Is.EqualTo(expected).Using(HtmlEntity.EqualityComparer));
+            Assert.That(actual, Is.EqualTo(expected).Using(HtmlEntityEqualityComparer.Instance));
         }
 
         [Test]
@@ -283,7 +245,7 @@ namespace LtGt.Tests
             var actual = node.GetNextSiblings().ToArray();
 
             // Assert
-            Assert.That(actual, Is.EqualTo(expected).Using(HtmlEntity.EqualityComparer));
+            Assert.That(actual, Is.EqualTo(expected).Using(HtmlEntityEqualityComparer.Instance));
         }
     }
 }

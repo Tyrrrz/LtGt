@@ -1,6 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
-using LtGt.Models;
+using FluentAssertions;
 using NUnit.Framework;
 
 namespace LtGt.Tests
@@ -23,20 +23,20 @@ namespace LtGt.Tests
             );
 
             yield return new TestCaseData(
-                new HtmlDeclaration("name", "value"),
-                new HtmlDeclaration("name", "value"),
+                new HtmlDeclaration("name value"),
+                new HtmlDeclaration("name value"),
                 true
             );
 
             yield return new TestCaseData(
-                new HtmlDeclaration("name1", "value"),
-                new HtmlDeclaration("name2", "value"),
+                new HtmlDeclaration("name1 value"),
+                new HtmlDeclaration("name2 value"),
                 false
             );
 
             yield return new TestCaseData(
-                new HtmlDeclaration("name", "value1"),
-                new HtmlDeclaration("name", "value2"),
+                new HtmlDeclaration("name value1"),
+                new HtmlDeclaration("name value2"),
                 false
             );
 
@@ -123,11 +123,11 @@ namespace LtGt.Tests
             );
 
             yield return new TestCaseData(
-                new HtmlDocument(HtmlDeclaration.DoctypeHtml,
+                new HtmlDocument(new HtmlDeclaration("doctype html"),
                     new HtmlElement("body",
                         new HtmlElement("div",
                             new HtmlText("test")))),
-                new HtmlDocument(HtmlDeclaration.DoctypeHtml,
+                new HtmlDocument(new HtmlDeclaration("doctype html"),
                     new HtmlElement("body",
                         new HtmlElement("div",
                             new HtmlText("test")))),
@@ -135,11 +135,11 @@ namespace LtGt.Tests
             );
 
             yield return new TestCaseData(
-                new HtmlDocument(HtmlDeclaration.DoctypeHtml,
+                new HtmlDocument(new HtmlDeclaration("doctype html"),
                     new HtmlElement("body",
                         new HtmlElement("div",
                             new HtmlText("test")))),
-                new HtmlDocument(HtmlDeclaration.DoctypeHtml,
+                new HtmlDocument(new HtmlDeclaration("doctype html"),
                     new HtmlElement("body",
                         new HtmlElement("span",
                             new HtmlText("test")))),
@@ -164,10 +164,10 @@ namespace LtGt.Tests
         public void Equals_Test(HtmlEntity entity1, HtmlEntity entity2, bool expected)
         {
             // Act
-            var actual = HtmlEntityEqualityComparer.Default.Equals(entity1, entity2);
+            var actual = HtmlEntityEqualityComparer.Instance.Equals(entity1, entity2);
 
             // Assert
-            Assert.That(actual, Is.EqualTo(expected));
+            actual.Should().Be(expected);
         }
 
         [Test]
@@ -175,11 +175,14 @@ namespace LtGt.Tests
         public void GetHashCode_Test(HtmlEntity entity1, HtmlEntity entity2, bool expectedEqualHashCodes)
         {
             // Act
-            var hashCode1 = HtmlEntityEqualityComparer.Default.GetHashCode(entity1);
-            var hashCode2 = HtmlEntityEqualityComparer.Default.GetHashCode(entity2);
+            var hashCode1 = HtmlEntityEqualityComparer.Instance.GetHashCode(entity1);
+            var hashCode2 = HtmlEntityEqualityComparer.Instance.GetHashCode(entity2);
 
             // Assert
-            Assert.That(hashCode1, expectedEqualHashCodes ? Is.EqualTo(hashCode2) : Is.Not.EqualTo(hashCode2));
+            if (expectedEqualHashCodes)
+                hashCode1.Should().Be(hashCode2);
+            else
+                hashCode1.Should().NotBe(hashCode2);
         }
     }
 }

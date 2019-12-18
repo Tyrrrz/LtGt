@@ -1,16 +1,11 @@
-using System;
 using System.Collections.Generic;
 using System.IO;
-using System.Linq;
-using System.Net.Http;
-using System.Threading.Tasks;
-using LtGt.Models;
 using NUnit.Framework;
 
 namespace LtGt.Tests
 {
     [TestFixture]
-    public class HtmlParserTests
+    public class HtmlTests
     {
         private static string TempDirPath => Path.Combine(TestContext.CurrentContext.TestDirectory, "Temp");
 
@@ -38,7 +33,7 @@ namespace LtGt.Tests
     </body>
 </html>",
                 new HtmlDocument(
-                    new HtmlDeclaration("doctype", "html"),
+                    new HtmlDeclaration("doctype html"),
                     new HtmlElement("html",
                         new HtmlElement("head",
                             new HtmlElement("title", new HtmlText("Test document")),
@@ -48,8 +43,6 @@ namespace LtGt.Tests
                                 new HtmlText("Test")))))
             );
         }
-
-        private static IEnumerable<TestCaseData> GetTestCases_LoadDocument() => GetTestCases_ParseDocument();
 
         private static IEnumerable<TestCaseData> GetTestCases_ParseElement()
         {
@@ -170,6 +163,13 @@ namespace LtGt.Tests
                     new HtmlElement("br"),
                     new HtmlText("test2"))
             );
+
+            yield return new TestCaseData(
+                // language=html
+                "     <div>test</div>",
+                new HtmlElement("div",
+                    new HtmlText("test"))
+            );
         }
 
         [Test]
@@ -177,26 +177,10 @@ namespace LtGt.Tests
         public void ParseDocument_Test(string source, HtmlDocument expected)
         {
             // Act
-            var actual = HtmlParser.Default.ParseDocument(source);
+            var actual = Html.ParseDocument(source);
 
             // Assert
-            Assert.That(actual, Is.EqualTo(expected).Using(HtmlEntity.EqualityComparer));
-        }
-
-        [Test]
-        [TestCaseSource(nameof(GetTestCases_LoadDocument))]
-        public void LoadDocument_Test(string source, HtmlDocument expected)
-        {
-            // Arrange
-            Directory.CreateDirectory(TempDirPath);
-            var filePath = Path.Combine(TempDirPath, Guid.NewGuid().ToString());
-            File.WriteAllText(filePath, source);
-
-            // Act
-            var actual = HtmlParser.Default.LoadDocument(filePath);
-
-            // Assert
-            Assert.That(actual, Is.EqualTo(expected).Using(HtmlEntity.EqualityComparer));
+            Assert.That(actual, Is.EqualTo(expected).Using(HtmlEntityEqualityComparer.Instance));
         }
 
         [Test]
@@ -204,10 +188,10 @@ namespace LtGt.Tests
         public void ParseElement_Test(string source, HtmlElement expected)
         {
             // Act
-            var actual = HtmlParser.Default.ParseElement(source);
+            var actual = Html.ParseElement(source);
 
             // Assert
-            Assert.That(actual, Is.EqualTo(expected).Using(HtmlEntity.EqualityComparer));
+            Assert.That(actual, Is.EqualTo(expected).Using(HtmlEntityEqualityComparer.Instance));
         }
 
         [Test]
@@ -215,39 +199,10 @@ namespace LtGt.Tests
         public void ParseNode_Test(string source, HtmlNode expected)
         {
             // Act
-            var actual = HtmlParser.Default.ParseNode(source);
+            var actual = Html.ParseNode(source);
 
             // Assert
-            Assert.That(actual, Is.EqualTo(expected).Using(HtmlEntity.EqualityComparer));
-        }
-
-        [Test]
-        [TestCase("https://google.com")]
-        public async Task ReadAsHtmlDocumentAsync_Test(string uri)
-        {
-            // Arrange
-            using var httpClient = new HttpClient();
-
-            // Act
-            using var response = await httpClient.GetAsync(uri);
-            var htmlDocument = await response.Content.ReadAsHtmlDocumentAsync();
-
-            // Assert
-            Assert.That(htmlDocument.GetDescendants().Count(), Is.AtLeast(10), "Descendant count");
-        }
-
-        [Test]
-        [TestCase("https://google.com")]
-        public async Task GetHtmlDocumentAsync_Test(string uri)
-        {
-            // Arrange
-            using var httpClient = new HttpClient();
-
-            // Act
-            var htmlDocument = await httpClient.GetHtmlDocumentAsync(uri);
-
-            // Assert
-            Assert.That(htmlDocument.GetDescendants().Count(), Is.AtLeast(10), "Descendant count");
+            Assert.That(actual, Is.EqualTo(expected).Using(HtmlEntityEqualityComparer.Instance));
         }
     }
 }

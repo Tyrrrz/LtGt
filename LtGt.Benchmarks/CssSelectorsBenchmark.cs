@@ -3,7 +3,6 @@ using System.Linq;
 using System.Net.Http;
 using System.Threading.Tasks;
 using BenchmarkDotNet.Attributes;
-using LtGt.Models;
 
 namespace LtGt.Benchmarks
 {
@@ -21,14 +20,14 @@ namespace LtGt.Benchmarks
 
             var source = await httpClient.GetStringAsync("https://youtube.com/watch?v=9bZkp7q19f0");
 
-            _ltGtDocument = HtmlParser.Default.ParseDocument(source);
+            _ltGtDocument = Html.ParseDocument(source);
             _angleSharpDocument = new AngleSharp.Html.Parser.HtmlParser().ParseDocument(source);
         }
 
         private const string CssSelector = "div#player";
 
         [Benchmark(Description = "LtGt", Baseline = true)]
-        public IReadOnlyList<HtmlElement> SelectWithLtGt() => _ltGtDocument.GetElementsBySelector(CssSelector).ToArray();
+        public IReadOnlyList<HtmlElement> SelectWithLtGt() => _ltGtDocument.QuerySelectorAll(CssSelector).ToArray();
 
         [Benchmark(Description = "AngleSharp")]
         public IReadOnlyList<AngleSharp.Dom.IElement> SelectWithAngleSharp() => _angleSharpDocument.QuerySelectorAll(CssSelector).ToArray();

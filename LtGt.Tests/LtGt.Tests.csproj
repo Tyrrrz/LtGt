@@ -11,6 +11,7 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <PackageReference Include="FluentAssertions" Version="5.9.0" />
     <PackageReference Include="nunit" Version="3.12.0" />
     <PackageReference Include="NUnit3TestAdapter" Version="3.15.1" />
     <PackageReference Include="Microsoft.NET.Test.Sdk" Version="16.4.0" />
@@ -18,8 +19,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\LtGt\LtGt.csproj" />
-    <ProjectReference Include="..\LtGt.Models\LtGt.Models.csproj" />
+    <ProjectReference Include="..\LtGt\LtGt.fsproj" />
   </ItemGroup>
 
 </Project>

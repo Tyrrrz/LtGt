@@ -1,7 +1,6 @@
 ﻿using System.Net.Http;
 using System.Threading.Tasks;
 using BenchmarkDotNet.Attributes;
-using LtGt.Models;
 
 namespace LtGt.Benchmarks
 {
@@ -19,7 +18,7 @@ namespace LtGt.Benchmarks
         }
 
         [Benchmark(Description = "LtGt", Baseline = true)]
-        public HtmlDocument ParseWithLtGt() => HtmlParser.Default.ParseDocument(_source);
+        public HtmlDocument ParseWithLtGt() => Html.ParseDocument(_source);
 
         [Benchmark(Description = "AngleSharp")]
         public AngleSharp.Html.Dom.IHtmlDocument ParseWithAngleSharp() => new AngleSharp.Html.Parser.HtmlParser().ParseDocument(_source);

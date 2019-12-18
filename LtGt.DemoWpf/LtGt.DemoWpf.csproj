@@ -20,8 +20,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\LtGt\LtGt.csproj" />
-    <ProjectReference Include="..\LtGt.Models\LtGt.Models.csproj" />
+    <ProjectReference Include="..\LtGt\LtGt.fsproj" />
   </ItemGroup>
 
 </Project>

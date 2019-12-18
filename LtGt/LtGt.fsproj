@@ -1,0 +1,27 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+  <Import Project="../LtGt.props" />
+
+  <PropertyGroup>
+    <TargetFrameworks>netstandard2.0;net45</TargetFrameworks>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <Compile Include="Utils.fs" />
+    <Compile Include="HtmlAst.fs" />
+    <Compile Include="HtmlEquality.fs" />
+    <Compile Include="HtmlParsing.fs" />
+    <Compile Include="HtmlLogic.fs" />
+    <Compile Include="CssSelectorAst.fs" />
+    <Compile Include="CssSelectorParsing.fs" />
+    <Compile Include="CssSelectorLogic.fs" />
+  </ItemGroup>
+
+  <ItemGroup Condition="'$(TargetFramework)' == 'net45'">
+    <Reference Include="System.Net.Http" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="FParsec" Version="1.0.3" />
+  </ItemGroup>
+
+</Project>
