@@ -6,10 +6,7 @@ open System.Runtime.CompilerServices
 module CssSelectorLogic =
 
     [<Extension>]
-    let QuerySelectorAll (self : HtmlContainer, query : string) =
-        if (ordinalEquals query "*") then
-            GetDescendantElements(self)
-        else
-            let selector = CssSelector.Parse query
-            GetDescendantElements(self)
-            |> Seq.filter selector.Evaluate
+    let QuerySelectorAll (self, query) =
+        let selector = CssSelector.Parse query
+        GetDescendantElements(self)
+        |> Seq.filter selector.Evaluate

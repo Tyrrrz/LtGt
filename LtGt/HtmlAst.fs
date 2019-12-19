@@ -53,7 +53,6 @@ type [<AllowNullLiteral>] HtmlDeclaration(value : string) =
 
     override self.Clone() = upcast HtmlDeclaration(self)
 
-
 type [<AllowNullLiteral>] HtmlAttribute(name : string, value : string) =
     inherit HtmlEntity()
 
@@ -95,7 +94,10 @@ type [<AllowNullLiteral>] HtmlElement(name : string, attributes : IReadOnlyList<
         let children = content |> Seq.filter (fun x -> x :? HtmlNode) |> Seq.cast<HtmlNode> |> Seq.toArray
         HtmlElement(name, attributes, children)
 
-    new(other : HtmlElement) = HtmlElement(other.Name, other.Attributes, other.Children)
+    new(other : HtmlElement) =
+        HtmlElement(other.Name,
+                    other.Attributes |> Seq.map (fun x -> x.Clone() :?> HtmlAttribute) |> Seq.toArray,
+                    other.Children |> Seq.map (fun x -> x.Clone() :?> HtmlNode) |> Seq.toArray)
 
     override self.Clone() = upcast HtmlElement(self)
 
@@ -108,6 +110,8 @@ type [<AllowNullLiteral>] HtmlDocument(declaration : HtmlDeclaration, children :
     new(declaration, [<ParamArray>] children : HtmlNode[]) =
         HtmlDocument(declaration, children :> IReadOnlyList<HtmlNode>)
 
-    new(other : HtmlDocument) = HtmlDocument(other.Declaration, other.Children)
+    new(other : HtmlDocument) =
+        HtmlDocument(other.Declaration,
+                     other.Children |> Seq.map (fun x -> x.Clone() :?> HtmlNode) |> Seq.toArray)
 
     override self.Clone() = upcast HtmlDocument(self)
