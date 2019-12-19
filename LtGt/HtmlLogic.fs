@@ -100,9 +100,17 @@ module HtmlLogic =
         |> Seq.filter (fun x -> MatchesClassName(x, className))
 
     let rec private appendInnerText (node : HtmlNode) (buffer : StringBuilder) =
+        let isEmpty (element:HtmlElement) =
+            String.ordinalEqualsCI element.Name "script" ||
+            String.ordinalEqualsCI element.Name "style" ||
+            String.ordinalEqualsCI element.Name "select" ||
+            String.ordinalEqualsCI element.Name "canvas" ||
+            String.ordinalEqualsCI element.Name "video" ||
+            String.ordinalEqualsCI element.Name "iframe"
+
         let shouldPrependLine (element:HtmlElement) =
             buffer.Length > 0 && (
-                String.ordinalEqualsCI element.Name "P" ||
+                String.ordinalEqualsCI element.Name "p" ||
                 String.ordinalEqualsCI element.Name "caption" ||
                 String.ordinalEqualsCI element.Name "div" ||
                 String.ordinalEqualsCI element.Name "li")
@@ -116,7 +124,7 @@ module HtmlLogic =
                 if shouldPrependLine a then
                     do buffer.AppendLine() |> ignore
 
-                if isRawTextElementName a.Name then
+                if isEmpty a then
                     buffer
                 else
                     a.Children |> Seq.iter (fun x -> appendInnerText x buffer |> ignore)
