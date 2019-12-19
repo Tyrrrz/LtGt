@@ -2,6 +2,7 @@
 
 open System
 open FParsec
+open LtGt.ParsingUtils
 
 module private HtmlParsers =
 
@@ -108,11 +109,7 @@ module private HtmlParsers =
     // -- element that can only contain text inside
     // -- <script> and <style>
 
-    let rawTextElementName =
-        rawTextElementNames
-        |> Seq.map (fun x -> attempt (pstringCI x))
-        |> choice
-        .>> spaces
+    let rawTextElementName = anyStringOfCI rawTextElementNames .>> spaces
 
     let rawTextElement =
         parse {
@@ -134,11 +131,7 @@ module private HtmlParsers =
     // -- element that never has children and should not have a closing tag
     // -- <meta>, <br>, etc
 
-    let voidElementName =
-        voidElementNames
-        |> Seq.map (fun x -> attempt (pstringCI x))
-        |> choice
-        .>> spaces
+    let voidElementName = anyStringOfCI voidElementNames .>> spaces
 
     let voidElement =
         skipChar '<' >>. voidElementName .>>. many attribute .>> spaces .>> optional (skipChar '/') .>> skipChar '>' .>> spaces

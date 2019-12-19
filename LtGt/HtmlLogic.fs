@@ -31,9 +31,17 @@ module HtmlLogic =
         |> Option.toObj
 
     [<Extension>]
+    let inline MatchesName(self : HtmlElement, name) =
+        String.ordinalEqualsCI self.Name name
+
+    [<Extension>]
     let inline GetId(self) =
         TryGetAttributeValue (self, "id")
         |> Option.toObj
+
+    [<Extension>]
+    let inline MatchesId(self : HtmlElement, id) =
+        String.ordinalEquals (GetId self) id
 
     [<Extension>]
     let inline GetClassName(self) =
@@ -50,7 +58,7 @@ module HtmlLogic =
     [<Extension>]
     let inline MatchesClassName(self, className) =
         let classNames = className |> String.split ' '
-        let elementClassNames = GetClassNames (self)
+        let elementClassNames = GetClassNames self
 
         classNames
         |> Seq.forall (fun x -> elementClassNames |> Seq.contains x)
@@ -72,7 +80,7 @@ module HtmlLogic =
 
             | :? HtmlContainer as x ->
                 yield child
-                yield! GetDescendants(x)
+                yield! GetDescendants x
 
             | _ ->
                 yield child
@@ -86,13 +94,13 @@ module HtmlLogic =
     [<Extension>]
     let inline GetElementById(self : HtmlContainer, id) =
         GetDescendantElements (self)
-        |> Seq.tryFind (fun x -> String.ordinalEquals (GetId x) id)
+        |> Seq.tryFind (fun x -> MatchesId(x, id))
         |> Option.toObj
 
     [<Extension>]
     let inline GetElementsByTagName(self, name) =
         GetDescendantElements (self)
-        |> Seq.filter (fun x -> String.ordinalEqualsCI x.Name name)
+        |> Seq.filter (fun x -> MatchesName(x, name))
 
     [<Extension>]
     let inline GetElementsByClassName(self, className) =
@@ -101,24 +109,24 @@ module HtmlLogic =
 
     let rec private appendInnerText (node : HtmlNode) (buffer : StringBuilder) =
         let isEmpty (element:HtmlElement) =
-            String.ordinalEqualsCI element.Name "script" ||
-            String.ordinalEqualsCI element.Name "style" ||
-            String.ordinalEqualsCI element.Name "select" ||
-            String.ordinalEqualsCI element.Name "canvas" ||
-            String.ordinalEqualsCI element.Name "video" ||
-            String.ordinalEqualsCI element.Name "iframe"
+            MatchesName (element, "script") ||
+            MatchesName (element, "style") ||
+            MatchesName (element, "select") ||
+            MatchesName (element, "canvas") ||
+            MatchesName (element, "video") ||
+            MatchesName (element, "iframe")
 
         let shouldPrependLine (element:HtmlElement) =
             buffer.Length > 0 && (
-                String.ordinalEqualsCI element.Name "p" ||
-                String.ordinalEqualsCI element.Name "caption" ||
-                String.ordinalEqualsCI element.Name "div" ||
-                String.ordinalEqualsCI element.Name "li")
+                MatchesName (element, "p") ||
+                MatchesName (element, "caption") ||
+                MatchesName (element, "div") ||
+                MatchesName (element, "li"))
 
         match node with
         | :? HtmlText as a -> buffer.Append a.Value
         | :? HtmlElement as a ->
-            if String.ordinalEqualsCI a.Name "br" then
+            if MatchesName (a, "br") then
                 buffer.AppendLine()
             else
                 if shouldPrependLine a then

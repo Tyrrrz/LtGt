@@ -3,10 +3,24 @@
 
   <PropertyGroup>
     <TargetFrameworks>netstandard2.0;net45</TargetFrameworks>
+    <Authors>$(Company)</Authors>
+    <Description>Lightweight HTML processor</Description>
+    <PackageTags>html parser net core</PackageTags>
+    <PackageProjectUrl>https://github.com/Tyrrrz/LtGt</PackageProjectUrl>
+    <PackageReleaseNotes>https://github.com/Tyrrrz/LtGt/blob/master/Changelog.md</PackageReleaseNotes>
+    <PackageIcon>favicon.png</PackageIcon>
+    <PackageLicenseExpression>MIT</PackageLicenseExpression>
+    <PackageRequireLicenseAcceptance>False</PackageRequireLicenseAcceptance>
+    <GenerateDocumentationFile>True</GenerateDocumentationFile>
+    <PublishRepositoryUrl>True</PublishRepositoryUrl>
+    <EmbedUntrackedSources>True</EmbedUntrackedSources>
+    <IncludeSymbols>True</IncludeSymbols>
+    <SymbolPackageFormat>snupkg</SymbolPackageFormat>
   </PropertyGroup>
 
   <ItemGroup>
     <Compile Include="Utils.fs" />
+    <Compile Include="ParsingUtils.fs" />
     <Compile Include="HtmlAst.fs" />
     <Compile Include="HtmlRules.fs" />
     <Compile Include="HtmlEquality.fs" />
@@ -17,12 +31,10 @@
     <Compile Include="CssSelectorLogic.fs" />
   </ItemGroup>
 
-  <ItemGroup Condition="'$(TargetFramework)' == 'net45'">
-    <Reference Include="System.Net.Http" />
-  </ItemGroup>
-
   <ItemGroup>
     <PackageReference Include="FParsec" Version="1.0.3" />
+    <PackageReference Include="Microsoft.NETFramework.ReferenceAssemblies" Version="1.0.0" PrivateAssets="all" />
+    <PackageReference Include="Microsoft.SourceLink.GitHub" Version="1.0.0" PrivateAssets="all" />
   </ItemGroup>
 
 </Project>

@@ -1,6 +1,7 @@
 ﻿namespace LtGt
 
 open FParsec
+open LtGt.ParsingUtils
 
 module private CssSelectorParsers =
 

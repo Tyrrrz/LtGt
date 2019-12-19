@@ -11,13 +11,14 @@ type HtmlEntityEqualityComparer() =
             String.ordinalEqualsCI x1.Value x2.Value
 
         | (:? HtmlAttribute as x1), (:? HtmlAttribute as x2) ->
-            String.ordinalEqualsCI x1.Name x2.Name && x1.Value = x2.Value
+            String.ordinalEqualsCI x1.Name x2.Name &&
+            String.ordinalEquals x1.Value x2.Value
 
         | (:? HtmlText as x1), (:? HtmlText as x2) ->
-            x1.Value = x2.Value
+            String.ordinalEquals x1.Value x2.Value
 
         | (:? HtmlComment as x1), (:? HtmlComment as x2) ->
-            x1.Value = x2.Value
+            String.ordinalEquals x1.Value x2.Value
 
         | (:? HtmlElement as x1), (:? HtmlElement as x2) ->
             String.ordinalEqualsCI x1.Name x2.Name &&
