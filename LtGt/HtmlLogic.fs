@@ -99,14 +99,34 @@ module HtmlLogic =
         GetDescendantElements (self)
         |> Seq.filter (fun x -> MatchesClassName(x, className))
 
-    let inline private AppendInnerText (self : HtmlContainer) (buffer : StringBuilder) =
-        // TODO: implement
-        buffer
+    let rec private appendInnerText (node : HtmlNode) (buffer : StringBuilder) =
+        let shouldPrependLine (element:HtmlElement) =
+            buffer.Length > 0 && (
+                String.ordinalEqualsCI element.Name "P" ||
+                String.ordinalEqualsCI element.Name "caption" ||
+                String.ordinalEqualsCI element.Name "div" ||
+                String.ordinalEqualsCI element.Name "li")
+
+        match node with
+        | :? HtmlText as a -> buffer.Append a.Value
+        | :? HtmlElement as a ->
+            if String.ordinalEqualsCI a.Name "br" then
+                buffer.AppendLine()
+            else
+                if shouldPrependLine a then
+                    do buffer.AppendLine() |> ignore
+
+                if isRawTextElementName a.Name then
+                    buffer
+                else
+                    a.Children |> Seq.iter (fun x -> appendInnerText x buffer |> ignore)
+                    buffer
+        | _ -> buffer
 
     [<Extension>]
-    let inline GetInnerText(self) =
+    let GetInnerText(self) =
         StringBuilder()
-        |> AppendInnerText self
+        |> appendInnerText self
         |> string
 
     [<Extension>]

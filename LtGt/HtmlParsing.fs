@@ -109,10 +109,10 @@ module private HtmlParsers =
     // -- <script> and <style>
 
     let rawTextElementName =
-        choice [
-            attempt (pstringCI "script")
-            attempt (pstringCI "style")
-        ] .>> spaces
+        rawTextElementNames
+        |> Seq.map (fun x -> attempt (pstringCI x))
+        |> choice
+        .>> spaces
 
     let rawTextElement =
         parse {
@@ -135,22 +135,10 @@ module private HtmlParsers =
     // -- <meta>, <br>, etc
 
     let voidElementName =
-        choice [
-            attempt (pstringCI "meta")
-            attempt (pstringCI "link")
-            attempt (pstringCI "img")
-            attempt (pstringCI "br")
-            attempt (pstringCI "input")
-            attempt (pstringCI "hr")
-            attempt (pstringCI "area")
-            attempt (pstringCI "base")
-            attempt (pstringCI "col")
-            attempt (pstringCI "embed")
-            attempt (pstringCI "param")
-            attempt (pstringCI "source")
-            attempt (pstringCI "track")
-            attempt (pstringCI "wbr")
-        ] .>> spaces
+        voidElementNames
+        |> Seq.map (fun x -> attempt (pstringCI x))
+        |> choice
+        .>> spaces
 
     let voidElement =
         skipChar '<' >>. voidElementName .>>. many attribute .>> spaces .>> optional (skipChar '/') .>> skipChar '>' .>> spaces
