@@ -29,4 +29,6 @@ module internal Utils =
         let inline split (c : char) (s : string) =
             s.Split([| c |], StringSplitOptions.RemoveEmptyEntries)
 
-    let inline htmlDecode str = Net.WebUtility.HtmlDecode str
+    let inline htmlEncode s = Net.WebUtility.HtmlEncode s
+
+    let inline htmlDecode s = Net.WebUtility.HtmlDecode s

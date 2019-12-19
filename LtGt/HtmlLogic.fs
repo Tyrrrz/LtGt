@@ -1,5 +1,6 @@
 ﻿namespace LtGt
 
+open System
 open System.Collections.Generic
 open System.Runtime.CompilerServices
 open System.Text
@@ -190,3 +191,62 @@ module HtmlLogic =
             yield self.Next
             yield! GetNextSiblings(self.Next)
     }
+
+    let rec appendHtml (entity : HtmlEntity) depth (buffer : StringBuilder) =
+        let appendLine d (b : StringBuilder) = b.AppendLine().Append(' ', d * 2)
+
+        match entity with
+        | :? HtmlDeclaration as x ->
+            buffer.Append (sprintf "<!%s>" x.Value)
+
+        | :? HtmlAttribute as x ->
+            if String.IsNullOrWhiteSpace x.Value then
+                buffer.Append x.Name
+            else
+                buffer.Append (sprintf "%s=\"%s\"" x.Name (htmlEncode x.Value))
+
+        | :? HtmlText as x ->
+            if TryElement x.Parent |> Option.exists (fun a -> isRawTextElementName a.Name) then
+                buffer.Append x.Value
+            else
+                buffer.Append (htmlEncode x.Value)
+
+        | :? HtmlComment as x ->
+            buffer.Append (sprintf "<!-- %s -->" x.Value)
+
+        | :? HtmlElement as x ->
+            do buffer.Append('<').Append(x.Name) |> ignore
+
+            for attribute in x.Attributes do
+                buffer.Append ' ' |> appendHtml attribute depth |> ignore
+
+            do buffer.Append '>' |> ignore
+
+            if (isVoidElementName x.Name && x.Children |> Seq.isEmpty) |> not then
+
+                let innerDepth = depth + 1
+
+                for child in x.Children do
+                    appendLine innerDepth buffer |> appendHtml child innerDepth |> ignore
+
+                do (appendLine depth buffer).Append("</").Append(x.Name).Append('>') |> ignore
+
+            buffer
+
+        | :? HtmlDocument as x ->
+            do buffer |> appendHtml x.Declaration depth |> ignore
+            do buffer.AppendLine() |> ignore
+
+            for child in x.Children do
+                do buffer |> appendHtml child depth |> ignore
+                do buffer.AppendLine() |> ignore
+
+            buffer
+
+        | _ -> buffer
+
+    [<Extension>]
+    let ToHtml(self : HtmlEntity) =
+        StringBuilder()
+        |> appendHtml self 0
+        |> string

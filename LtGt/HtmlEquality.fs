@@ -31,7 +31,7 @@ type HtmlEntityEqualityComparer() =
 
         | _ -> false
 
-    let (<*>) h0 h = Microsoft.FSharp.Core.Operators.(*) h0 23 + h
+    let (<*>) a b = Microsoft.FSharp.Core.Operators.(*) a 23 + b
 
     let rec hash (a : HtmlEntity) =
         match a with
