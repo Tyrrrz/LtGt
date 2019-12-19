@@ -14,7 +14,7 @@ module HtmlLogic =
 
     let inline internal TryGetAttribute (self : HtmlElement, name) =
         self.Attributes
-        |> Seq.tryFind (fun x -> ordinalEqualsCI x.Name name)
+        |> Seq.tryFind (fun x -> String.ordinalEqualsCI x.Name name)
 
     let inline internal TryGetAttributeValue (self, name) =
         TryGetAttribute (self, name)
@@ -86,13 +86,13 @@ module HtmlLogic =
     [<Extension>]
     let inline GetElementById(self : HtmlContainer, id) =
         GetDescendantElements (self)
-        |> Seq.tryFind (fun x -> ordinalEquals (GetId x) id)
+        |> Seq.tryFind (fun x -> String.ordinalEquals (GetId x) id)
         |> Option.toObj
 
     [<Extension>]
     let inline GetElementsByTagName(self, name) =
         GetDescendantElements (self)
-        |> Seq.filter (fun x -> ordinalEqualsCI x.Name name)
+        |> Seq.filter (fun x -> String.ordinalEqualsCI x.Name name)
 
     [<Extension>]
     let inline GetElementsByClassName(self, className) =

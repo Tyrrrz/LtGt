@@ -8,23 +8,23 @@ module internal Utils =
 
     // * General utils *
 
-    let inline ordinalEquals a b = String.Equals(a, b, StringComparison.Ordinal)
-
-    let inline ordinalEqualsCI a b = String.Equals(a, b, StringComparison.OrdinalIgnoreCase)
-
-    let inline ordinalHash a =
-        match a with
-        | null -> 0
-        | _ -> StringComparer.Ordinal.GetHashCode(a)
-
-    let inline ordinalHashCI a =
-        match a with
-        | null -> 0
-        | _ -> StringComparer.OrdinalIgnoreCase.GetHashCode(a)
-
     let inline (<&>) f g = fun x -> f x && g x
 
     module String =
+
+        let inline ordinalEquals a b = String.Equals(a, b, StringComparison.Ordinal)
+
+        let inline ordinalEqualsCI a b = String.Equals(a, b, StringComparison.OrdinalIgnoreCase)
+
+        let inline ordinalHash a =
+            match a with
+            | null -> 0
+            | _ -> StringComparer.Ordinal.GetHashCode(a)
+
+        let inline ordinalHashCI a =
+            match a with
+            | null -> 0
+            | _ -> StringComparer.OrdinalIgnoreCase.GetHashCode(a)
 
         let inline trim (s : string) =
             s.Trim()
