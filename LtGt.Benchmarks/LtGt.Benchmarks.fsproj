@@ -10,10 +10,16 @@
     <PackageReference Include="AngleSharp" Version="0.12.1" />
     <PackageReference Include="BenchmarkDotNet" Version="0.11.5" />
     <PackageReference Include="HtmlAgilityPack" Version="1.11.12" />
+    <PackageReference Include="TaskBuilder.fs" Version="2.1.0" />
   </ItemGroup>
 
   <ItemGroup>
     <ProjectReference Include="..\LtGt\LtGt.fsproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Compile Include="Benchmarks.fs" />
+    <Compile Include="Program.fs" />
   </ItemGroup>
 
 </Project>

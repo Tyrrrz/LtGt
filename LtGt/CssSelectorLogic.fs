@@ -7,8 +7,8 @@ open System.Runtime.CompilerServices
 [<AutoOpen>]
 module CssSelectorLogic =
 
-    let private evaluateAttrOp a pattern value =
-        match a with
+    let private evaluateAttrOp op pattern value =
+        match op with
         | Equals -> String.ordinalEqualsCI pattern value
         | StartsWith -> value.StartsWith(pattern, StringComparison.OrdinalIgnoreCase)
         | EndsWith -> value.EndsWith(pattern, StringComparison.OrdinalIgnoreCase)
@@ -22,8 +22,8 @@ module CssSelectorLogic =
         | OnlyMultiplier multiplier -> value % multiplier = 0
         | OnlyConstant constant -> value = constant
 
-    let rec private evaluateSelector s (element : HtmlElement) =
-        match s with
+    let rec private evaluateSelector selector (element : HtmlElement) =
+        match selector with
 
         // Primitive selectors
 
