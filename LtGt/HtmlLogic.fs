@@ -385,7 +385,7 @@ module HtmlLogicExtensions =
 
     /// Gets all descendant elements that are matched by the specified tag name.
     [<Extension>]
-    let GetElementsByTagName (self, name) =
+    let GetElementsByName (self, name) =
         self
         |> elementsByName name
 
