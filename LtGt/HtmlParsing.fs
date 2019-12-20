@@ -1,6 +1,5 @@
 ﻿namespace LtGt
 
-open System
 open FParsec
 open LtGt.ParsingUtils
 
@@ -213,11 +212,6 @@ module private HtmlParsers =
         ]
 
 module Html =
-
-    let private runOrRaise parser source =
-        match run parser source with
-        | Success (r, _, _) -> r
-        | Failure (e, _, _) -> raise (InvalidOperationException e)
 
     let public ParseDocument source = runOrRaise (spaces >>. HtmlParsers.document .>> eof) source
 

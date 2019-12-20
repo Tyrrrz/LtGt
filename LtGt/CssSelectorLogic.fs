@@ -3,7 +3,8 @@
 open System
 open System.Runtime.CompilerServices
 
-[<AutoOpen; Extension>]
+// F# API
+[<AutoOpen>]
 module CssSelectorLogic =
 
     let private evaluateAttrOp a pattern value =
@@ -27,28 +28,35 @@ module CssSelectorLogic =
         // Primitive selectors
 
         | Any -> true
-        | ByType name -> String.ordinalEqualsCI name element.Name
-        | ByClass name -> MatchesClassName (element, name)
-        | ById id -> String.ordinalEquals id (GetId element)
+        | ByType name -> element |> nameMatches name
+        | ByClass className -> element |> classNameMatches className
+        | ById id -> element |> idMatches id
 
         // Attribute selectors
 
         | ByAttribute name ->
-            TryGetAttribute (element, name)
+            element
+            |> tryAttribute name
             |> Option.isSome
 
         | ByAttributeValue (name, op, pattern) ->
-            TryGetAttributeValue (element, name)
+            element
+            |> tryAttributeValue name
             |> Option.exists (evaluateAttrOp op pattern)
 
         // Hierarchical selectors
 
-        | Root -> element.Parent |> Option.ofObj |> Option.bind TryElement |> Option.isNone
+        | Root ->
+            element.Parent
+            |> Option.ofObj
+            |> Option.bind tryAsElement
+            |> Option.isNone
+
         | Empty -> element.Children |> Seq.isEmpty
 
         | OnlyChild ->
             element
-            |> GetSiblings
+            |> siblings
             |> Seq.isEmpty
 
         | FirstChild ->
@@ -61,53 +69,53 @@ module CssSelectorLogic =
 
         | NthChild formula ->
             element
-            |> GetPreviousSiblings
+            |> previousSiblings
             |> Seq.length
             |> fun x -> x + 1
             |> evaluateFormula formula
 
         | NthLastChild formula ->
             element
-            |> GetNextSiblings
+            |> nextSiblings
             |> Seq.length
             |> fun x -> x + 1
             |> evaluateFormula formula
 
         | OnlyOfType ->
             element
-            |> GetSiblings
-            |> FilterElements
-            |> Seq.filter (fun x -> String.ordinalEqualsCI x.Name element.Name)
+            |> siblings
+            |> filterElements
+            |> Seq.filter (nameMatches element.Name)
             |> Seq.isEmpty
 
         | FirstOfType ->
             element
-            |> GetPreviousSiblings
-            |> FilterElements
-            |> Seq.filter (fun x -> String.ordinalEqualsCI x.Name element.Name)
+            |> previousSiblings
+            |> filterElements
+            |> Seq.filter (nameMatches element.Name)
             |> Seq.isEmpty
 
         | LastOfType ->
             element
-            |> GetNextSiblings
-            |> FilterElements
-            |> Seq.filter (fun x -> String.ordinalEqualsCI x.Name element.Name)
+            |> nextSiblings
+            |> filterElements
+            |> Seq.filter (nameMatches element.Name)
             |> Seq.isEmpty
 
         | NthOfType formula ->
             element
-            |> GetPreviousSiblings
-            |> FilterElements
-            |> Seq.filter (fun x -> String.ordinalEqualsCI x.Name element.Name)
+            |> previousSiblings
+            |> filterElements
+            |> Seq.filter (nameMatches element.Name)
             |> Seq.length
             |> fun x -> x + 1
             |> evaluateFormula formula
 
         | NthLastOfType formula ->
             element
-            |> GetNextSiblings
-            |> FilterElements
-            |> Seq.filter (fun x -> String.ordinalEqualsCI x.Name element.Name)
+            |> nextSiblings
+            |> filterElements
+            |> Seq.filter (nameMatches element.Name)
             |> Seq.length
             |> fun x -> x + 1
             |> evaluateFormula formula
@@ -115,28 +123,29 @@ module CssSelectorLogic =
         // Hierarchical combinators
 
         | Descendant (ancestorSelector, childSelector) ->
-            GetAncestors element
+            element
+            |> ancestors
             |> Seq.cast
-            |> FilterElements
+            |> filterElements
             |> Seq.exists (evaluateSelector ancestorSelector)
             && evaluateSelector childSelector element
 
         | Child (parentSelector, childSelector) ->
             element.Parent
-            |> TryElement
+            |> tryAsElement
             |> Option.exists (evaluateSelector parentSelector)
             && evaluateSelector childSelector element
 
         | Sibling (previousSelector, targetSelector) ->
             element.Previous
-            |> TryElement
+            |> tryAsElement
             |> Option.exists (evaluateSelector previousSelector)
             && evaluateSelector targetSelector element
 
         | SubsequentSibling (previousSelector, targetSelector) ->
             element
-            |> GetPreviousSiblings
-            |> FilterElements
+            |> previousSiblings
+            |> filterElements
             |> Seq.exists (evaluateSelector previousSelector)
             && evaluateSelector targetSelector element
 
@@ -145,8 +154,17 @@ module CssSelectorLogic =
         | Not selector -> evaluateSelector selector element |> not
         | Group selectors -> selectors |> Seq.forall (fun x -> evaluateSelector x element)
 
+    let queryElements query container =
+        let selector = CssSelector.Parse query
+        container
+        |> descendantElements
+        |> Seq.filter (evaluateSelector selector)
+
+// C# API
+[<Extension>]
+module CssSelectorLogicExtensions =
+
     [<Extension>]
     let QueryElements (self, query) =
-        let selector = CssSelector.Parse query
-        GetDescendantElements(self)
-        |> Seq.filter (evaluateSelector selector)
+        self
+        |> queryElements query

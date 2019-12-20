@@ -6,7 +6,7 @@ open LtGt.ParsingUtils
 module private CssSelectorParsers =
 
     // Note to self:
-    // Don't skip trailing spaces in selectors because they have meaning here
+    // Don't skip trailing spaces in selectors because they are semantically important
 
     let exprChar =
         choice [
@@ -221,7 +221,4 @@ module private CssSelectorParsers =
 
 module internal CssSelector =
 
-    let public Parse source =
-        match run (CssSelectorParsers.selector .>> eof) source with
-        | Success (r, _, _) -> r
-        | Failure (e, _, _) -> raise (System.InvalidOperationException(e))
+    let public Parse source = runOrRaise (CssSelectorParsers.selector .>> eof) source
