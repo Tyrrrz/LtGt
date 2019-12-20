@@ -1,21 +1,11 @@
 using System.Collections.Generic;
-using System.IO;
 using NUnit.Framework;
 
 namespace LtGt.Tests
 {
     [TestFixture]
-    public class HtmlTests
+    public class HtmlParsingTests
     {
-        private static string TempDirPath => Path.Combine(TestContext.CurrentContext.TestDirectory, "Temp");
-
-        [TearDown]
-        public void Cleanup()
-        {
-            if (Directory.Exists(TempDirPath))
-                Directory.Delete(TempDirPath, true);
-        }
-
         private static IEnumerable<TestCaseData> GetTestCases_ParseDocument()
         {
             yield return new TestCaseData(

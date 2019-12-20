@@ -211,10 +211,17 @@ module private HtmlParsers =
             attempt elementChild |>> upcastNode
         ]
 
+// F# & C# API
 module Html =
 
-    let public ParseDocument source = runOrRaise (spaces >>. HtmlParsers.document .>> eof) source
+    /// Parses input string as an HTML document or raises an exception in case of failure.
+    [<CompiledName("ParseDocument")>]
+    let parseDocument source = runOrRaise (spaces >>. HtmlParsers.document .>> eof) source
 
-    let public ParseElement source = runOrRaise (spaces >>. HtmlParsers.element .>> eof) source
+    /// Parses input string as an HTML element or raises an exception in case of failure.
+    [<CompiledName("ParseElement")>]
+    let parseElement source = runOrRaise (spaces >>. HtmlParsers.element .>> eof) source
 
-    let public ParseNode source = runOrRaise (spaces >>. HtmlParsers.node .>> eof) source
+    /// Parses input string as an HTML node or raises an exception in case of failure.
+    [<CompiledName("ParseNode")>]
+    let parseNode source = runOrRaise (spaces >>. HtmlParsers.node .>> eof) source

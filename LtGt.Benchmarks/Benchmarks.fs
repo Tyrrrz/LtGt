@@ -10,7 +10,7 @@ open LtGt
 module private Helpers =
 
     let parseDocumentWithLtGt source =
-        Html.ParseDocument source
+        Html.parseDocument source
 
     let parseDocumentWithAngleSharp (source : string) =
         AngleSharp.Html.Parser.HtmlParser().ParseDocument(source)

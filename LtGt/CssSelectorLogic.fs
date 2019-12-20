@@ -154,8 +154,9 @@ module CssSelectorLogic =
         | Not selector -> evaluateSelector selector element |> not
         | Group selectors -> selectors |> Seq.forall (fun x -> evaluateSelector x element)
 
+    /// Gets all descendant elements that are matched by the specified CSS selector.
     let queryElements query container =
-        let selector = CssSelector.Parse query
+        let selector = CssSelector.parse query
         container
         |> descendantElements
         |> Seq.filter (evaluateSelector selector)
@@ -164,6 +165,7 @@ module CssSelectorLogic =
 [<Extension>]
 module CssSelectorLogicExtensions =
 
+    /// Gets all descendant elements that are matched by the specified CSS selector.
     [<Extension>]
     let QueryElements (self, query) =
         self

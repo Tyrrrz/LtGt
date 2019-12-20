@@ -1,126 +1,13 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
 using NUnit.Framework;
 
 namespace LtGt.Tests
 {
     [TestFixture]
-    public class HtmlContainerTests
+    public class CssSelectorLogicTests
     {
-        private static IEnumerable<TestCaseData> GetTestCases_GetElementById()
-        {
-            yield return new TestCaseData(
-                new HtmlElement("div",
-                    new HtmlElement("p", new HtmlAttribute("id", "test1")),
-                    new HtmlElement("p", new HtmlAttribute("id", "test2"))),
-                "test1",
-                new HtmlElement("p", new HtmlAttribute("id", "test1"))
-            );
-
-            yield return new TestCaseData(
-                new HtmlElement("div",
-                    new HtmlElement("p", new HtmlAttribute("id", "test1")),
-                    new HtmlElement("p", new HtmlAttribute("id", "test2"))),
-                "test3",
-                null
-            );
-        }
-
-        private static IEnumerable<TestCaseData> GetTestCases_GetElementsByTagName()
-        {
-            yield return new TestCaseData(
-                new HtmlElement("div",
-                    new HtmlElement("a"),
-                    new HtmlElement("span",
-                        new HtmlElement("p")),
-                    new HtmlElement("p")),
-                "p",
-                new[]
-                {
-                    new HtmlElement("p"),
-                    new HtmlElement("p")
-                }
-            );
-
-            yield return new TestCaseData(
-                new HtmlElement("div",
-                    new HtmlElement("a"),
-                    new HtmlElement("span",
-                        new HtmlElement("p")),
-                    new HtmlElement("p")),
-                "br",
-                new HtmlElement[0]
-            );
-        }
-
-        private static IEnumerable<TestCaseData> GetTestCases_GetElementsByClassName()
-        {
-            yield return new TestCaseData(
-                new HtmlElement("div",
-                    new HtmlElement("a", new HtmlAttribute("class", "test1")),
-                    new HtmlElement("span",
-                        new HtmlElement("p", new HtmlAttribute("class", "test2"))),
-                    new HtmlElement("p", new HtmlAttribute("class", "test2 test3"))),
-                "test2",
-                new[]
-                {
-                    new HtmlElement("p", new HtmlAttribute("class", "test2")),
-                    new HtmlElement("p", new HtmlAttribute("class", "test2 test3"))
-                }
-            );
-
-            yield return new TestCaseData(
-                new HtmlElement("div",
-                    new HtmlElement("a", new HtmlAttribute("class", "test1")),
-                    new HtmlElement("span",
-                        new HtmlElement("p", new HtmlAttribute("class", "test2"))),
-                    new HtmlElement("p", new HtmlAttribute("class", "test2 test3"))),
-                "test3",
-                new[]
-                {
-                    new HtmlElement("p", new HtmlAttribute("class", "test2 test3"))
-                }
-            );
-
-            yield return new TestCaseData(
-                new HtmlElement("div",
-                    new HtmlElement("a", new HtmlAttribute("class", "test1")),
-                    new HtmlElement("span",
-                        new HtmlElement("p", new HtmlAttribute("class", "test2"))),
-                    new HtmlElement("p", new HtmlAttribute("class", "test2 test3"))),
-                "test2 test3",
-                new[]
-                {
-                    new HtmlElement("p", new HtmlAttribute("class", "test2 test3"))
-                }
-            );
-
-            yield return new TestCaseData(
-                new HtmlElement("div",
-                    new HtmlElement("a", new HtmlAttribute("class", "test1")),
-                    new HtmlElement("span",
-                        new HtmlElement("p", new HtmlAttribute("class", "test2"))),
-                    new HtmlElement("p", new HtmlAttribute("class", "test2 test3"))),
-                "test3 test2",
-                new[]
-                {
-                    new HtmlElement("p", new HtmlAttribute("class", "test2 test3"))
-                }
-            );
-
-            yield return new TestCaseData(
-                new HtmlElement("div",
-                    new HtmlElement("a", new HtmlAttribute("class", "test1")),
-                    new HtmlElement("span",
-                        new HtmlElement("p", new HtmlAttribute("class", "test2"))),
-                    new HtmlElement("p", new HtmlAttribute("class", "test2 test3"))),
-                "test4",
-                new HtmlElement[0]
-            );
-        }
-
-        private static IEnumerable<TestCaseData> GetTestCases_Elements()
+        private static IEnumerable<TestCaseData> GetTestCases_QueryElements()
         {
             // Any
 
@@ -1213,98 +1100,8 @@ namespace LtGt.Tests
             );
         }
 
-        private static IEnumerable<TestCaseData> GetTestCases_GetInnerText()
-        {
-            yield return new TestCaseData(
-                new HtmlElement("div", new HtmlText("test")),
-                "test"
-            );
-
-            yield return new TestCaseData(
-                new HtmlElement("div",
-                    new HtmlText("test1"),
-                    new HtmlText("test2")),
-                "test1test2"
-            );
-
-            yield return new TestCaseData(
-                new HtmlElement("div",
-                    new HtmlText("test1"),
-                    new HtmlText("test2"),
-                    new HtmlElement("br")),
-                $"test1test2{Environment.NewLine}"
-            );
-
-            yield return new TestCaseData(
-                new HtmlElement("div",
-                    new HtmlText("test1"),
-                    new HtmlElement("br"),
-                    new HtmlText("test2")),
-                $"test1{Environment.NewLine}test2"
-            );
-
-            yield return new TestCaseData(
-                new HtmlElement("div",
-                    new HtmlText("test1"),
-                    new HtmlElement("div"),
-                    new HtmlText("test2")),
-                $"test1{Environment.NewLine}test2"
-            );
-
-            yield return new TestCaseData(
-                new HtmlElement("div",
-                    new HtmlElement("a", new HtmlText("test1")),
-                    new HtmlElement("p", new HtmlText("test2")),
-                    new HtmlElement("div", new HtmlElement("a", new HtmlText("test3")))),
-                $"test1{Environment.NewLine}test2{Environment.NewLine}test3"
-            );
-
-            yield return new TestCaseData(
-                new HtmlElement("div", new HtmlElement("span"), new HtmlElement("img")),
-                ""
-            );
-
-            yield return new TestCaseData(
-                new HtmlElement("div"),
-                ""
-            );
-        }
-
         [Test]
-        [TestCaseSource(nameof(GetTestCases_GetElementById))]
-        public void GetElementById_Test(HtmlContainer container, string id, HtmlElement expected)
-        {
-            // Act
-            var actual = container.GetElementById(id);
-
-            // Assert
-            Assert.That(actual, Is.EqualTo(expected).Using(HtmlEntityEqualityComparer.Instance));
-        }
-
-        [Test]
-        [TestCaseSource(nameof(GetTestCases_GetElementsByTagName))]
-        public void GetElementsByTagName_Test(HtmlContainer container, string tagName, IReadOnlyList<HtmlElement> expected)
-        {
-            // Act
-            var actual = container.GetElementsByTagName(tagName).ToArray();
-
-            // Assert
-            Assert.That(actual, Is.EqualTo(expected).Using(HtmlEntityEqualityComparer.Instance));
-        }
-
-        [Test]
-        [TestCaseSource(nameof(GetTestCases_GetElementsByClassName))]
-        public void GetElementsByClassName_Test(HtmlContainer container, string className, IReadOnlyList<HtmlElement> expected)
-        {
-            // Act
-            var actual = container.GetElementsByClassName(className).ToArray();
-
-            // Assert
-            Assert.That(actual, Is.EqualTo(expected).Using(HtmlEntityEqualityComparer.Instance));
-        }
-
-        [Test]
-        [TestCaseSource(nameof(GetTestCases_Elements))]
+        [TestCaseSource(nameof(GetTestCases_QueryElements))]
         public void QueryElements_Test(HtmlContainer container, string selector, IReadOnlyList<HtmlElement> expected)
         {
             // Act
@@ -1312,17 +1109,6 @@ namespace LtGt.Tests
 
             // Assert
             Assert.That(actual, Is.EqualTo(expected).Using(HtmlEntityEqualityComparer.Instance));
-        }
-
-        [Test]
-        [TestCaseSource(nameof(GetTestCases_GetInnerText))]
-        public void GetInnerText_Test(HtmlContainer container, string expected)
-        {
-            // Act
-            var actual = container.GetInnerText();
-
-            // Assert
-            Assert.That(actual, Is.EqualTo(expected));
         }
     }
 }

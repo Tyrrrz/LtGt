@@ -1,12 +1,11 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
-using FluentAssertions;
 using NUnit.Framework;
 
 namespace LtGt.Tests
 {
     [TestFixture]
-    public class HtmlEntityEqualityComparerTests
+    public class HtmlEqualityTests
     {
         private static IEnumerable<TestCaseData> GetTestCases_Equals()
         {
@@ -167,7 +166,7 @@ namespace LtGt.Tests
             var actual = HtmlEntityEqualityComparer.Instance.Equals(entity1, entity2);
 
             // Assert
-            actual.Should().Be(expected);
+            Assert.That(actual, Is.EqualTo(expected));
         }
 
         [Test]
@@ -179,10 +178,7 @@ namespace LtGt.Tests
             var hashCode2 = HtmlEntityEqualityComparer.Instance.GetHashCode(entity2);
 
             // Assert
-            if (expectedEqualHashCodes)
-                hashCode1.Should().Be(hashCode2);
-            else
-                hashCode1.Should().NotBe(hashCode2);
+            Assert.That(hashCode1, expectedEqualHashCodes ? Is.EqualTo(hashCode2) : Is.Not.EqualTo(hashCode2));
         }
     }
 }

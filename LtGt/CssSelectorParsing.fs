@@ -219,6 +219,8 @@ module private CssSelectorParsers =
             attempt standaloneCombinator
         ]
 
+// F# API (not accessible from C#)
 module internal CssSelector =
 
-    let public Parse source = runOrRaise (CssSelectorParsers.selector .>> eof) source
+    /// Parses input string as a CSS selector or raises an exception in case of failure.
+    let public parse source = runOrRaise (CssSelectorParsers.selector .>> eof) source
