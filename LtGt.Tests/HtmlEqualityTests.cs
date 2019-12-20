@@ -1,5 +1,4 @@
 ﻿using System.Collections.Generic;
-using System.Linq;
 using NUnit.Framework;
 
 namespace LtGt.Tests
@@ -146,17 +145,7 @@ namespace LtGt.Tests
             );
         }
 
-        private static IEnumerable<TestCaseData> GetTestCases_GetHashCode()
-        {
-            foreach (var testCase in GetTestCases_Equals())
-            {
-                // Skip nulls because GetHashCode doesn't work on nulls unlike Equals
-                if (testCase.Arguments.Any(a => a == null))
-                    continue;
-
-                yield return testCase;
-            }
-        }
+        private static IEnumerable<TestCaseData> GetTestCases_GetHashCode() => GetTestCases_Equals();
 
         [Test]
         [TestCaseSource(nameof(GetTestCases_Equals))]

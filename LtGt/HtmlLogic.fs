@@ -55,7 +55,7 @@ module HtmlLogic =
     let nameMatches name (element : HtmlElement) =
         String.ordinalEqualsCI element.Name name
 
-    /// Checks whether an HTML element has specified value of "id" attribute.
+    /// Checks whether an element has specified value of "id" attribute.
     /// This takes into account case.
     let idMatches id element =
         element
@@ -259,14 +259,14 @@ module HtmlLogicExtensions =
 
     // -- Attributes
 
-    /// Gets an attribute by name or null if not found.
+    /// Gets an attribute by name or returns null if not found.
     [<Extension>]
     let GetAttribute (self, name) =
         self
         |> tryAttribute name
         |> Option.toObj
 
-    /// Gets the value of an attribute by its name or null if attribute is not found.
+    /// Gets the value of an attribute by its name or returns null if attribute is not found.
     [<Extension>]
     let GetAttributeValue (self, name) =
         self
@@ -275,28 +275,28 @@ module HtmlLogicExtensions =
 
     // -- Elements
 
-    /// Gets the value of the "id" attribute or null if it's not set.
+    /// Gets the value of the "id" attribute or returns null if it's not set.
     [<Extension>]
     let GetId self =
         self
         |> tryId
         |> Option.toObj
 
-    /// Gets the value of the "class" attribute or null if it's not set.
+    /// Gets the value of the "class" attribute or returns null if it's not set.
     [<Extension>]
     let GetClassName self =
         self
         |> tryClassName
         |> Option.toObj
 
-    /// Gets the value of the "href" attribute or null if it's not set.
+    /// Gets the value of the "href" attribute or returns null if it's not set.
     [<Extension>]
     let GetHref self =
         self
         |> tryHref
         |> Option.toObj
 
-    /// Gets the value of the "src" attribute or null if it's not set.
+    /// Gets the value of the "src" attribute or returns null if it's not set.
     [<Extension>]
     let GetSrc self =
         self
@@ -310,7 +310,7 @@ module HtmlLogicExtensions =
         self
         |> nameMatches name
 
-    /// Checks whether an HTML element has specified value of "id" attribute.
+    /// Checks whether an element has specified value of "id" attribute.
     /// This takes into account case.
     [<Extension>]
     let MatchesId (self, id) =
@@ -376,7 +376,7 @@ module HtmlLogicExtensions =
         self
         |> descendantElements
 
-    /// Gets the first descendant element by the value of its "id" attribute or null if not found.
+    /// Gets the first descendant element by the value of its "id" attribute or returns null if not found.
     [<Extension>]
     let GetElementById (self, id) =
         self
