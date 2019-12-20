@@ -120,7 +120,7 @@ namespace LtGt.Tests
             );
         }
 
-        private static IEnumerable<TestCaseData> GetTestCases_QuerySelectorAll()
+        private static IEnumerable<TestCaseData> GetTestCases_Elements()
         {
             // Any
 
@@ -1304,11 +1304,11 @@ namespace LtGt.Tests
         }
 
         [Test]
-        [TestCaseSource(nameof(GetTestCases_QuerySelectorAll))]
-        public void QuerySelectorAll_Test(HtmlContainer container, string selector, IReadOnlyList<HtmlElement> expected)
+        [TestCaseSource(nameof(GetTestCases_Elements))]
+        public void QueryElements_Test(HtmlContainer container, string selector, IReadOnlyList<HtmlElement> expected)
         {
             // Act
-            var actual = container.QuerySelectorAll(selector).ToArray();
+            var actual = container.QueryElements(selector).ToArray();
 
             // Assert
             Assert.That(actual, Is.EqualTo(expected).Using(HtmlEntityEqualityComparer.Instance));

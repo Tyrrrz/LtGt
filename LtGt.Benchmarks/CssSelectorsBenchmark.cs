@@ -27,7 +27,7 @@ namespace LtGt.Benchmarks
         private const string CssSelector = "div#player";
 
         [Benchmark(Description = "LtGt", Baseline = true)]
-        public IReadOnlyList<HtmlElement> SelectWithLtGt() => _ltGtDocument.QuerySelectorAll(CssSelector).ToArray();
+        public IReadOnlyList<HtmlElement> SelectWithLtGt() => _ltGtDocument.QueryElements(CssSelector).ToArray();
 
         [Benchmark(Description = "AngleSharp")]
         public IReadOnlyList<AngleSharp.Dom.IElement> SelectWithAngleSharp() => _angleSharpDocument.QuerySelectorAll(CssSelector).ToArray();

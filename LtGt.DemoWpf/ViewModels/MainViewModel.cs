@@ -108,7 +108,7 @@ namespace LtGt.DemoWpf.ViewModels
 
             TopLevelNodes = string.IsNullOrWhiteSpace(Selector)
                 ? Document.Children
-                : Document.QuerySelectorAll(Selector).ToArray();
+                : Document.QueryElements(Selector).ToArray();
         }
     }
 }

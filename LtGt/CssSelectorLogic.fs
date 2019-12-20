@@ -146,7 +146,7 @@ module CssSelectorLogic =
         | Group selectors -> selectors |> Seq.forall (fun x -> evaluateSelector x element)
 
     [<Extension>]
-    let QuerySelectorAll (self, query) =
+    let QueryElements (self, query) =
         let selector = CssSelector.Parse query
         GetDescendantElements(self)
         |> Seq.filter (evaluateSelector selector)
