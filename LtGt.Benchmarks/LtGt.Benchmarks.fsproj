@@ -19,7 +19,6 @@
 
   <ItemGroup>
     <Compile Include="Benchmarks.fs" />
-    <Compile Include="Program.fs" />
   </ItemGroup>
 
 </Project>

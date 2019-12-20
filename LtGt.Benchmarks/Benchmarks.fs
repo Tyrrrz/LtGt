@@ -1,7 +1,8 @@
-﻿namespace LtGt.Benchmarks
-
-open System.Net.Http
+﻿open System.Net.Http
+open System.Reflection
 open BenchmarkDotNet.Attributes
+open BenchmarkDotNet.Order
+open BenchmarkDotNet.Running
 open FSharp.Control.Tasks.V2
 open LtGt
 
@@ -16,10 +17,9 @@ module private Helpers =
 
     let parseDocumentWithHtmlAgilityPack (source : string) =
         let document = HtmlAgilityPack.HtmlDocument()
-        document.LoadHtml source
-        document
+        document.LoadHtml source; document
 
-[<SimpleJob>]
+[<SimpleJob; RankColumn; Orderer(SummaryOrderPolicy.FastestToSlowest)>]
 type ParseDocumentBenchmark() =
 
     let mutable _source : string = null
@@ -40,7 +40,7 @@ type ParseDocumentBenchmark() =
     [<Benchmark(Description = "HtmlAgilityPack")>]
     member self.HtmlAgilityPack() = parseDocumentWithHtmlAgilityPack _source
 
-[<SimpleJob>]
+[<SimpleJob; RankColumn; Orderer(SummaryOrderPolicy.FastestToSlowest)>]
 type BasicSelectorsBenchmark() =
 
     let mutable _ltGtDocument : HtmlDocument = null
@@ -66,7 +66,7 @@ type BasicSelectorsBenchmark() =
     [<Benchmark(Description = "HtmlAgilityPack")>]
     member self.HtmlAgilityPack() = _htmlAgilityPackDocument.GetElementbyId("player")
 
-[<SimpleJob>]
+[<SimpleJob; RankColumn; Orderer(SummaryOrderPolicy.FastestToSlowest)>]
 type CssSelectorsBenchmark() =
 
     let mutable _ltGtDocument : HtmlDocument = null
@@ -86,3 +86,8 @@ type CssSelectorsBenchmark() =
 
     [<Benchmark(Description = "AngleSharp")>]
     member self.AngleSharp() = _angleSharpDocument.QuerySelectorAll("div#player") |> Seq.toArray
+
+[<EntryPoint>]
+let main args =
+    BenchmarkRunner.Run(Assembly.GetExecutingAssembly()) |> ignore
+    0
