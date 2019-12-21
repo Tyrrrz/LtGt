@@ -50,6 +50,13 @@ module HtmlLogic =
         element
         |> tryAttributeValue "src"
 
+    /// Gets the value of the "class" attribute as a list of space-separated elements.
+    let classNames element =
+        element
+        |> tryClassName
+        |> Option.map (String.split ' ')
+        |> Option.defaultValue Array.empty
+
     /// Checks whether an element has specified tag name.
     /// This takes into account case.
     let nameMatches name (element : HtmlElement) =
@@ -62,16 +69,9 @@ module HtmlLogic =
         |> tryId
         |> Option.exists (String.ordinalEquals id)
 
-    /// Gets the value of the "class" attribute as a list of space-separated elements.
-    let classNames element =
-        element
-        |> tryClassName
-        |> Option.map (String.split ' ')
-        |> Option.defaultValue Array.empty
-
     /// Checks whether the class name of an element matches specified class name.
     /// This function works by splitting both class names by space and checking if the element contains all individual
-    /// elements in the list.
+    /// classes in the list.
     let classNameMatches className element =
         let targetClassNames = className |> String.split ' '
         let sourceClassNames = element |> classNames
@@ -161,7 +161,7 @@ module HtmlLogic =
 
             | :? HtmlContainer as x ->
                 yield child
-                yield! descendants x
+                yield! x |> descendants
 
             | _ ->
                 yield child
@@ -190,6 +190,8 @@ module HtmlLogic =
         container
         |> descendantElements
         |> Seq.filter (classNameMatches className)
+
+    // -- Entities
 
     let rec private appendHtml (entity : HtmlEntity) depth (buffer : StringBuilder) =
         let appendLine d (b : StringBuilder) = b.AppendLine().Append(' ', d * 2)
@@ -245,13 +247,23 @@ module HtmlLogic =
 
         | _ -> buffer
 
-    // -- Entities
-
     /// Renders an entity as HTML code.
     let toHtml entity =
         StringBuilder()
         |> appendHtml entity 0
         |> string
+
+    let rec clone (entity : HtmlEntity) : HtmlEntity =
+        match entity with
+        | :? HtmlDeclaration as x -> upcast HtmlDeclaration(x.Value)
+        | :? HtmlAttribute as x -> upcast HtmlAttribute(x.Name, x.Value)
+        | :? HtmlText as x -> upcast HtmlText(x.Value)
+        | :? HtmlComment as x -> upcast HtmlComment(x.Value)
+        | :? HtmlElement as x -> upcast HtmlElement(x.Name,
+                                                    x.Attributes |> Seq.map clone |> Seq.cast |> Seq.toArray,
+                                                    x.Children |> Seq.map clone |> Seq.cast |> Seq.toArray)
+        | :? HtmlDocument as x -> upcast HtmlDocument(x.Declaration |> clone :?> HtmlDeclaration,
+                                                      x.Children |> Seq.map clone |> Seq.cast<HtmlNode> |> Seq.toArray)
 
 // C# API
 [<Extension>]
@@ -303,6 +315,13 @@ module HtmlLogicExtensions =
         |> trySrc
         |> Option.toObj
 
+    /// Gets the value of the "class" attribute as a list of space-separated elements.
+    [<Extension>]
+    let GetClassNames self =
+        self
+        |> classNames
+        :> IReadOnlyList<string>
+
     /// Checks whether an element has specified tag name.
     /// This takes into account case.
     [<Extension>]
@@ -317,16 +336,9 @@ module HtmlLogicExtensions =
         self
         |> idMatches id
 
-    /// Gets the value of the "class" attribute as a list of space-separated elements.
-    [<Extension>]
-    let GetClassNames self =
-        self
-        |> classNames
-        :> IReadOnlyList<string>
-
     /// Checks whether the class name of an element matches specified class name.
     /// This function works by splitting both class names by space and checking if the element contains all individual
-    /// elements in the list.
+    /// classes in the list.
     [<Extension>]
     let MatchesClassName (self, className) =
         self

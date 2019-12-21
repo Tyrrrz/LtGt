@@ -88,11 +88,20 @@ type [<AllowNullLiteral>] HtmlElement(name : string, attributes : IReadOnlyList<
     member self.Name = name
     member self.Attributes = attributes
 
-    // temp hack until mutability is in place
-    new(name, [<ParamArray>] content : HtmlEntity[]) =
-        let attributes = content |> Seq.filter (fun x -> x :? HtmlAttribute) |> Seq.cast<HtmlAttribute> |> Seq.toArray
-        let children = content |> Seq.filter (fun x -> x :? HtmlNode) |> Seq.cast<HtmlNode> |> Seq.toArray
-        HtmlElement(name, attributes, children)
+    new(name, attr1, attr2, attr3, attr4, [<ParamArray>] children : HtmlNode[]) =
+        HtmlElement(name, [| attr1; attr2; attr3; attr4 |], children)
+
+    new(name, attr1, attr2, attr3, [<ParamArray>] children : HtmlNode[]) =
+        HtmlElement(name, [| attr1; attr2; attr3 |], children)
+
+    new(name, attr1, attr2, [<ParamArray>] children : HtmlNode[]) =
+        HtmlElement(name, [| attr1; attr2 |], children)
+
+    new(name, attribute : HtmlAttribute, [<ParamArray>] children : HtmlNode[]) =
+        HtmlElement(name, [| attribute |], children)
+
+    new(name, [<ParamArray>] children : HtmlNode[]) =
+        HtmlElement(name, Array.empty, children)
 
     new(other : HtmlElement) =
         HtmlElement(other.Name,
@@ -106,7 +115,6 @@ type [<AllowNullLiteral>] HtmlDocument(declaration : HtmlDeclaration, children :
 
     member self.Declaration = declaration
 
-     // temp hack until mutability is in place
     new(declaration, [<ParamArray>] children : HtmlNode[]) =
         HtmlDocument(declaration, children :> IReadOnlyList<HtmlNode>)
 

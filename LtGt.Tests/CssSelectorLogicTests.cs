@@ -1098,6 +1098,18 @@ namespace LtGt.Tests
                     new HtmlElement("p", new HtmlAttribute("class", "foo(bar)"))
                 }
             );
+
+            // Malformed
+
+            yield return new TestCaseData(
+                new HtmlElement("div",
+                    new HtmlElement("p", new HtmlAttribute("id", "test1")),
+                    new HtmlElement("div",
+                        new HtmlElement("p", new HtmlAttribute("id", "test2"))),
+                    new HtmlElement("p", new HtmlAttribute("id", "test3"))),
+                "@a! asdk; $%^",
+                new HtmlElement[0]
+            );
         }
 
         [Test]

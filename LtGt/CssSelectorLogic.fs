@@ -25,14 +25,10 @@ module CssSelectorLogic =
     let rec private evaluateSelector selector (element : HtmlElement) =
         match selector with
 
-        // Primitive selectors
-
         | Any -> true
         | ByType name -> element |> nameMatches name
         | ByClass className -> element |> classNameMatches className
         | ById id -> element |> idMatches id
-
-        // Attribute selectors
 
         | ByAttribute name ->
             element
@@ -43,8 +39,6 @@ module CssSelectorLogic =
             element
             |> tryAttributeValue name
             |> Option.exists (evaluateAttrOp op pattern)
-
-        // Hierarchical selectors
 
         | Root ->
             element.Parent
@@ -120,8 +114,6 @@ module CssSelectorLogic =
             |> fun x -> x + 1
             |> evaluateFormula formula
 
-        // Hierarchical combinators
-
         | Descendant (ancestorSelector, childSelector) ->
             element
             |> ancestors
@@ -149,17 +141,18 @@ module CssSelectorLogic =
             |> Seq.exists (evaluateSelector previousSelector)
             && evaluateSelector targetSelector element
 
-        // Supreme combinators
-
-        | Not selector -> evaluateSelector selector element |> not
+        | Not selector -> element |> evaluateSelector selector |> not
         | Group selectors -> selectors |> Seq.forall (fun x -> evaluateSelector x element)
 
     /// Gets all descendant elements that are matched by the specified CSS selector.
     let queryElements query container =
-        let selector = CssSelector.parse query
-        container
-        |> descendantElements
-        |> Seq.filter (evaluateSelector selector)
+        // This never fails, just returns nothing in case of fail
+        match CssSelector.tryParse query with
+        | Ok selector ->
+            container
+            |> descendantElements
+            |> Seq.filter (evaluateSelector selector)
+        | Error _ -> Seq.empty
 
 // C# API
 [<Extension>]

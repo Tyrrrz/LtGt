@@ -214,14 +214,43 @@ module private HtmlParsers =
 // F# & C# API
 module Html =
 
+    exception ParseException of string
+
+    let private fullDocument = spaces >>. HtmlParsers.document .>> eof
+
+    let private fullElement = spaces >>. HtmlParsers.element .>> eof
+
+    let private fullNode = spaces >>. HtmlParsers.node .>> eof
+
+    /// Tries to parse input string as an HTML document.
+    [<CompiledName("TryParseDocument")>]
+    let tryParseDocument source = runWithResult fullDocument source
+
+    /// Tries to parse input string as an HTML element.
+    [<CompiledName("TryParseElement")>]
+    let tryParseElement source = runWithResult fullElement source
+
+    /// Tries to parse input string as an HTML node.
+    [<CompiledName("TryParseNode")>]
+    let tryParseNode source = runWithResult fullNode source
+
     /// Parses input string as an HTML document or raises an exception in case of failure.
     [<CompiledName("ParseDocument")>]
-    let parseDocument source = runOrRaise (spaces >>. HtmlParsers.document .>> eof) source
+    let parseDocument source =
+        match tryParseDocument source with
+        | Result.Ok res -> res
+        | Result.Error err -> raise (ParseException err)
 
     /// Parses input string as an HTML element or raises an exception in case of failure.
     [<CompiledName("ParseElement")>]
-    let parseElement source = runOrRaise (spaces >>. HtmlParsers.element .>> eof) source
+    let parseElement source =
+        match tryParseElement source with
+        | Result.Ok res -> res
+        | Result.Error err -> raise (ParseException err)
 
     /// Parses input string as an HTML node or raises an exception in case of failure.
     [<CompiledName("ParseNode")>]
-    let parseNode source = runOrRaise (spaces >>. HtmlParsers.node .>> eof) source
+    let parseNode source =
+        match tryParseNode source with
+        | Result.Ok res -> res
+        | Result.Error err -> raise (ParseException err)

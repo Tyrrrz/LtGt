@@ -2,10 +2,6 @@
 
 open FParsec
 
-// Exception thrown when parsing fails.
-// Used as an alternative to Result union when called from C#.
-exception ParseException of string
-
 module internal ParsingUtils =
 
     let isSpace = FParsec.Text.IsWhitespace
@@ -34,9 +30,3 @@ module internal ParsingUtils =
         match run parser source with
         | Success (res, _, _) -> Result.Ok res
         | Failure (err, _, _) -> Result.Error err
-
-    /// Runs parser on source and either produces a successful result or throws an exception.
-    let inline runOrRaise parser source =
-        match run parser source with
-        | Success (res, _, _) -> res
-        | Failure (err, _, _) -> raise (ParseException err)

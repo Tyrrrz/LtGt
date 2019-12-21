@@ -162,24 +162,6 @@ namespace LtGt.Tests
             );
         }
 
-        private static IEnumerable<TestCaseData> GetTestCases_ToHtml()
-        {
-            yield return new TestCaseData(
-                new HtmlDocument(new HtmlDeclaration("doctype html"),
-                    new HtmlElement("html",
-                        new HtmlElement("head",
-                            new HtmlElement("title", new HtmlText("Test document")),
-                            new HtmlElement("meta", new HtmlAttribute("name", "description"), new HtmlAttribute("content", "Test")),
-                            new HtmlComment("Some test comment"),
-                            new HtmlElement("script",
-                                new HtmlText("let a = Math.random()*100 < 50 ? true : false;"))),
-                        new HtmlElement("body",
-                            new HtmlElement("div", new HtmlAttribute("id", "content"),
-                                new HtmlElement("a", new HtmlAttribute("href", "https://example.com"),
-                                    new HtmlText("Test <link>"))))))
-            );
-        }
-
         [Test]
         [TestCaseSource(nameof(GetTestCases_ParseDocument))]
         public void ParseDocument_Test(string source, HtmlDocument expected)
@@ -211,18 +193,6 @@ namespace LtGt.Tests
 
             // Assert
             Assert.That(actual, Is.EqualTo(expected).Using(HtmlEntityEqualityComparer.Instance));
-        }
-
-        [Test]
-        [TestCaseSource(nameof(GetTestCases_ToHtml))]
-        public void ToHtml_Test(HtmlNode node)
-        {
-            // Act
-            var html = node.ToHtml();
-            var roundTrip = Html.ParseNode(html);
-
-            // Assert
-            Assert.That(node, Is.EqualTo(roundTrip).Using(HtmlEntityEqualityComparer.Instance));
         }
     }
 }
