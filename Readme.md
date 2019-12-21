@@ -48,7 +48,23 @@ const string html = @"<!doctype html>
   </body>
 </html>";
 
+// This throws an exception on parse errors
 var document = Html.ParseDocument(html);
+
+// -or-
+
+// This returns a wrapped result instead
+var documentResult = Html.TryParseDocument(html);
+if (documentResult.IsOk)
+{
+    // Handle result
+    var document = documentResult.ResultValue;
+}
+else
+{
+    // Handle error
+    var error = documentResult.ErrorValue;
+}
 ```
 
 ```f#
@@ -64,7 +80,15 @@ let html = "<!doctype html>
   </body>
 </html>"
 
+// This throws an exception on parse errors
 let document = Html.parseDocument html
+
+// -or-
+
+// This returns a wrapped result instead
+match (Html.parseDocument html) with
+| Result.Ok document -> // handle result
+| Result.Error error -> // handle error
 ```
 
 ### Parse a fragment
