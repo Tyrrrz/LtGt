@@ -4,6 +4,7 @@ open System
 open System.Collections.Generic
 open System.Runtime.CompilerServices
 open System.Text
+open System.Xml.Linq
 
 // F# API
 [<AutoOpen>]
@@ -236,6 +237,26 @@ module HtmlLogic =
         |> appendHtml entity 0
         |> string
 
+    /// Converts an entity to its equivalent LINQ2XML representation.
+    let rec toXObject (entity : HtmlEntity) : XObject =
+        match entity with
+        | :? HtmlDeclaration as x -> upcast XComment(x.Content)
+
+        | :? HtmlAttribute as x -> upcast XAttribute(XName.Get(x.Name),
+                                                     x.Value |> Option.ofObj |> Option.defaultValue "")
+
+        | :? HtmlText as x -> upcast XText(x.Content)
+        | :? HtmlComment as x -> upcast XComment(x.Content)
+        | :? HtmlCData as x -> upcast XCData(x.Content)
+
+        | :? HtmlElement as x -> upcast XElement(XName.Get(x.Name),
+                                                    x.Attributes |> Seq.map toXObject |> Seq.toArray,
+                                                    x.Children |> Seq.map toXObject |> Seq.toArray)
+
+        | :? HtmlDocument as x -> upcast XDocument(x.Children |> Seq.map toXObject |> Seq.toArray)
+
+        | _ -> failwith "Unmatched entity."
+
     /// Creates a deep copy of an entity.
     let rec clone (entity : HtmlEntity) : HtmlEntity =
         match entity with
@@ -244,11 +265,14 @@ module HtmlLogic =
         | :? HtmlText as x -> upcast HtmlText(x.Content)
         | :? HtmlComment as x -> upcast HtmlComment(x.Content)
         | :? HtmlCData as x -> upcast HtmlCData(x.Content)
+
         | :? HtmlElement as x -> upcast HtmlElement(x.Name,
                                                     x.Attributes |> Seq.map clone |> Seq.cast |> Seq.toArray,
                                                     x.Children |> Seq.map clone |> Seq.cast |> Seq.toArray)
+
         | :? HtmlDocument as x -> upcast HtmlDocument(x.Declaration |> clone :?> HtmlDeclaration,
                                                       x.Children |> Seq.map clone |> Seq.cast<HtmlNode> |> Seq.toArray)
+
         | _ -> failwith "Unmatched entity."
 
 // C# API
@@ -386,6 +410,12 @@ module HtmlLogicExtensions =
     let ToHtml self =
         self
         |> toHtml
+
+    /// Converts an entity to its equivalent LINQ2XML representation.
+    [<Extension>]
+    let ToXObject self =
+        self
+        |> toXObject
 
     /// Creates a deep copy of an entity.
     [<Extension>]

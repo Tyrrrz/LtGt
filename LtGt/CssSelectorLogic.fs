@@ -144,7 +144,7 @@ module CssSelectorLogic =
 
     /// Gets all descendant elements that are matched by the specified CSS selector.
     let queryElements query container =
-        // This never fails, just returns nothing in case of fail
+        // This never fails, just returns nothing in case of an error
         match CssSelector.tryParse query with
         | Ok selector ->
             container

@@ -1,6 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Xml.Linq;
+using LtGt.Tests.Internal;
 using NUnit.Framework;
 
 namespace LtGt.Tests
@@ -524,6 +526,41 @@ namespace LtGt.Tests
             );
         }
 
+        private static IEnumerable<TestCaseData> GetTestCases_ToXObject()
+        {
+            yield return new TestCaseData(
+                new HtmlAttribute("name"),
+                new XAttribute("name", "")
+            );
+
+            yield return new TestCaseData(
+                new HtmlAttribute("name", "value"),
+                new XAttribute("name", "value")
+            );
+
+            yield return new TestCaseData(
+                new HtmlComment("test"),
+                new XComment("test")
+            );
+
+            yield return new TestCaseData(
+                new HtmlText("test"),
+                new XText("test")
+            );
+
+            yield return new TestCaseData(
+                new HtmlElement("test"),
+                new XElement("test")
+            );
+
+            yield return new TestCaseData(
+                new HtmlDocument(new HtmlDeclaration("doctype html"),
+                    new HtmlElement("test")),
+                new XDocument(
+                    new XElement("test"))
+            );
+        }
+
         private static IEnumerable<TestCaseData> GetTestCases_Clone()
         {
             yield return new TestCaseData(new HtmlDeclaration("name value"));
@@ -706,6 +743,17 @@ namespace LtGt.Tests
 
             // Assert
             Assert.That(node, Is.EqualTo(roundTrip).Using(HtmlEntityEqualityComparer.Instance));
+        }
+
+        [Test]
+        [TestCaseSource(nameof(GetTestCases_ToXObject))]
+        public void ToXObject_Test(HtmlEntity entity, XObject expected)
+        {
+            // Act
+            var actual = entity.ToXObject();
+
+            // Assert
+            Assert.That(actual, Is.EqualTo(expected).Using(XObjectEqualityComparer.Instance));
         }
 
         [Test]
