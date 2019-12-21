@@ -415,7 +415,7 @@ namespace LtGt.Tests
             );
         }
 
-        private static IEnumerable<TestCaseData> GetTestCases_GetElementsByName()
+        private static IEnumerable<TestCaseData> GetTestCases_GetElementsByTagName()
         {
             yield return new TestCaseData(
                 new HtmlElement("div",
@@ -712,11 +712,11 @@ namespace LtGt.Tests
         }
 
         [Test]
-        [TestCaseSource(nameof(GetTestCases_GetElementsByName))]
-        public void GetElementsByName_Test(HtmlContainer container, string tagName, IReadOnlyList<HtmlElement> expected)
+        [TestCaseSource(nameof(GetTestCases_GetElementsByTagName))]
+        public void GetElementsByTagName_Test(HtmlContainer container, string tagName, IReadOnlyList<HtmlElement> expected)
         {
             // Act
-            var actual = container.GetElementsByName(tagName).ToArray();
+            var actual = container.GetElementsByTagName(tagName).ToArray();
 
             // Assert
             Assert.That(actual, Is.EqualTo(expected).Using(HtmlEntityEqualityComparer.Instance));

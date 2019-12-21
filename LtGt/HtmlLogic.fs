@@ -130,7 +130,7 @@ module HtmlLogic =
         |> Seq.tryFind (idMatches id)
 
     /// Gets all descendant elements that are matched by the specified tag name.
-    let elementsByName name container =
+    let elementsByTagName name container =
         container
         |> descendantElements
         |> Seq.filter (nameMatches name)
@@ -387,9 +387,9 @@ module HtmlLogicExtensions =
 
     /// Gets all descendant elements that are matched by the specified tag name.
     [<Extension>]
-    let GetElementsByName (self, name) =
+    let GetElementsByTagName (self, name) =
         self
-        |> elementsByName name
+        |> elementsByTagName name
 
     /// Gets all descendant elements that are matched by the specified class name.
     [<Extension>]
