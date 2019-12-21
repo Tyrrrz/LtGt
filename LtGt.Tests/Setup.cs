@@ -1,5 +1,4 @@
-﻿using LtGt.Models;
-using NUnit.Framework;
+﻿using NUnit.Framework;
 
 namespace LtGt.Tests
 {
@@ -9,7 +8,7 @@ namespace LtGt.Tests
         [OneTimeSetUp]
         public void ConfigureFormatters()
         {
-            TestContext.AddFormatter<HtmlNode>(n => HtmlRenderer.Default.RenderNode((HtmlNode) n));
+            TestContext.AddFormatter<HtmlEntity>(e => ((HtmlEntity) e).ToHtml());
         }
     }
 }

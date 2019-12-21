@@ -1,5 +1,4 @@
 ﻿using System.Collections.Generic;
-using LtGt.Models;
 using NUnit.Framework;
 
 namespace LtGt.Tests
@@ -9,7 +8,7 @@ namespace LtGt.Tests
     {
         private static IEnumerable<TestCaseData> GetTestCases_Clone()
         {
-            yield return new TestCaseData(new HtmlDeclaration("name", "value"));
+            yield return new TestCaseData(new HtmlDeclaration("name value"));
 
             yield return new TestCaseData(new HtmlAttribute("name"));
 
@@ -29,7 +28,7 @@ namespace LtGt.Tests
             );
 
             yield return new TestCaseData(
-                new HtmlDocument(HtmlDeclaration.DoctypeHtml,
+                new HtmlDocument(new HtmlDeclaration("doctype html"),
                     new HtmlElement("body",
                         new HtmlElement("div",
                             new HtmlText("test"))))
@@ -44,11 +43,8 @@ namespace LtGt.Tests
             var actual = entity.Clone();
 
             // Assert
-            Assert.Multiple(() =>
-            {
-                Assert.That(actual, Is.Not.SameAs(entity));
-                Assert.That(actual, Is.EqualTo(entity).Using(HtmlEntity.EqualityComparer));
-            });
+            Assert.That(actual, Is.Not.SameAs(entity));
+            Assert.That(actual, Is.EqualTo(entity).Using(HtmlEntityEqualityComparer.Instance));
         }
     }
 }

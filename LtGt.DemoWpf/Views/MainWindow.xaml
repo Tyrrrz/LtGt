@@ -4,7 +4,7 @@
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
     xmlns:converters="clr-namespace:LtGt.DemoWpf.Converters"
     xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
-    xmlns:models="clr-namespace:LtGt.Models;assembly=LtGt"
+    xmlns:ltgt="clr-namespace:LtGt;assembly=LtGt"
     Title="LtGt Demo"
     Width="750"
     Height="500"
@@ -121,7 +121,7 @@
             </TreeView.ItemContainerStyle>
             <TreeView.Resources>
                 <!--  HTML Element  -->
-                <HierarchicalDataTemplate DataType="{x:Type models:HtmlElement}" ItemsSource="{Binding Children}">
+                <HierarchicalDataTemplate DataType="{x:Type ltgt:HtmlElement}" ItemsSource="{Binding Children}">
                     <WrapPanel Orientation="Horizontal">
                         <!--  Opening bracket and tag name  -->
                         <TextBlock TextWrapping="Wrap">
@@ -154,7 +154,7 @@
                 </HierarchicalDataTemplate>
 
                 <!--  HTML Text  -->
-                <DataTemplate DataType="{x:Type models:HtmlText}">
+                <DataTemplate DataType="{x:Type ltgt:HtmlText}">
                     <TextBlock
                         Foreground="{DynamicResource PrimaryInverseTextBrush}"
                         Text="{Binding Value}"
@@ -162,7 +162,7 @@
                 </DataTemplate>
 
                 <!--  HTML Comment  -->
-                <DataTemplate DataType="{x:Type models:HtmlComment}">
+                <DataTemplate DataType="{x:Type ltgt:HtmlComment}">
                     <TextBlock
                         FontStyle="Italic"
                         Foreground="Gray"
