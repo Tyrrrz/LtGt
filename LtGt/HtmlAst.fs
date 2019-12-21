@@ -3,12 +3,9 @@
 open System
 open System.Collections.Generic
 
-// ---------------------------------
 // Abstractions
-// ---------------------------------
 
-type [<AbstractClass; AllowNullLiteral>] HtmlEntity() =
-    abstract member Clone : unit -> HtmlEntity
+type [<AbstractClass; AllowNullLiteral>] HtmlEntity() = class end
 
 and [<AbstractClass; AllowNullLiteral>] HtmlNode() =
     inherit HtmlEntity()
@@ -40,50 +37,62 @@ and [<AbstractClass; AllowNullLiteral>] HtmlContainer(children : IReadOnlyList<H
 
     member self.Children = children
 
-// ---------------------------------
 // Implementations
-// ---------------------------------
 
-type [<AllowNullLiteral>] HtmlDeclaration(value : string) =
+type [<AllowNullLiteral>] HtmlDeclaration(content : string) =
     inherit HtmlEntity()
 
-    member self.Value = value
+    member self.Content = content
 
-    new(other : HtmlDeclaration) = HtmlDeclaration(other.Value)
-
-    override self.Clone() = upcast HtmlDeclaration(self)
-
-type [<AllowNullLiteral>] HtmlAttribute(name : string, value : string) =
+and [<AllowNullLiteral>] HtmlAttribute(name : string, value : string) =
     inherit HtmlEntity()
+
+    let mutable parent : HtmlElement = null
+    let mutable previous : HtmlAttribute = null
+    let mutable next : HtmlAttribute = null
 
     member self.Name = name
     member self.Value = value
 
+    member self.Parent
+        with public get() = parent
+        and internal set value = parent <- value
+
+    member self.Previous
+        with public get() = previous
+        and internal set value = previous <- value
+
+    member self.Next
+        with public get() = next
+        and internal set value = next <- value
+
     new(name) = HtmlAttribute(name, null)
-    new(other : HtmlAttribute) = HtmlAttribute(other.Name, other.Value)
 
-    override self.Clone() = upcast HtmlAttribute(self)
-
-type [<AllowNullLiteral>] HtmlText(value : string) =
+and [<AllowNullLiteral>] HtmlText(content : string) =
     inherit HtmlNode()
 
-    member self.Value = value
+    member self.Content = content
 
-    new(other : HtmlText) = HtmlText(other.Value)
-
-    override self.Clone() = upcast HtmlText(self)
-
-type [<AllowNullLiteral>] HtmlComment(value : string) =
+and [<AllowNullLiteral>] HtmlComment(content : string) =
     inherit HtmlNode()
 
-    member self.Value = value
+    member self.Content = content
 
-    new(other : HtmlComment) = HtmlComment(other.Value)
+and [<AllowNullLiteral>] HtmlCData(content : string) =
+    inherit HtmlNode()
 
-    override self.Clone() = upcast HtmlComment(self)
+    member self.Content = content
 
-type [<AllowNullLiteral>] HtmlElement(name : string, attributes : IReadOnlyList<HtmlAttribute>, children : IReadOnlyList<HtmlNode>) =
+and [<AllowNullLiteral>] HtmlElement(name : string,
+                                     attributes : IReadOnlyList<HtmlAttribute>,
+                                     children : IReadOnlyList<HtmlNode>) as self =
     inherit HtmlContainer(children)
+
+    do attributes |> Seq.iteri (fun i node ->
+        node.Parent <- self
+        node.Previous <- attributes |> Seq.tryItem (i - 1) |> Option.toObj
+        node.Next <- attributes |> Seq.tryItem (i + 1) |> Option.toObj
+    )
 
     member self.Name = name
     member self.Attributes = attributes
@@ -103,23 +112,11 @@ type [<AllowNullLiteral>] HtmlElement(name : string, attributes : IReadOnlyList<
     new(name, [<ParamArray>] children : HtmlNode[]) =
         HtmlElement(name, Array.empty, children)
 
-    new(other : HtmlElement) =
-        HtmlElement(other.Name,
-                    other.Attributes |> Seq.map (fun x -> x.Clone() :?> HtmlAttribute) |> Seq.toArray,
-                    other.Children |> Seq.map (fun x -> x.Clone() :?> HtmlNode) |> Seq.toArray)
-
-    override self.Clone() = upcast HtmlElement(self)
-
-type [<AllowNullLiteral>] HtmlDocument(declaration : HtmlDeclaration, children : IReadOnlyList<HtmlNode>) =
+and [<AllowNullLiteral>] HtmlDocument(declaration : HtmlDeclaration,
+                                      children : IReadOnlyList<HtmlNode>) =
     inherit HtmlContainer(children)
 
     member self.Declaration = declaration
 
     new(declaration, [<ParamArray>] children : HtmlNode[]) =
         HtmlDocument(declaration, children :> IReadOnlyList<HtmlNode>)
-
-    new(other : HtmlDocument) =
-        HtmlDocument(other.Declaration,
-                     other.Children |> Seq.map (fun x -> x.Clone() :?> HtmlNode) |> Seq.toArray)
-
-    override self.Clone() = upcast HtmlDocument(self)

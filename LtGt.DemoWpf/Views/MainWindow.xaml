@@ -157,7 +157,7 @@
                 <DataTemplate DataType="{x:Type ltgt:HtmlText}">
                     <TextBlock
                         Foreground="{DynamicResource PrimaryInverseTextBrush}"
-                        Text="{Binding Value}"
+                        Text="{Binding Content}"
                         TextWrapping="Wrap" />
                 </DataTemplate>
 
@@ -168,8 +168,20 @@
                         Foreground="Gray"
                         TextWrapping="Wrap">
                         <Run Text="&lt;!--" />
-                        <Run Text="{Binding Value, Mode=OneWay}" />
+                        <Run Text="{Binding Content, Mode=OneWay}" />
                         <Run Text="--&gt;" />
+                    </TextBlock>
+                </DataTemplate>
+
+                <!--  HTML CData  -->
+                <DataTemplate DataType="{x:Type ltgt:HtmlCData}">
+                    <TextBlock
+                        FontStyle="Italic"
+                        Foreground="Gray"
+                        TextWrapping="Wrap">
+                        <Run Text="&lt;![CDATA[" />
+                        <Run Text="{Binding Content, Mode=OneWay}" />
+                        <Run Text="]]&gt;" />
                     </TextBlock>
                 </DataTemplate>
             </TreeView.Resources>

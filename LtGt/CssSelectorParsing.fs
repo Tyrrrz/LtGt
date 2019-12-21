@@ -6,35 +6,11 @@ open LtGt.ParsingUtils
 module private CssSelectorParsers =
 
     // Note to self:
-    // Don't skip trailing spaces in selectors because they are semantically important
+    // Spaces are important in CSS selectors, don't skip them.
 
-    let exprChar =
-        choice [
-            attempt (skipChar '\\' >>. anyChar)
-            attempt (noneOf " .#:[]()>+~*^$|=")
-        ]
+    // ** Attribute value operator
 
-    // Primitive selectors
-
-    let any = skipChar '*' >>% Any
-
-    let byType = many1Chars letterOrDigit |>> ByType
-
-    let byClass = skipChar '.' >>. many1Chars exprChar |>> ByClass
-
-    let byId = skipChar '#' >>. many1Chars exprChar |>> ById
-
-    let primitive =
-        choice [
-            any
-            byType
-            byClass
-            byId
-        ]
-
-    // Attribute selectors
-
-    let attributeValueEqualityOperator =
+    let attributeValueOperator =
         choice [
             skipString "^=" >>% StartsWith
             skipString "$=" >>% EndsWith
@@ -42,57 +18,91 @@ module private CssSelectorParsers =
             skipString "~=" >>% WhiteSpaceSeparatedContains
             skipString "|=" >>% HyphenSeparatedStartsWith
             skipChar '=' >>% Equals
-        ] .>> spaces
-
-    let byAttribute =
-        many1CharsBetween (skipChar '[') exprChar (skipChar ']')
-        |>> ByAttribute
-
-    let doublyQuotedByAttributeValue =
-        skipChar '[' >>. tuple3 (many1Chars exprChar) attributeValueEqualityOperator (manyCharsBetween (skipChar '"') anyChar (skipChar '"')) .>> skipChar ']'
-        |>> ByAttributeValue
-
-    let singlyQuotedByAttributeValue =
-        skipChar '[' >>. tuple3 (many1Chars exprChar) attributeValueEqualityOperator (manyCharsBetween (skipChar ''') anyChar (skipChar ''')) .>> skipChar ']'
-        |>> ByAttributeValue
-
-    let attribute =
-        choice [
-            attempt doublyQuotedByAttributeValue
-            attempt singlyQuotedByAttributeValue
-            attempt byAttribute
         ]
 
-    // Hierarchical selectors
+    // ** Number formula
 
-    let integerSign =
+    let even = skipString "even" >>% MultiplierAndConstant (2, 0)
+
+    let odd = skipString "odd" >>% MultiplierAndConstant (2, 1)
+
+    let formulaSign =
         choice [
             skipChar '-' >>% -1
             skipChar '+' >>% +1
             preturn +1
         ]
 
-    let integer =
-        integerSign .>> spaces .>>. many1Chars digit
-        |>> fun (sign, str) -> sign * int str
+    let formulaNumber =
+        many1Chars digit
+        |>> int
 
-    let even = skipString "even" >>% MultiplierAndConstant (2, 0)
+    let formulaSignedNumber =
+        formulaSign .>> spaces .>>. formulaNumber
+        |>> fun (sign, number) -> sign * number
 
-    let odd = skipString "odd" >>% MultiplierAndConstant (2, 1)
+    let multiplierAndConstantFormula =
+        formulaSignedNumber .>> skipChar 'n' .>>. formulaSignedNumber
+        |>> MultiplierAndConstant
 
-    let fullNumberFormula = integer .>> skipChar 'n' .>>. integer |>> MultiplierAndConstant
+    let onlyMultiplierNumberFormula =
+        formulaSignedNumber .>> skipChar 'n'
+        |>> OnlyMultiplier
 
-    let onlyMultiplierNumberFormula = integer .>> skipChar 'n' |>> OnlyMultiplier
-
-    let onlyConstantNumberFormula = integer |>> OnlyConstant
+    let onlyConstantNumberFormula =
+        formulaSignedNumber
+        |>> OnlyConstant
 
     let numberFormula =
         choice [
             even
             odd
-            attempt fullNumberFormula
+            attempt multiplierAndConstantFormula
             attempt onlyMultiplierNumberFormula
             attempt onlyConstantNumberFormula
+        ]
+
+    // ** Selectors
+
+    let exprChar =
+        choice [
+            attempt (skipChar '\\' >>. anyChar)
+            attempt (noneOf " .#:[]()>+~*^$|=")
+        ]
+
+    let any = skipChar '*' >>% Any
+
+    let byName = many1Chars letterOrDigit |>> ByName
+
+    let byId = skipChar '#' >>. many1Chars exprChar |>> ById
+
+    let byClassName = skipChar '.' >>. many1Chars exprChar |>> ByClassName
+
+    let primitive =
+        choice [
+            any
+            byName
+            byId
+            byClassName
+        ]
+
+    let byAttribute =
+        many1CharsBetween (skipChar '[') exprChar (skipChar ']')
+        |>> ByAttribute
+
+    let byDoublyQuotedAttributeValue =
+        skipChar '[' >>. tuple3 (many1Chars exprChar) attributeValueOperator (manyCharsBetween (skipChar '"') anyChar (skipChar '"')) .>> skipChar ']'
+        |>> ByAttributeValue
+
+    let bySinglyQuotedAttributeValue =
+        skipChar '[' >>. tuple3 (many1Chars exprChar) attributeValueOperator (manyCharsBetween (skipChar ''') anyChar (skipChar ''')) .>> skipChar ']'
+        |>> ByAttributeValue
+
+    let attribute =
+        choice [
+            attempt byDoublyQuotedAttributeValue
+            attempt bySinglyQuotedAttributeValue
+            attempt byAttribute
         ]
 
     let root = skipStringCI ":root" >>% Root
@@ -106,11 +116,11 @@ module private CssSelectorParsers =
     let lastChild = skipStringCI ":last-child" >>% LastChild
 
     let nthChild =
-        skipStringCI ":nth-child(" >>. spaces >>. numberFormula .>> skipChar ')'
+        skipStringCI ":nth-child(" >>. numberFormula .>> skipChar ')'
         |>> NthChild
 
     let nthLastChild =
-        skipStringCI ":nth-last-child(" >>. spaces >>. numberFormula .>> skipChar ')'
+        skipStringCI ":nth-last-child(" >>. numberFormula .>> skipChar ')'
         |>> NthLastChild
 
     let onlyOfType = skipStringCI ":only-of-type" >>% OnlyOfType
@@ -120,11 +130,11 @@ module private CssSelectorParsers =
     let lastOfType = skipStringCI ":last-of-type" >>% LastOfType
 
     let nthOfType =
-        skipStringCI ":nth-of-type(" >>. spaces >>. numberFormula .>> skipChar ')'
+        skipStringCI ":nth-of-type(" >>. numberFormula .>> skipChar ')'
         |>> NthOfType
 
     let nthLastOfType =
-        skipStringCI ":nth-last-of-type(" >>. spaces >>. numberFormula .>> skipChar ')'
+        skipStringCI ":nth-last-of-type(" >>. numberFormula .>> skipChar ')'
         |>> NthLastOfType
 
     let hierarchical =
@@ -153,7 +163,7 @@ module private CssSelectorParsers =
     let group, groupRef = createParserForwardedToRef()
 
     let not =
-        skipString ":not(" >>. spaces >>. group .>> skipChar ')'
+        skipString ":not(" >>. group .>> skipChar ')'
         |>> Not
 
     do groupRef :=

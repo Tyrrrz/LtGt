@@ -16,17 +16,20 @@ module HtmlEquality =
         | null, null -> true
 
         | (:? HtmlDeclaration as x1), (:? HtmlDeclaration as x2) ->
-            String.ordinalEqualsCI x1.Value x2.Value
+            String.ordinalEqualsCI x1.Content x2.Content
 
         | (:? HtmlAttribute as x1), (:? HtmlAttribute as x2) ->
             String.ordinalEqualsCI x1.Name x2.Name &&
             String.ordinalEquals x1.Value x2.Value
 
         | (:? HtmlText as x1), (:? HtmlText as x2) ->
-            String.ordinalEquals x1.Value x2.Value
+            String.ordinalEquals x1.Content x2.Content
 
         | (:? HtmlComment as x1), (:? HtmlComment as x2) ->
-            String.ordinalEquals x1.Value x2.Value
+            String.ordinalEquals x1.Content x2.Content
+
+        | (:? HtmlCData as x1), (:? HtmlCData as x2) ->
+            String.ordinalEquals x1.Content x2.Content
 
         | (:? HtmlElement as x1), (:? HtmlElement as x2) ->
             String.ordinalEqualsCI x1.Name x2.Name &&
@@ -40,16 +43,18 @@ module HtmlEquality =
         | _ -> false
 
     /// Calculates hashcode for specified HTML entity.
-    let rec htmlHash (a : HtmlEntity) =
-        match a with
+    let rec htmlHash (e : HtmlEntity) =
+        match e with
 
-        | :? HtmlDeclaration as x -> String.ordinalHashCI x.Value
+        | :? HtmlDeclaration as x -> String.ordinalHashCI x.Content
 
         | :? HtmlAttribute as x -> String.ordinalHashCI x.Name <*> String.ordinalHash x.Value
 
-        | :? HtmlText as x -> String.ordinalHash x.Value
+        | :? HtmlText as x -> String.ordinalHash x.Content
 
-        | :? HtmlComment as x -> String.ordinalHash x.Value
+        | :? HtmlComment as x -> String.ordinalHash x.Content
+
+        | :? HtmlCData as x -> String.ordinalHash x.Content
 
         | :? HtmlElement as x ->
             String.ordinalHashCI x.Name <*>

@@ -2,7 +2,7 @@
   <Import Project="../LtGt.props" />
 
   <PropertyGroup>
-    <TargetFrameworks>netstandard2.0;net45</TargetFrameworks>
+    <TargetFrameworks>netstandard2.0;netstandard1.6;net45</TargetFrameworks>
     <Authors>$(Company)</Authors>
     <Description>Lightweight HTML processor</Description>
     <PackageTags>html parser net core</PackageTags>
@@ -32,6 +32,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <PackageReference Update="FSharp.Core" Version="4.3.4" />
     <PackageReference Include="FParsec" Version="1.0.3" />
     <PackageReference Include="Microsoft.NETFramework.ReferenceAssemblies" Version="1.0.0" PrivateAssets="all" />
     <PackageReference Include="Microsoft.SourceLink.GitHub" Version="1.0.0" PrivateAssets="all" />

@@ -64,32 +64,6 @@ namespace LtGt.Tests
             );
         }
 
-        private static IEnumerable<TestCaseData> GetTestCases_GetHref()
-        {
-            yield return new TestCaseData(
-                new HtmlElement("a", new HtmlAttribute("href", "test")),
-                "test"
-            );
-
-            yield return new TestCaseData(
-                new HtmlElement("a"),
-                null
-            );
-        }
-
-        private static IEnumerable<TestCaseData> GetTestCases_GetSrc()
-        {
-            yield return new TestCaseData(
-                new HtmlElement("img", new HtmlAttribute("src", "test")),
-                "test"
-            );
-
-            yield return new TestCaseData(
-                new HtmlElement("img"),
-                null
-            );
-        }
-
         private static IEnumerable<TestCaseData> GetTestCases_GetClassNames()
         {
             yield return new TestCaseData(
@@ -550,6 +524,35 @@ namespace LtGt.Tests
             );
         }
 
+        private static IEnumerable<TestCaseData> GetTestCases_Clone()
+        {
+            yield return new TestCaseData(new HtmlDeclaration("name value"));
+
+            yield return new TestCaseData(new HtmlAttribute("name"));
+
+            yield return new TestCaseData(new HtmlAttribute("name", "value"));
+
+            yield return new TestCaseData(new HtmlAttribute("name"));
+
+            yield return new TestCaseData(new HtmlComment("test"));
+
+            yield return new TestCaseData(new HtmlText("test"));
+
+            yield return new TestCaseData(new HtmlElement("div"));
+
+            yield return new TestCaseData(
+                new HtmlElement("div",
+                    new HtmlElement("a", new HtmlAttribute("href", "/test")), new HtmlText("test"))
+            );
+
+            yield return new TestCaseData(
+                new HtmlDocument(new HtmlDeclaration("doctype html"),
+                    new HtmlElement("body",
+                        new HtmlElement("div",
+                            new HtmlText("test"))))
+            );
+        }
+
         [Test]
         [TestCaseSource(nameof(GetTestCases_GetAttribute))]
         public void GetAttribute_Test(HtmlElement element, string attributeName, HtmlAttribute expected)
@@ -584,28 +587,6 @@ namespace LtGt.Tests
         }
 
         [Test]
-        [TestCaseSource(nameof(GetTestCases_GetHref))]
-        public void GetHref_Test(HtmlElement element, string expected)
-        {
-            // Act
-            var actual = element.GetHref();
-
-            // Assert
-            Assert.That(actual, Is.EqualTo(expected));
-        }
-
-        [Test]
-        [TestCaseSource(nameof(GetTestCases_GetSrc))]
-        public void GetSrc_Test(HtmlElement element, string expected)
-        {
-            // Act
-            var actual = element.GetSrc();
-
-            // Assert
-            Assert.That(actual, Is.EqualTo(expected));
-        }
-
-        [Test]
         [TestCaseSource(nameof(GetTestCases_GetClassNames))]
         public void GetClassNames_Test(HtmlElement element, IReadOnlyList<string> expected)
         {
@@ -621,7 +602,7 @@ namespace LtGt.Tests
         public void MatchesClassName_Test(HtmlElement element, string className, bool expected)
         {
             // Act
-            var actual = element.MatchesClassName(className);
+            var actual = element.ClassNameMatches(className);
 
             // Assert
             Assert.That(actual, Is.EqualTo(expected));
@@ -725,6 +706,18 @@ namespace LtGt.Tests
 
             // Assert
             Assert.That(node, Is.EqualTo(roundTrip).Using(HtmlEntityEqualityComparer.Instance));
+        }
+
+        [Test]
+        [TestCaseSource(nameof(GetTestCases_Clone))]
+        public void Clone_Test(HtmlEntity entity)
+        {
+            // Act
+            var actual = entity.Clone();
+
+            // Assert
+            Assert.That(actual, Is.Not.SameAs(entity));
+            Assert.That(actual, Is.EqualTo(entity).Using(HtmlEntityEqualityComparer.Instance));
         }
     }
 }

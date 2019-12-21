@@ -93,6 +93,18 @@ namespace LtGt.Tests
             );
 
             yield return new TestCaseData(
+                new HtmlCData("test"),
+                new HtmlCData("test"),
+                true
+            );
+
+            yield return new TestCaseData(
+                new HtmlCData("test1"),
+                new HtmlCData("test2"),
+                false
+            );
+
+            yield return new TestCaseData(
                 new HtmlElement("div"),
                 new HtmlElement("div"),
                 true

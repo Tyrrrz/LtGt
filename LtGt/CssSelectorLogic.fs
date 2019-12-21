@@ -1,6 +1,5 @@
 ﻿namespace LtGt
 
-open System
 open System.Runtime.CompilerServices
 
 // F# API
@@ -9,10 +8,10 @@ module CssSelectorLogic =
 
     let private evaluateAttrOp op pattern value =
         match op with
-        | Equals -> String.ordinalEqualsCI pattern value
-        | StartsWith -> value.StartsWith(pattern, StringComparison.OrdinalIgnoreCase)
-        | EndsWith -> value.EndsWith(pattern, StringComparison.OrdinalIgnoreCase)
-        | Contains -> value.IndexOf(pattern, StringComparison.OrdinalIgnoreCase) >= 0
+        | Equals -> String.ordinalEqualsCI value pattern
+        | StartsWith -> String.ordinalStartsWithCI value pattern
+        | EndsWith -> String.ordinalEndsWithCI value pattern
+        | Contains -> String.ordinalContainsCI value pattern
         | WhiteSpaceSeparatedContains -> value |> String.split ' ' |> Seq.exists (String.ordinalEqualsCI pattern)
         | HyphenSeparatedStartsWith -> value |> String.split '-' |> Seq.tryHead |> Option.exists (String.ordinalEqualsCI pattern)
 
@@ -24,11 +23,10 @@ module CssSelectorLogic =
 
     let rec private evaluateSelector selector (element : HtmlElement) =
         match selector with
-
         | Any -> true
-        | ByType name -> element |> nameMatches name
-        | ByClass className -> element |> classNameMatches className
+        | ByName name -> element |> nameMatches name
         | ById id -> element |> idMatches id
+        | ByClassName className -> element |> classNameMatches className
 
         | ByAttribute name ->
             element
@@ -120,26 +118,26 @@ module CssSelectorLogic =
             |> Seq.cast
             |> filterElements
             |> Seq.exists (evaluateSelector ancestorSelector)
-            && evaluateSelector childSelector element
+            && element |> evaluateSelector childSelector
 
         | Child (parentSelector, childSelector) ->
             element.Parent
             |> tryAsElement
             |> Option.exists (evaluateSelector parentSelector)
-            && evaluateSelector childSelector element
+            && element |> evaluateSelector childSelector
 
         | Sibling (previousSelector, targetSelector) ->
             element.Previous
             |> tryAsElement
             |> Option.exists (evaluateSelector previousSelector)
-            && evaluateSelector targetSelector element
+            && element |> evaluateSelector targetSelector
 
         | SubsequentSibling (previousSelector, targetSelector) ->
             element
             |> previousSiblings
             |> filterElements
             |> Seq.exists (evaluateSelector previousSelector)
-            && evaluateSelector targetSelector element
+            && element |> evaluateSelector targetSelector
 
         | Not selector -> element |> evaluateSelector selector |> not
         | Group selectors -> selectors |> Seq.forall (fun x -> evaluateSelector x element)

@@ -1,6 +1,7 @@
 ﻿namespace LtGt
 
 open System
+open System.Text
 
 [<AutoOpen>]
 module internal Utils =
@@ -28,6 +29,15 @@ module internal Utils =
             | null -> 0
             | _ -> StringComparer.OrdinalIgnoreCase.GetHashCode(s)
 
+        /// Checks that first string starts with second string according to ordinal comparison rules, disregarding differences in case.
+        let inline ordinalStartsWithCI (a : string) (b : string) = a.StartsWith(b, StringComparison.OrdinalIgnoreCase)
+
+        /// Checks that first string ends with second string according to ordinal comparison rules, disregarding differences in case.
+        let inline ordinalEndsWithCI (a : string) (b : string) = a.EndsWith(b, StringComparison.OrdinalIgnoreCase)
+
+        /// Checks that first string contains second string according to ordinal comparison rules, disregarding differences in case.
+        let inline ordinalContainsCI (a : string) (b : string) = a.IndexOf(b, StringComparison.OrdinalIgnoreCase) >= 0
+
         /// Trims whitespace in a string.
         let inline trim (s : string) =
             s.Trim()
@@ -41,3 +51,6 @@ module internal Utils =
 
     /// Decodes reserved HTML characters in a string.
     let inline htmlDecode s = Net.WebUtility.HtmlDecode s
+
+    type StringBuilder with
+        member self.AppendLineIndented depth = self.AppendLine().Append(' ', depth * 2)

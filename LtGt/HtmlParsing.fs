@@ -7,84 +7,38 @@ module private HtmlParsers =
 
     let upcastNode x = x :> HtmlNode
 
-    // ---------------------------------
-    // Text
-    // ---------------------------------
+    // ** Declaration
 
-    // * CDATA *
-    // <![CDATA[content]]>
-    let cdata =
-        manyCharsBetween (skipString "<![CDATA[") anyChar (skipString "]]>") .>> spaces
-        |>> HtmlText
-
-    // * Normal text *
-    let text =
-        many1Chars (noneOf "<")
-        |>> htmlDecode
-        |>> String.trim
-        |>> HtmlText
-
-    // ---------------------------------
-    // Comment
-    // ---------------------------------
-
-    // * Normal comment *
-    // <!-- content -->
-    let normalComment =
-        manyCharsBetween (skipString "<!--") anyChar (skipString "-->") .>> spaces
-        |>> String.trim
-        |>> HtmlComment
-
-    // * Unexpected XML directive *
-    // -- treated as comment
-    // <?xml version="1.0"?>
-    let unexpectedDirectiveComment =
-        manyCharsBetween (skipString "<?") anyChar (skipString "?>") .>> spaces
-        |>> String.trim
-        |>> HtmlComment
-
-    // * Unexpected HTML declaration *
-    // -- treated as comment
     // <!doctype html>
-    let unexpectedDeclarationComment =
+    let declaration =
         manyCharsBetween (skipString "<!") anyChar (skipChar '>') .>> spaces
-        |>> String.trim
-        |>> HtmlComment
+        |>> HtmlDeclaration
 
-    let comment =
-        choice [
-            attempt normalComment
-            attempt unexpectedDirectiveComment
-            attempt unexpectedDeclarationComment
-        ]
-
-    // ---------------------------------
-    // Attribute
-    // ---------------------------------
+    // ** Attribute
 
     let attributeName = many1Satisfy (isNotSpace <&> isNoneOf ">'\"=/") .>> spaces
 
-    // * Doubly-quoted attribute *
+    // Doubly-quoted attribute
     // id="main"
     let doublyQuotedAttribute =
         attributeName .>> skipChar '=' .>> spaces .>>. manyCharsBetween (skipChar '"') anyChar (skipChar '"') .>> spaces
         |>> fun (name, value) -> (name, htmlDecode value)
         |>> HtmlAttribute
 
-    // * Singly-quoted attribute *
+    // Singly-quoted attribute
     // id="main"
     let singlyQuotedAttribute =
         attributeName .>> skipChar '=' .>> spaces .>>. manyCharsBetween (skipChar ''') anyChar (skipChar ''') .>> spaces
         |>> fun (name, value) -> (name, htmlDecode value)
         |>> HtmlAttribute
 
-    // * Unquoted attribute *
+    // Unquoted attribute
     // id=main
     let unquotedAttribute =
         attributeName .>> skipChar '=' .>> spaces .>>. attributeName .>> spaces
         |>> HtmlAttribute
 
-    // * Void attribute *
+    // Void attribute
     // id
     let voidAttribute =
         attributeName
@@ -98,18 +52,59 @@ module private HtmlParsers =
             attempt voidAttribute
         ]
 
-    // ---------------------------------
-    // Element
-    // ---------------------------------
+    // ** Text
+
+    let text =
+        many1Chars (noneOf "<")
+        |>> htmlDecode
+        |>> String.trim
+        |>> HtmlText
+
+    // ** Comment
+
+    // Normal comment
+    // <!-- content -->
+    let normalComment =
+        manyCharsBetween (skipString "<!--") anyChar (skipString "-->") .>> spaces
+        |>> String.trim
+        |>> HtmlComment
+
+    // Unexpected XML directive treated as comment
+    // <?xml version="1.0"?>
+    let unexpectedDirectiveComment =
+        manyCharsBetween (skipString "<?") anyChar (skipString "?>") .>> spaces
+        |>> String.trim
+        |>> HtmlComment
+
+    // Unexpected HTML declaration treated as comment
+    // <!doctype html>
+    let unexpectedDeclarationComment =
+        manyCharsBetween (skipString "<!") anyChar (skipChar '>') .>> spaces
+        |>> String.trim
+        |>> HtmlComment
+
+    let comment =
+        choice [
+            attempt normalComment
+            attempt unexpectedDirectiveComment
+            attempt unexpectedDeclarationComment
+        ]
+
+    // ** CData
+
+    // <![CDATA[content]]>
+    let cdata =
+        manyCharsBetween (skipString "<![CDATA[") anyChar (skipString "]]>") .>> spaces
+        |>> HtmlCData
+
+    // ** Element
 
     let elementName = many1Chars letterOrDigit .>> spaces
-
-    // * Raw text element *
-    // -- element that can only contain text inside
-    // -- <script> and <style>
-
     let rawTextElementName = anyStringOfCI rawTextElementNames .>> spaces
+    let voidElementName = anyStringOfCI voidElementNames .>> spaces
 
+    // Raw text element
+    // <script>foo = bar();</script>
     let rawTextElement =
         parse {
             // <script ...>
@@ -120,40 +115,35 @@ module private HtmlParsers =
             do! spaces
 
             // ...</script>
-            let! text = (manyCharsTill anyChar (skipString (sprintf "</%s>" name))) |>> String.trim |>> HtmlText |>> upcastNode |>> Array.create 1
+            let! children = (manyCharsTill anyChar (skipString (sprintf "</%s>" name)))
+                            |>> String.trim
+                            |>> HtmlText
+                            |>> upcastNode
+                            |>> Array.create 1
             do! spaces
 
-            return HtmlElement(name, attributes, text)
+            return HtmlElement(name, attributes, children)
         }
 
-    // * Void element *
-    // -- element that never has children and should not have a closing tag
-    // -- <meta>, <br>, etc
-
-    let voidElementName = anyStringOfCI voidElementNames .>> spaces
-
+    // Void element
+    // <meta name="foo" content="bar">
     let voidElement =
         skipChar '<' >>. voidElementName .>>. many attribute .>> spaces .>> optional (skipChar '/') .>> skipChar '>' .>> spaces
         |>> fun (name, attributes) -> (name, attributes, Array.empty)
         |>> HtmlElement
 
-    // * Self-closing element *
-    // -- element that doesn't have children and doesn't have a closing tag
-    // -- this element is illegal in HTML but nobody really cares
-    // -- <div />, <span />
-
+    // Self-closing element
+    // <div />
     let selfClosingElement =
         skipChar '<' >>. elementName .>>. many attribute .>> spaces .>> skipString "/>" .>> spaces
         |>> fun (name, attributes) -> (name, attributes, Array.empty)
         |>> HtmlElement
 
-    // * Normal element *
-    // -- element that may have children and has a closing tag
-    // -- <div>, <span>, etc
-
     // Element child parser is recursive as it can also contain other elements
     let elementChild, elementChildRef = createParserForwardedToRef<HtmlNode, unit>()
 
+    // Normal element
+    // <div><p>foo</p></div>
     let normalElement =
         parse {
             // <div ...>
@@ -189,21 +179,13 @@ module private HtmlParsers =
             attempt text |>> upcastNode
         ]
 
-    // ---------------------------------
-    // Document
-    // ---------------------------------
-
-    let declaration =
-        manyCharsBetween (skipString "<!") anyChar (skipChar '>') .>> spaces
-        |>> HtmlDeclaration
+    // ** Document
 
     let document =
         declaration .>>. many elementChild .>> spaces
         |>> HtmlDocument
 
-    // ---------------------------------
-    // Node
-    // ---------------------------------
+    // ** Node
 
     let node =
         choice [
@@ -213,8 +195,6 @@ module private HtmlParsers =
 
 // F# & C# API
 module Html =
-
-    exception ParseException of string
 
     let private fullDocument = spaces >>. HtmlParsers.document .>> eof
 
@@ -233,6 +213,9 @@ module Html =
     /// Tries to parse input string as an HTML node.
     [<CompiledName("TryParseNode")>]
     let tryParseNode source = runWithResult fullNode source
+
+    /// Exception thrown when parsing fails.
+    exception ParseException of string
 
     /// Parses input string as an HTML document or raises an exception in case of failure.
     [<CompiledName("ParseDocument")>]

@@ -9,7 +9,13 @@ open System.Text
 [<AutoOpen>]
 module HtmlLogic =
 
-    // -- Attributes
+    // ** Primitives
+
+    /// Tries to cast a node to an element.
+    let tryAsElement (node : HtmlNode) =
+        match node with
+        | :? HtmlElement as x -> Some x
+        | _ -> None
 
     /// Tries to find an attribute by name.
     let tryAttribute name (element : HtmlElement) =
@@ -22,14 +28,6 @@ module HtmlLogic =
         |> tryAttribute name
         |> Option.map (fun x -> x.Value)
 
-    // -- Elements
-
-    /// Tries to cast a node to an element.
-    let tryAsElement (node : HtmlNode) =
-        match node with
-        | :? HtmlElement as x -> Some x
-        | _ -> None
-
     /// Tries to get the value of the "id" attribute.
     let tryId element =
         element
@@ -39,16 +37,6 @@ module HtmlLogic =
     let tryClassName element =
         element
         |> tryAttributeValue "class"
-
-    /// Tries to get the value of the "href" attribute.
-    let tryHref element =
-        element
-        |> tryAttributeValue "href"
-
-    /// Tries to get the value of the "src" attribute.
-    let trySrc element =
-        element
-        |> tryAttributeValue "src"
 
     /// Gets the value of the "class" attribute as a list of space-separated elements.
     let classNames element =
@@ -79,47 +67,7 @@ module HtmlLogic =
         targetClassNames
         |> Seq.forall (fun x -> sourceClassNames |> Seq.contains x)
 
-    // -- Containers
-
-    let rec private appendInnerText (node : HtmlNode) (buffer : StringBuilder) =
-        let isFirstNode = buffer.Length = 0
-
-        let isEmpty element =
-            nameMatches "script" element ||
-            nameMatches "style" element ||
-            nameMatches "select" element ||
-            nameMatches "canvas" element ||
-            nameMatches "video" element ||
-            nameMatches "iframe" element
-
-        let shouldPrependLine element =
-            not isFirstNode && (
-                nameMatches "p" element ||
-                nameMatches "caption" element ||
-                nameMatches "div" element ||
-                nameMatches "li" element)
-
-        match node with
-        | :? HtmlText as a -> buffer.Append a.Value
-        | :? HtmlElement as a ->
-            if a |> nameMatches "br" then
-                buffer.AppendLine()
-            else
-                if shouldPrependLine a then
-                    do buffer.AppendLine() |> ignore
-
-                if isEmpty a then
-                    buffer
-                else
-                    a.Children |> Seq.iter (fun x -> appendInnerText x buffer |> ignore)
-                    buffer
-        | _ -> buffer
-
-    /// Gets inner text.
-    let innerText container =
-        StringBuilder()
-        |> appendInnerText container
-        |> string
+    // ** Hierarchical navigation
 
     /// Gets all of the node's ancestors, from immediate parent to the root node.
     let rec ancestors (node : HtmlNode) = seq {
@@ -163,8 +111,7 @@ module HtmlLogic =
                 yield child
                 yield! x |> descendants
 
-            | _ ->
-                yield child
+            | _ -> yield child
     }
 
     /// Gets all descendant elements (i.e. children and children of children recursively).
@@ -172,6 +119,8 @@ module HtmlLogic =
         container
         |> descendants
         |> filterElements
+
+    // ** Basic selectors
 
     /// Tries to find the first descendant element by the value of its "id" attribute.
     let tryElementById id container =
@@ -191,15 +140,51 @@ module HtmlLogic =
         |> descendantElements
         |> Seq.filter (classNameMatches className)
 
-    // -- Entities
+    // ** Misc
+
+    let rec private appendInnerText (node : HtmlNode) (buffer : StringBuilder) =
+        let isHidden (element : HtmlElement) =
+            nameMatches "br" element ||
+            nameMatches "script" element ||
+            nameMatches "style" element ||
+            nameMatches "select" element ||
+            nameMatches "canvas" element ||
+            nameMatches "video" element ||
+            nameMatches "iframe" element
+
+        let shouldPrependLine (element : HtmlElement) =
+            buffer.Length <> 0 && (
+                nameMatches "br" element ||
+                nameMatches "p" element ||
+                nameMatches "caption" element ||
+                nameMatches "div" element ||
+                nameMatches "li" element)
+
+        match node with
+        | :? HtmlText as a -> buffer.Append a.Content
+        | :? HtmlCData as a -> buffer.Append a.Content
+        | :? HtmlElement as a ->
+            if shouldPrependLine a then
+                do buffer.AppendLine() |> ignore
+
+            if isHidden a then
+                buffer
+            else
+                a.Children |> Seq.iter (fun x -> appendInnerText x buffer |> ignore)
+                buffer
+        | _ -> buffer
+
+    /// Gets inner text.
+    let innerText container =
+        StringBuilder()
+        |> appendInnerText container
+        |> string
 
     let rec private appendHtml (entity : HtmlEntity) depth (buffer : StringBuilder) =
-        let appendLine d (b : StringBuilder) = b.AppendLine().Append(' ', d * 2)
-
         match entity with
 
         | :? HtmlDeclaration as x ->
-            buffer.Append (sprintf "<!%s>" x.Value)
+            buffer.Append (sprintf "<!%s>" x.Content)
 
         | :? HtmlAttribute as x ->
             if String.IsNullOrWhiteSpace x.Value then
@@ -209,29 +194,27 @@ module HtmlLogic =
 
         | :? HtmlText as x ->
             if x.Parent |> tryAsElement |> Option.exists (fun a -> isRawTextElementName a.Name) then
-                buffer.Append x.Value
+                buffer.Append x.Content
             else
-                buffer.Append (htmlEncode x.Value)
+                buffer.Append (htmlEncode x.Content)
 
         | :? HtmlComment as x ->
-            buffer.Append (sprintf "<!-- %s -->" x.Value)
+            buffer.Append (sprintf "<!-- %s -->" x.Content)
+
+        | :? HtmlCData as x ->
+            buffer.Append (sprintf "<![CDATA[%s]]>" x.Content)
 
         | :? HtmlElement as x ->
             do buffer.Append('<').Append(x.Name) |> ignore
 
             for attribute in x.Attributes do
                 buffer.Append ' ' |> appendHtml attribute depth |> ignore
-
             do buffer.Append '>' |> ignore
 
-            if (isVoidElementName x.Name && x.Children |> Seq.isEmpty) |> not then
-
-                let innerDepth = depth + 1
-
+            if not (isVoidElementName x.Name) || not (x.Children |> Seq.isEmpty) then
                 for child in x.Children do
-                    appendLine innerDepth buffer |> appendHtml child innerDepth |> ignore
-
-                do (appendLine depth buffer).Append("</").Append(x.Name).Append('>') |> ignore
+                    buffer.AppendLineIndented(depth + 1) |> appendHtml child (depth + 1) |> ignore
+                do buffer.AppendLineIndented(depth).Append("</").Append(x.Name).Append('>') |> ignore
 
             buffer
 
@@ -245,7 +228,7 @@ module HtmlLogic =
 
             buffer
 
-        | _ -> buffer
+        | _ -> failwith "Unmatched entity."
 
     /// Renders an entity as HTML code.
     let toHtml entity =
@@ -253,23 +236,26 @@ module HtmlLogic =
         |> appendHtml entity 0
         |> string
 
+    /// Creates a deep copy of an entity.
     let rec clone (entity : HtmlEntity) : HtmlEntity =
         match entity with
-        | :? HtmlDeclaration as x -> upcast HtmlDeclaration(x.Value)
+        | :? HtmlDeclaration as x -> upcast HtmlDeclaration(x.Content)
         | :? HtmlAttribute as x -> upcast HtmlAttribute(x.Name, x.Value)
-        | :? HtmlText as x -> upcast HtmlText(x.Value)
-        | :? HtmlComment as x -> upcast HtmlComment(x.Value)
+        | :? HtmlText as x -> upcast HtmlText(x.Content)
+        | :? HtmlComment as x -> upcast HtmlComment(x.Content)
+        | :? HtmlCData as x -> upcast HtmlCData(x.Content)
         | :? HtmlElement as x -> upcast HtmlElement(x.Name,
                                                     x.Attributes |> Seq.map clone |> Seq.cast |> Seq.toArray,
                                                     x.Children |> Seq.map clone |> Seq.cast |> Seq.toArray)
         | :? HtmlDocument as x -> upcast HtmlDocument(x.Declaration |> clone :?> HtmlDeclaration,
                                                       x.Children |> Seq.map clone |> Seq.cast<HtmlNode> |> Seq.toArray)
+        | _ -> failwith "Unmatched entity."
 
 // C# API
 [<Extension>]
 module HtmlLogicExtensions =
 
-    // -- Attributes
+    // ** Primitives
 
     /// Gets an attribute by name or returns null if not found.
     [<Extension>]
@@ -285,8 +271,6 @@ module HtmlLogicExtensions =
         |> tryAttributeValue name
         |> Option.toObj
 
-    // -- Elements
-
     /// Gets the value of the "id" attribute or returns null if it's not set.
     [<Extension>]
     let GetId self =
@@ -301,20 +285,6 @@ module HtmlLogicExtensions =
         |> tryClassName
         |> Option.toObj
 
-    /// Gets the value of the "href" attribute or returns null if it's not set.
-    [<Extension>]
-    let GetHref self =
-        self
-        |> tryHref
-        |> Option.toObj
-
-    /// Gets the value of the "src" attribute or returns null if it's not set.
-    [<Extension>]
-    let GetSrc self =
-        self
-        |> trySrc
-        |> Option.toObj
-
     /// Gets the value of the "class" attribute as a list of space-separated elements.
     [<Extension>]
     let GetClassNames self =
@@ -325,14 +295,14 @@ module HtmlLogicExtensions =
     /// Checks whether an element has specified tag name.
     /// This takes into account case.
     [<Extension>]
-    let MatchesName (self, name) =
+    let NameMatches (self, name) =
         self
         |> nameMatches name
 
     /// Checks whether an element has specified value of "id" attribute.
     /// This takes into account case.
     [<Extension>]
-    let MatchesId (self, id) =
+    let IdMatches (self, id) =
         self
         |> idMatches id
 
@@ -340,17 +310,11 @@ module HtmlLogicExtensions =
     /// This function works by splitting both class names by space and checking if the element contains all individual
     /// classes in the list.
     [<Extension>]
-    let MatchesClassName (self, className) =
+    let ClassNameMatches (self, className) =
         self
         |> classNameMatches className
 
-    // -- Containers
-
-    /// Gets inner text.
-    [<Extension>]
-    let GetInnerText self =
-        self
-        |> innerText
+    // ** Hierarchical navigation
 
     /// Gets all of the node's ancestors, from immediate parent to the root node.
     [<Extension>]
@@ -388,6 +352,8 @@ module HtmlLogicExtensions =
         self
         |> descendantElements
 
+    // ** Basic selectors
+
     /// Gets the first descendant element by the value of its "id" attribute or returns null if not found.
     [<Extension>]
     let GetElementById (self, id) =
@@ -407,10 +373,22 @@ module HtmlLogicExtensions =
         self
         |> elementsByClassName className
 
-    // -- Entities
+    // ** Misc
+
+    /// Gets inner text.
+    [<Extension>]
+    let GetInnerText self =
+        self
+        |> innerText
 
     /// Renders an entity as HTML code.
     [<Extension>]
     let ToHtml self =
         self
         |> toHtml
+
+    /// Creates a deep copy of an entity.
+    [<Extension>]
+    let Clone self =
+        self
+        |> clone

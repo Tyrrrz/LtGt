@@ -1,6 +1,6 @@
 ﻿namespace LtGt
 
-type internal AttributeValueEqualityOperator =
+type internal AttributeValueOperator =
     | Equals
     | StartsWith
     | EndsWith
@@ -15,11 +15,11 @@ type internal NumberFormula =
 
 type internal Selector =
     | Any
-    | ByType of string
-    | ByClass of string
+    | ByName of string
     | ById of string
+    | ByClassName of string
     | ByAttribute of string
-    | ByAttributeValue of string * AttributeValueEqualityOperator * string
+    | ByAttributeValue of string * AttributeValueOperator * string
     | Root
     | Empty
     | OnlyChild
