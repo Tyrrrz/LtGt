@@ -35,6 +35,8 @@ LtGt is an F# library but it has separate APIs for convenient usage with both F#
 
 ### Parse a document
 
+>C#
+
 ```c#
 using LtGt;
 
@@ -67,6 +69,8 @@ else
 }
 ```
 
+>F#
+
 ```f#
 open LtGt
 
@@ -86,12 +90,14 @@ let document = Html.parseDocument html
 // -or-
 
 // This returns a wrapped result instead
-match (Html.parseDocument html) with
+match (Html.tryParseDocument html) with
 | Result.Ok document -> // handle result
 | Result.Error error -> // handle error
 ```
 
 ### Parse a fragment
+
+>C#
 
 ```c#
 const string html = "<div id=\"some-element\"><a href=\"https://example.com\">Link</a></div>";
@@ -102,6 +108,8 @@ var element = Html.ParseElement(html);
 // Parse any node
 var node = Html.ParseNode(html);
 ```
+
+>F#
 
 ```f#
 let html = "<div id=\"some-element\"><a href=\"https://example.com\">Link</a></div>"
@@ -115,6 +123,8 @@ let node = Html.parseNode html
 
 ### Find specific element
 
+>C#
+
 ```c#
 var element1 = document.GetElementById("menu-bar");
 var element2 = document.GetElementsByTagName("div").FirstOrDefault();
@@ -124,6 +134,8 @@ var element1Data = element1.GetAttributeValue("data");
 var element2Id = element2.GetId();
 var element3Text = element3.GetInnerText();
 ```
+
+>F#
 
 ```f#
 let element1 = document |> tryElementById "menu-bar"
@@ -137,9 +149,13 @@ let element3Text = element3 |> Option.map innerText
 
 You can leverage the full power of CSS selectors as well.
 
+>C#
+
 ```c#
 var element = document.QueryElements("div#main > span.container:empty").FirstOrDefault();
 ```
+
+>F#
 
 ```f#
 let element = document |> queryElements "div#main > span.container:empty" |> Seq.tryHead
@@ -149,35 +165,39 @@ let element = document |> queryElements "div#main > span.container:empty" |> Seq
 
 You can compare two HTML entities by value, including their descendants.
 
+>C#
+
 ```c#
 var element1 = new HtmlElement("span",
     new HtmlAttribute("id", "foo"),
-    new HtmlText("bar"))
+    new HtmlText("bar"));
 
 var element2 = new HtmlElement("span",
     new HtmlAttribute("id", "foo"),
-    new HtmlText("bar"))
+    new HtmlText("bar"));
 
 var element3 = new HtmlElement("span",
     new HtmlAttribute("id", "foo"),
-    new HtmlText("oof"))
+    new HtmlText("oof"));
 
 var firstTwoEqual = HtmlEntityEqualityComparer.Instance.Equals(element1, element2); // true
 var lastTwoEqual = HtmlEntityEqualityComparer.Instance.Equals(element2, element3); // false
 ```
 
+>F#
+
 ```f#
 let element1 = HtmlElement("span",
     HtmlAttribute("id", "foo"),
-    HtmlText("bar"));
+    HtmlText("bar"))
 
 let element2 = HtmlElement("span",
     HtmlAttribute("id", "foo"),
-    HtmlText("bar"));
+    HtmlText("bar"))
 
 let element3 = HtmlElement("span",
     HtmlAttribute("id", "foo"),
-    HtmlText("oof"));
+    HtmlText("oof"))
 
 let firstTwoEqual = htmlEquals element1 element2 // true
 let lastTwoEqual = htmlEquals element2 element3 // false
@@ -187,11 +207,15 @@ let lastTwoEqual = htmlEquals element2 element3 // false
 
 You can convert LtGt's objects to `System.Xml.Linq` objects (`XNode`, `XElement`, etc). This can be useful if you need to convert HTML to XML or if you want to use XPath to select nodes.
 
+>C#
+
 ```c#
 var htmlDocument = Html.ParseDocument(html);
 var xmlDocument = (XDocument) htmlDocument.ToXObject();
 var elements = xmlDocument.XPathSelectElements("//input[@type=\"submit\"]");
 ```
+
+>F#
 
 ```f#
 let htmlDocument = Html.parseDocument html
@@ -203,6 +227,8 @@ let elements = xmlDocument.XPathSelectElements("//input[@type=\"submit\"]")
 
 You can turn any entity to its equivalent HTML code.
 
+>C#
+
 ```c#
 var element = new HtmlElement("div",
     new HtmlAttribute("id", "main"),
@@ -210,6 +236,8 @@ var element = new HtmlElement("div",
 
 var html = element.ToHtml(); // <div id="main">Hello world</div>
 ```
+
+>F#
 
 ```f#
 let element = HtmlElement("div",
