@@ -45,14 +45,13 @@ module HtmlLogic =
         |> tryClassName
         |> Option.map (String.split ' ')
         |> Option.defaultValue Array.empty
+        |> List.ofArray
 
     /// Checks whether an element has specified tag name.
-    /// This takes into account case.
-    let nameMatches name (element : HtmlElement) =
-        String.ordinalEqualsCI element.Name name
+    let tagNameMatches name (element : HtmlElement) =
+        String.ordinalEqualsCI element.TagName name
 
     /// Checks whether an element has specified value of "id" attribute.
-    /// This takes into account case.
     let idMatches id element =
         element
         |> tryId
@@ -64,9 +63,7 @@ module HtmlLogic =
     let classNameMatches className element =
         let targetClassNames = className |> String.split ' '
         let sourceClassNames = element |> classNames
-
-        targetClassNames
-        |> Seq.forall (fun x -> sourceClassNames |> Seq.contains x)
+        targetClassNames |> Seq.forall (fun x -> sourceClassNames |> Seq.exists (String.ordinalEquals x))
 
     // ** Hierarchical navigation
 
@@ -133,7 +130,7 @@ module HtmlLogic =
     let elementsByTagName name container =
         container
         |> descendantElements
-        |> Seq.filter (nameMatches name)
+        |> Seq.filter (tagNameMatches name)
 
     /// Gets all descendant elements that are matched by the specified class name.
     let elementsByClassName className container =
@@ -145,21 +142,21 @@ module HtmlLogic =
 
     let rec private appendInnerText (node : HtmlNode) (buffer : StringBuilder) =
         let isHidden (element : HtmlElement) =
-            nameMatches "br" element ||
-            nameMatches "script" element ||
-            nameMatches "style" element ||
-            nameMatches "select" element ||
-            nameMatches "canvas" element ||
-            nameMatches "video" element ||
-            nameMatches "iframe" element
+            tagNameMatches "br" element ||
+            tagNameMatches "script" element ||
+            tagNameMatches "style" element ||
+            tagNameMatches "select" element ||
+            tagNameMatches "canvas" element ||
+            tagNameMatches "video" element ||
+            tagNameMatches "iframe" element
 
         let shouldPrependLine (element : HtmlElement) =
             buffer.Length <> 0 && (
-                nameMatches "br" element ||
-                nameMatches "p" element ||
-                nameMatches "caption" element ||
-                nameMatches "div" element ||
-                nameMatches "li" element)
+                tagNameMatches "br" element ||
+                tagNameMatches "p" element ||
+                tagNameMatches "caption" element ||
+                tagNameMatches "div" element ||
+                tagNameMatches "li" element)
 
         match node with
         | :? HtmlText as a -> buffer.Append a.Content
@@ -194,7 +191,7 @@ module HtmlLogic =
                 buffer.Append (sprintf "%s=\"%s\"" x.Name (htmlEncode x.Value))
 
         | :? HtmlText as x ->
-            if x.Parent |> tryAsElement |> Option.exists (fun a -> isRawTextElementName a.Name) then
+            if x.Parent |> tryAsElement |> Option.exists (fun a -> isRawTextElementTagName a.TagName) then
                 buffer.Append x.Content
             else
                 buffer.Append (htmlEncode x.Content)
@@ -206,16 +203,16 @@ module HtmlLogic =
             buffer.Append (sprintf "<![CDATA[%s]]>" x.Content)
 
         | :? HtmlElement as x ->
-            do buffer.Append('<').Append(x.Name) |> ignore
+            do buffer.Append('<').Append(x.TagName) |> ignore
 
             for attribute in x.Attributes do
                 buffer.Append ' ' |> appendHtml attribute depth |> ignore
             do buffer.Append '>' |> ignore
 
-            if not (isVoidElementName x.Name) || not (x.Children |> Seq.isEmpty) then
+            if not (isVoidElementTagName x.TagName) || not (x.Children |> Seq.isEmpty) then
                 for child in x.Children do
                     buffer.AppendLineIndented(depth + 1) |> appendHtml child (depth + 1) |> ignore
-                do buffer.AppendLineIndented(depth).Append("</").Append(x.Name).Append('>') |> ignore
+                do buffer.AppendLineIndented(depth).Append("</").Append(x.TagName).Append('>') |> ignore
 
             buffer
 
@@ -249,7 +246,7 @@ module HtmlLogic =
         | :? HtmlComment as x -> upcast XComment(x.Content)
         | :? HtmlCData as x -> upcast XCData(x.Content)
 
-        | :? HtmlElement as x -> upcast XElement(XName.Get(x.Name),
+        | :? HtmlElement as x -> upcast XElement(XName.Get(x.TagName),
                                                     x.Attributes |> Seq.map toXObject |> Seq.toArray,
                                                     x.Children |> Seq.map toXObject |> Seq.toArray)
 
@@ -266,7 +263,7 @@ module HtmlLogic =
         | :? HtmlComment as x -> upcast HtmlComment(x.Content)
         | :? HtmlCData as x -> upcast HtmlCData(x.Content)
 
-        | :? HtmlElement as x -> upcast HtmlElement(x.Name,
+        | :? HtmlElement as x -> upcast HtmlElement(x.TagName,
                                                     x.Attributes |> Seq.map clone |> Seq.cast |> Seq.toArray,
                                                     x.Children |> Seq.map clone |> Seq.cast |> Seq.toArray)
 
@@ -317,14 +314,12 @@ module HtmlLogicExtensions =
         :> IReadOnlyList<string>
 
     /// Checks whether an element has specified tag name.
-    /// This takes into account case.
     [<Extension>]
-    let NameMatches (self, name) =
+    let TagNameMatches (self, name) =
         self
-        |> nameMatches name
+        |> tagNameMatches name
 
     /// Checks whether an element has specified value of "id" attribute.
-    /// This takes into account case.
     [<Extension>]
     let IdMatches (self, id) =
         self

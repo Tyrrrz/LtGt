@@ -15,7 +15,7 @@ type internal NumberFormula =
 
 type internal Selector =
     | Any
-    | ByName of string
+    | ByTagName of string
     | ById of string
     | ByClassName of string
     | ByAttribute of string

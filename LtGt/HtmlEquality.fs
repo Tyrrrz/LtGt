@@ -32,7 +32,7 @@ module HtmlEquality =
             String.ordinalEquals x1.Content x2.Content
 
         | (:? HtmlElement as x1), (:? HtmlElement as x2) ->
-            String.ordinalEqualsCI x1.Name x2.Name &&
+            String.ordinalEqualsCI x1.TagName x2.TagName &&
             Seq.zip x1.Attributes x2.Attributes |> Seq.map (fun (x1a, x2a) -> htmlEquals x1a x2a) |> Seq.fold (&&) true &&
             Seq.zip x1.Children x2.Children |> Seq.map (fun (x1c, x2c) -> htmlEquals x1c x2c) |> Seq.fold (&&) true
 
@@ -57,7 +57,7 @@ module HtmlEquality =
         | :? HtmlCData as x -> String.ordinalHash x.Content
 
         | :? HtmlElement as x ->
-            String.ordinalHashCI x.Name <*>
+            String.ordinalHashCI x.TagName <*>
             (x.Attributes |> Seq.map htmlHash |> Seq.fold (<*>) 17) <*>
             (x.Children |> Seq.map htmlHash |> Seq.fold (<*>) 17)
 

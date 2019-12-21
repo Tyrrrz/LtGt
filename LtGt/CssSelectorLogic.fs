@@ -24,7 +24,7 @@ module CssSelectorLogic =
     let rec private evaluateSelector selector (element : HtmlElement) =
         match selector with
         | Any -> true
-        | ByName name -> element |> nameMatches name
+        | ByTagName name -> element |> tagNameMatches name
         | ById id -> element |> idMatches id
         | ByClassName className -> element |> classNameMatches className
 
@@ -77,28 +77,28 @@ module CssSelectorLogic =
             element
             |> siblings
             |> filterElements
-            |> Seq.filter (nameMatches element.Name)
+            |> Seq.filter (tagNameMatches element.TagName)
             |> Seq.isEmpty
 
         | FirstOfType ->
             element
             |> previousSiblings
             |> filterElements
-            |> Seq.filter (nameMatches element.Name)
+            |> Seq.filter (tagNameMatches element.TagName)
             |> Seq.isEmpty
 
         | LastOfType ->
             element
             |> nextSiblings
             |> filterElements
-            |> Seq.filter (nameMatches element.Name)
+            |> Seq.filter (tagNameMatches element.TagName)
             |> Seq.isEmpty
 
         | NthOfType formula ->
             element
             |> previousSiblings
             |> filterElements
-            |> Seq.filter (nameMatches element.Name)
+            |> Seq.filter (tagNameMatches element.TagName)
             |> Seq.length
             |> fun x -> x + 1
             |> evaluateFormula formula
@@ -107,7 +107,7 @@ module CssSelectorLogic =
             element
             |> nextSiblings
             |> filterElements
-            |> Seq.filter (nameMatches element.Name)
+            |> Seq.filter (tagNameMatches element.TagName)
             |> Seq.length
             |> fun x -> x + 1
             |> evaluateFormula formula

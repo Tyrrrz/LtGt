@@ -14,14 +14,20 @@ and [<AbstractClass; AllowNullLiteral>] HtmlNode() =
     let mutable previous : HtmlNode = null
     let mutable next : HtmlNode = null
 
+    /// Parent container of this node.
+    /// This property can be null.
     member self.Parent
         with public get() = parent
         and internal set value = parent <- value
 
+    /// Previous node.
+    /// This property can be null.
     member self.Previous
         with public get() = previous
         and internal set value = previous <- value
 
+    /// Next node.
+    /// This property can be null.
     member self.Next
         with public get() = next
         and internal set value = next <- value
@@ -54,14 +60,20 @@ and [<AllowNullLiteral>] HtmlAttribute(name : string, value : string) =
     member self.Name = name
     member self.Value = value
 
+    /// Parent element that contains this attribute.
+    /// This property can be null.
     member self.Parent
         with public get() = parent
         and internal set value = parent <- value
 
+    /// Previous attribute.
+    /// This property can be null.
     member self.Previous
         with public get() = previous
         and internal set value = previous <- value
 
+    /// Next attribute.
+    /// This property can be null.
     member self.Next
         with public get() = next
         and internal set value = next <- value
@@ -83,7 +95,7 @@ and [<AllowNullLiteral>] HtmlCData(content : string) =
 
     member self.Content = content
 
-and [<AllowNullLiteral>] HtmlElement(name : string,
+and [<AllowNullLiteral>] HtmlElement(tagName : string,
                                      attributes : IReadOnlyList<HtmlAttribute>,
                                      children : IReadOnlyList<HtmlNode>) as self =
     inherit HtmlContainer(children)
@@ -94,7 +106,7 @@ and [<AllowNullLiteral>] HtmlElement(name : string,
         node.Next <- attributes |> Seq.tryItem (i + 1) |> Option.toObj
     )
 
-    member self.Name = name
+    member self.TagName = tagName
     member self.Attributes = attributes
 
     new(name, attr1, attr2, attr3, attr4, [<ParamArray>] children : HtmlNode[]) =

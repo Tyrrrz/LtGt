@@ -72,7 +72,7 @@ module private CssSelectorParsers =
 
     let any = skipChar '*' >>% Any
 
-    let byName = many1Chars letterOrDigit |>> ByName
+    let byTagName = many1Chars letterOrDigit |>> ByTagName
 
     let byId = skipChar '#' >>. many1Chars exprChar |>> ById
 
@@ -81,7 +81,7 @@ module private CssSelectorParsers =
     let primitive =
         choice [
             any
-            byName
+            byTagName
             byId
             byClassName
         ]

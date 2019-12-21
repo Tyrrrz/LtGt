@@ -125,7 +125,7 @@
                     <WrapPanel Orientation="Horizontal">
                         <!--  Opening bracket and tag name  -->
                         <TextBlock TextWrapping="Wrap">
-                            <Run Text="&lt;" /><Run Foreground="#529d7f" Text="{Binding Name, Mode=OneWay}" />
+                            <Run Text="&lt;" /><Run Foreground="#529d7f" Text="{Binding TagName, Mode=OneWay}" />
                         </TextBlock>
 
                         <!--  Attributes  -->
