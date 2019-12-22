@@ -1,3 +1,9 @@
+### v2.0 (22-Dec-2019)
+
+- Rewrote the library in F#. It now has separate APIs for F# and C# (see readme).
+- Several breaking changes across method/property names. Migration should be pretty straightforward though.
+- Added CData as a separate node.
+
 ### v1.0.2 (26-Aug-2019)
 
 - Fixed an issue where left-recursive contextual combinators didn't work in CSS selectors. For example, now you can do `#elem > h3 > span.yellow p a[href]`.
