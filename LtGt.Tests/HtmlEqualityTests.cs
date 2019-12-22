@@ -155,6 +155,33 @@ namespace LtGt.Tests
                             new HtmlText("test")))),
                 false
             );
+
+            yield return new TestCaseData(
+                new HtmlElement("div",
+                    new HtmlAttribute("id", "test"),
+                    new HtmlAttribute("class", "test")),
+                new HtmlElement("div",
+                    new HtmlAttribute("id", "test")),
+                false
+            );
+
+            yield return new TestCaseData(
+                new HtmlElement("div",
+                    new HtmlElement("p"),
+                    new HtmlElement("a")),
+                new HtmlElement("div",
+                    new HtmlElement("p")),
+                false
+            );
+
+            yield return new TestCaseData(
+                new HtmlDocument(new HtmlDeclaration("doctype html"),
+                    new HtmlElement("p"),
+                    new HtmlElement("a")),
+                new HtmlDocument(new HtmlDeclaration("doctype html"),
+                    new HtmlElement("p")),
+                false
+            );
         }
 
         private static IEnumerable<TestCaseData> GetTestCases_GetHashCode() => GetTestCases_Equals();

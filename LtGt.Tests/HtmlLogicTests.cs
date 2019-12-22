@@ -35,6 +35,31 @@ namespace LtGt.Tests
             );
         }
 
+        private static IEnumerable<TestCaseData> GetTestCases_GetAttributeValue()
+        {
+            yield return new TestCaseData(
+                new HtmlElement("div",
+                    new HtmlAttribute("attr1"),
+                    new HtmlAttribute("attr2", "val2")),
+                "attr1",
+                null
+            );
+
+            yield return new TestCaseData(
+                new HtmlElement("div",
+                    new HtmlAttribute("attr1"),
+                    new HtmlAttribute("attr2", "val2")),
+                "attr2",
+                "val2"
+            );
+
+            yield return new TestCaseData(
+                new HtmlElement("div"),
+                "attr1",
+                null
+            );
+        }
+
         private static IEnumerable<TestCaseData> GetTestCases_GetId()
         {
             yield return new TestCaseData(
@@ -84,7 +109,67 @@ namespace LtGt.Tests
             );
         }
 
-        private static IEnumerable<TestCaseData> GetTestCases_MatchesClassName()
+        private static IEnumerable<TestCaseData> GetTestCases_TagNameMatches()
+        {
+            yield return new TestCaseData(
+                new HtmlElement("div"),
+                "div",
+                true
+            );
+
+            yield return new TestCaseData(
+                new HtmlElement("div"),
+                "DIV",
+                true
+            );
+
+            yield return new TestCaseData(
+                new HtmlElement("div"),
+                "p",
+                false
+            );
+
+            yield return new TestCaseData(
+                new HtmlElement("p"),
+                "div",
+                false
+            );
+        }
+
+        private static IEnumerable<TestCaseData> GetTestCases_IdMatches()
+        {
+            yield return new TestCaseData(
+                new HtmlElement("div", new HtmlAttribute("id", "test")),
+                "test",
+                true
+            );
+
+            yield return new TestCaseData(
+                new HtmlElement("div", new HtmlAttribute("id", "test")),
+                "test2",
+                false
+            );
+
+            yield return new TestCaseData(
+                new HtmlElement("div", new HtmlAttribute("id", "TEST")),
+                "test",
+                false
+            );
+
+            yield return new TestCaseData(
+                new HtmlElement("div", new HtmlAttribute("id")),
+                "test",
+                false
+            );
+
+            yield return new TestCaseData(
+                new HtmlElement("div"),
+                "test",
+                false
+            );
+        }
+
+        private static IEnumerable<TestCaseData> GetTestCases_ClassNameMatches()
         {
             yield return new TestCaseData(
                 new HtmlElement("div", new HtmlAttribute("class", "test1")),
@@ -96,6 +181,12 @@ namespace LtGt.Tests
                 new HtmlElement("div", new HtmlAttribute("class", "test2")),
                 "test2",
                 true
+            );
+
+            yield return new TestCaseData(
+                new HtmlElement("div", new HtmlAttribute("class", "test2")),
+                "TEST2",
+                false
             );
 
             yield return new TestCaseData(
@@ -138,63 +229,6 @@ namespace LtGt.Tests
                 new HtmlElement("div", new HtmlAttribute("class", "test3 test2 test1")),
                 "test1 test2",
                 true
-            );
-        }
-
-        private static IEnumerable<TestCaseData> GetTestCases_GetInnerText()
-        {
-            yield return new TestCaseData(
-                new HtmlElement("div", new HtmlText("test")),
-                "test"
-            );
-
-            yield return new TestCaseData(
-                new HtmlElement("div",
-                    new HtmlText("test1"),
-                    new HtmlText("test2")),
-                "test1test2"
-            );
-
-            yield return new TestCaseData(
-                new HtmlElement("div",
-                    new HtmlText("test1"),
-                    new HtmlText("test2"),
-                    new HtmlElement("br")),
-                $"test1test2{Environment.NewLine}"
-            );
-
-            yield return new TestCaseData(
-                new HtmlElement("div",
-                    new HtmlText("test1"),
-                    new HtmlElement("br"),
-                    new HtmlText("test2")),
-                $"test1{Environment.NewLine}test2"
-            );
-
-            yield return new TestCaseData(
-                new HtmlElement("div",
-                    new HtmlText("test1"),
-                    new HtmlElement("div"),
-                    new HtmlText("test2")),
-                $"test1{Environment.NewLine}test2"
-            );
-
-            yield return new TestCaseData(
-                new HtmlElement("div",
-                    new HtmlElement("a", new HtmlText("test1")),
-                    new HtmlElement("p", new HtmlText("test2")),
-                    new HtmlElement("div", new HtmlElement("a", new HtmlText("test3")))),
-                $"test1{Environment.NewLine}test2{Environment.NewLine}test3"
-            );
-
-            yield return new TestCaseData(
-                new HtmlElement("div", new HtmlElement("span"), new HtmlElement("img")),
-                ""
-            );
-
-            yield return new TestCaseData(
-                new HtmlElement("div"),
-                ""
             );
         }
 
@@ -396,6 +430,44 @@ namespace LtGt.Tests
             );
         }
 
+        private static IEnumerable<TestCaseData> GetTestCases_GetDescendants()
+        {
+            yield return new TestCaseData(
+                new HtmlElement("div",
+                    new HtmlElement("div",
+                        new HtmlText("text"),
+                        new HtmlElement("br")),
+                    new HtmlComment("comment")),
+                new HtmlNode[]
+                {
+                    new HtmlElement("div",
+                        new HtmlText("text"),
+                        new HtmlElement("br")),
+                    new HtmlText("text"),
+                    new HtmlElement("br"),
+                    new HtmlComment("comment")
+                }
+            );
+        }
+
+        private static IEnumerable<TestCaseData> GetTestCases_GetDescendantElements()
+        {
+            yield return new TestCaseData(
+                new HtmlElement("div",
+                    new HtmlElement("div",
+                        new HtmlText("text"),
+                        new HtmlElement("br")),
+                    new HtmlComment("comment")),
+                new HtmlNode[]
+                {
+                    new HtmlElement("div",
+                        new HtmlText("text"),
+                        new HtmlElement("br")),
+                    new HtmlElement("br")
+                }
+            );
+        }
+
         private static IEnumerable<TestCaseData> GetTestCases_GetElementById()
         {
             yield return new TestCaseData(
@@ -508,6 +580,84 @@ namespace LtGt.Tests
             );
         }
 
+        private static IEnumerable<TestCaseData> GetTestCases_GetInnerText()
+        {
+            yield return new TestCaseData(
+                new HtmlElement("div", new HtmlText("test")),
+                "test"
+            );
+
+            yield return new TestCaseData(
+                new HtmlElement("div",
+                    new HtmlText("test1"),
+                    new HtmlText("test2")),
+                "test1test2"
+            );
+
+            yield return new TestCaseData(
+                new HtmlElement("div",
+                    new HtmlText("test1"),
+                    new HtmlText("test2"),
+                    new HtmlElement("br")),
+                $"test1test2{Environment.NewLine}"
+            );
+
+            yield return new TestCaseData(
+                new HtmlElement("div",
+                    new HtmlText("test1"),
+                    new HtmlElement("br"),
+                    new HtmlText("test2")),
+                $"test1{Environment.NewLine}test2"
+            );
+
+            yield return new TestCaseData(
+                new HtmlElement("div",
+                    new HtmlText("test1"),
+                    new HtmlElement("div"),
+                    new HtmlText("test2")),
+                $"test1{Environment.NewLine}test2"
+            );
+
+            yield return new TestCaseData(
+                new HtmlElement("div",
+                    new HtmlElement("a", new HtmlText("test1")),
+                    new HtmlElement("p", new HtmlText("test2")),
+                    new HtmlElement("div", new HtmlElement("a", new HtmlText("test3")))),
+                $"test1{Environment.NewLine}test2{Environment.NewLine}test3"
+            );
+
+            yield return new TestCaseData(
+                new HtmlElement("div", new HtmlElement("span"), new HtmlElement("img")),
+                ""
+            );
+
+            yield return new TestCaseData(
+                new HtmlElement("div"),
+                ""
+            );
+
+            yield return new TestCaseData(
+                new HtmlElement("head",
+                    new HtmlElement("title", new HtmlText("The title")),
+                    new HtmlElement("style", new HtmlText("a { display: none }"))),
+                "The title"
+            );
+
+            yield return new TestCaseData(
+                new HtmlElement("code",
+                    new HtmlCData("var a = 0; a++; console.log(a);")),
+                "var a = 0; a++; console.log(a);"
+            );
+
+            yield return new TestCaseData(
+                new HtmlElement("div",
+                    new HtmlComment("comment"),
+                    new HtmlText("text"),
+                    new HtmlComment("another comment")),
+                "text"
+            );
+        }
+
         private static IEnumerable<TestCaseData> GetTestCases_ToHtml()
         {
             yield return new TestCaseData(
@@ -523,6 +673,18 @@ namespace LtGt.Tests
                             new HtmlElement("div", new HtmlAttribute("id", "content"),
                                 new HtmlElement("a", new HtmlAttribute("href", "https://example.com"),
                                     new HtmlText("Test <link>"))))))
+            );
+
+            yield return new TestCaseData(
+                new HtmlElement("span",
+                    new HtmlAttribute("class", "content"),
+                    new HtmlAttribute("id", "main"),
+                    new HtmlAttribute("data-attr", "val"),
+                    new HtmlCData("<character & data>"))
+            );
+
+            yield return new TestCaseData(
+                new HtmlElement("div", new HtmlAttribute("no-value"))
             );
         }
 
@@ -546,6 +708,11 @@ namespace LtGt.Tests
             yield return new TestCaseData(
                 new HtmlText("test"),
                 new XText("test")
+            );
+
+            yield return new TestCaseData(
+                new HtmlCData("test"),
+                new XCData("test")
             );
 
             yield return new TestCaseData(
@@ -575,6 +742,8 @@ namespace LtGt.Tests
 
             yield return new TestCaseData(new HtmlText("test"));
 
+            yield return new TestCaseData(new HtmlCData("test"));
+
             yield return new TestCaseData(new HtmlElement("div"));
 
             yield return new TestCaseData(
@@ -599,6 +768,17 @@ namespace LtGt.Tests
 
             // Assert
             Assert.That(actual, Is.EqualTo(expected).Using(HtmlEntityEqualityComparer.Instance));
+        }
+
+        [Test]
+        [TestCaseSource(nameof(GetTestCases_GetAttributeValue))]
+        public void GetAttributeValue_Test(HtmlElement element, string attributeName, string expected)
+        {
+            // Act
+            var actual = element.GetAttributeValue(attributeName);
+
+            // Assert
+            Assert.That(actual, Is.EqualTo(expected));
         }
 
         [Test]
@@ -635,22 +815,33 @@ namespace LtGt.Tests
         }
 
         [Test]
-        [TestCaseSource(nameof(GetTestCases_MatchesClassName))]
-        public void MatchesClassName_Test(HtmlElement element, string className, bool expected)
+        [TestCaseSource(nameof(GetTestCases_TagNameMatches))]
+        public void TagNameMatches_Test(HtmlElement element, string className, bool expected)
         {
             // Act
-            var actual = element.ClassNameMatches(className);
+            var actual = element.TagNameMatches(className);
 
             // Assert
             Assert.That(actual, Is.EqualTo(expected));
         }
 
         [Test]
-        [TestCaseSource(nameof(GetTestCases_GetInnerText))]
-        public void GetInnerText_Test(HtmlContainer container, string expected)
+        [TestCaseSource(nameof(GetTestCases_IdMatches))]
+        public void IdMatches_Test(HtmlElement element, string className, bool expected)
         {
             // Act
-            var actual = container.GetInnerText();
+            var actual = element.IdMatches(className);
+
+            // Assert
+            Assert.That(actual, Is.EqualTo(expected));
+        }
+
+        [Test]
+        [TestCaseSource(nameof(GetTestCases_ClassNameMatches))]
+        public void ClassNameMatches_Test(HtmlElement element, string className, bool expected)
+        {
+            // Act
+            var actual = element.ClassNameMatches(className);
 
             // Assert
             Assert.That(actual, Is.EqualTo(expected));
@@ -701,6 +892,28 @@ namespace LtGt.Tests
         }
 
         [Test]
+        [TestCaseSource(nameof(GetTestCases_GetDescendants))]
+        public void GetDescendants_Test(HtmlContainer container, IReadOnlyList<HtmlNode> expected)
+        {
+            // Act
+            var actual = container.GetDescendants().ToArray();
+
+            // Assert
+            Assert.That(actual, Is.EqualTo(expected).Using(HtmlEntityEqualityComparer.Instance));
+        }
+
+        [Test]
+        [TestCaseSource(nameof(GetTestCases_GetDescendantElements))]
+        public void GetDescendantElements_Test(HtmlContainer container, IReadOnlyList<HtmlNode> expected)
+        {
+            // Act
+            var actual = container.GetDescendantElements().ToArray();
+
+            // Assert
+            Assert.That(actual, Is.EqualTo(expected).Using(HtmlEntityEqualityComparer.Instance));
+        }
+
+        [Test]
         [TestCaseSource(nameof(GetTestCases_GetElementById))]
         public void GetElementById_Test(HtmlContainer container, string id, HtmlElement expected)
         {
@@ -731,6 +944,17 @@ namespace LtGt.Tests
 
             // Assert
             Assert.That(actual, Is.EqualTo(expected).Using(HtmlEntityEqualityComparer.Instance));
+        }
+
+        [Test]
+        [TestCaseSource(nameof(GetTestCases_GetInnerText))]
+        public void GetInnerText_Test(HtmlContainer container, string expected)
+        {
+            // Act
+            var actual = container.GetInnerText();
+
+            // Assert
+            Assert.That(actual, Is.EqualTo(expected));
         }
 
         [Test]

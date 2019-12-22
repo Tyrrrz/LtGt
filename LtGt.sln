@@ -14,7 +14,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution 
 		Readme.md = Readme.md
 	EndProjectSection
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "LtGt.Benchmarks", "LtGt.Benchmarks\LtGt.Benchmarks.fsproj", "{AFF35A44-5C94-4F37-B58C-D11D04801A37}"
+Project("{6EC3EE1D-3C4E-46DD-8F32-0CC8E7565705}") = "LtGt.Benchmarks", "LtGt.Benchmarks\LtGt.Benchmarks.fsproj", "{AFF35A44-5C94-4F37-B58C-D11D04801A37}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "LtGt.DemoWpf", "LtGt.DemoWpf\LtGt.DemoWpf.csproj", "{574F4D01-6EDE-4D0D-8B0F-2CA3F20F9799}"
 EndProject
