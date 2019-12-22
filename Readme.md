@@ -6,9 +6,9 @@
 [![Downloads](https://img.shields.io/nuget/dt/LtGt.svg)](https://nuget.org/packages/LtGt)
 [![Donate](https://img.shields.io/badge/donate-$$$-purple.svg)](https://tyrrrz.me/donate)
 
-LtGt is a minimalistic library for working with HTML. It can parse any HTML5-compliant code into an object model which you can use to traverse nodes or locate specific elements. The library establishes itself as a foundation that you can build upon, and comes with a lot of extension methods that can help navigate the DOM easily. It also supports HTML rendering, so you can turn any HTML object tree to code.
+LtGt is a minimalistic library for working with HTML. It can parse any HTML5-compliant code into an object model which you can use to traverse nodes or locate specific elements. The library establishes itself as a foundation that you can build upon, and comes with a lot of extension methods that can help navigate the DOM easily.
 
-_Currently, the object model in LtGt is immutable so it cannot be used to manipulate DOM directly._
+_Note: This project mostly serves an educational purpose. For real-life performance-critical applications I recommend using [AngleSharp](https://github.com/AngleSharp/AngleSharp) instead._
 
 ## Download
 
@@ -17,12 +17,11 @@ _Currently, the object model in LtGt is immutable so it cannot be used to manipu
 ## Features
 
 - Parse any HTML5-compliant code
-- Traverse over the DOM using LINQ or Seq
-- Basic element selectors, i.e. `GetElementById()`, `GetElementsByTagName()`, etc
-- CSS selectors, i.e. `div#main`, `p.info:nth-child(2n + 1)`, etc
-- Convert HTML to equivalent Linq2Xml representation, i.e. `XNode`, `XElement`, etc
-- Convert HTML to code
-- Targets .NET Framework 4.5+ and .NET Standard 1.6+
+- Traverse the DOM using LINQ or Seq
+- Use basic element selectors like `GetElementById()`, `GetElementsByTagName()`, etc
+- Use CSS selectors via `QueryElements()`
+- Convert any HTML node to its equivalent Linq2Xml representation
+- Render any HTML entity to code
 
 ## Screenshots
 
@@ -31,7 +30,7 @@ _Currently, the object model in LtGt is immutable so it cannot be used to manipu
 
 ## Usage
 
-LtGt is an F# library but it has separate APIs for convenient usage with both F# and C#.
+LtGt is a library written in F# but it provides two separate idiomatic APIs that you can use from both C# and F#.
 
 ### Parse a document
 
@@ -251,6 +250,7 @@ let html = element |> toHtml // <div id="main">Hello world</div>
 
 This is how LtGt compares to popular HTML libraries when it comes to parsing a document (in this case, a YouTube video watch page).
 The results are not in favor of LtGt so if performance is important for your task, you should probably consider using a different parser.
+That said, these results are still pretty impressive for a parser built with parser combinators as opposed to a traditional manual approach. 
 
 ```ini
 BenchmarkDotNet=v0.12.0, OS=Windows 10.0.14393.3384 (1607/AnniversaryUpdate/Redstone1)
