@@ -21,21 +21,21 @@ module private HtmlParsers =
     // Doubly-quoted attribute
     // id="main"
     let doublyQuotedAttribute =
-        attributeName .>> skipChar '=' .>> spaces .>>. manyCharsBetween (skipChar '"') anyChar (skipChar '"') .>> spaces
+        attributeName .>>? skipChar '=' .>>? spaces .>>.? manyCharsBetween (skipChar '"') anyChar (skipChar '"') .>> spaces
         |>> fun (name, value) -> (name, htmlDecode value)
         |>> HtmlAttribute
 
     // Singly-quoted attribute
     // id="main"
     let singlyQuotedAttribute =
-        attributeName .>> skipChar '=' .>> spaces .>>. manyCharsBetween (skipChar ''') anyChar (skipChar ''') .>> spaces
+        attributeName .>>? skipChar '=' .>>? spaces .>>.? manyCharsBetween (skipChar ''') anyChar (skipChar ''') .>> spaces
         |>> fun (name, value) -> (name, htmlDecode value)
         |>> HtmlAttribute
 
     // Unquoted attribute
     // id=main
     let unquotedAttribute =
-        attributeName .>> skipChar '=' .>> spaces .>>. attributeName .>> spaces
+        attributeName .>>? skipChar '=' .>>? spaces .>>. attributeName .>> spaces
         |>> HtmlAttribute
 
     // Void attribute
@@ -46,10 +46,10 @@ module private HtmlParsers =
 
     let attribute =
         choice [
-            attempt doublyQuotedAttribute
-            attempt singlyQuotedAttribute
-            attempt unquotedAttribute
-            attempt voidAttribute
+            doublyQuotedAttribute
+            singlyQuotedAttribute
+            unquotedAttribute
+            voidAttribute
         ]
 
     // ** Text
@@ -85,9 +85,9 @@ module private HtmlParsers =
 
     let comment =
         choice [
-            attempt normalComment
-            attempt unexpectedDirectiveComment
-            attempt unexpectedDeclarationComment
+            normalComment
+            unexpectedDirectiveComment
+            unexpectedDeclarationComment
         ]
 
     // ** CData
@@ -173,10 +173,10 @@ module private HtmlParsers =
 
     do elementChildRef :=
         choice [
-            attempt element |>> upcastNode
-            attempt cdata |>> upcastNode
-            attempt comment |>> upcastNode
-            attempt text |>> upcastNode
+            element |>> upcastNode
+            cdata |>> upcastNode
+            comment |>> upcastNode
+            text |>> upcastNode
         ]
 
     // ** Document
@@ -189,9 +189,14 @@ module private HtmlParsers =
 
     let node =
         choice [
-            attempt document |>> upcastNode
-            attempt elementChild |>> upcastNode
+            document |>> upcastNode
+            elementChild |>> upcastNode
         ]
+
+/// Exception thrown when parsing fails.
+//  Workaround: https://github.com/dotnet/fsharp/issues/3327#issuecomment-315025498
+exception ParseException of message : string
+    with override this.Message = this.message
 
 // F# & C# API
 module Html =
@@ -213,9 +218,6 @@ module Html =
     /// Tries to parse input string as an HTML node.
     [<CompiledName("TryParseNode")>]
     let tryParseNode source = runWithResult fullNode source
-
-    /// Exception thrown when parsing fails.
-    exception ParseException of string
 
     /// Parses input string as an HTML document or raises an exception in case of failure.
     [<CompiledName("ParseDocument")>]

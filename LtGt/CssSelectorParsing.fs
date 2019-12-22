@@ -42,11 +42,11 @@ module private CssSelectorParsers =
         |>> fun (sign, number) -> sign * number
 
     let multiplierAndConstantFormula =
-        formulaSignedNumber .>> skipChar 'n' .>>. formulaSignedNumber
+        formulaSignedNumber .>>? skipChar 'n' .>>. formulaSignedNumber
         |>> MultiplierAndConstant
 
     let onlyMultiplierNumberFormula =
-        formulaSignedNumber .>> skipChar 'n'
+        formulaSignedNumber .>>? skipChar 'n'
         |>> OnlyMultiplier
 
     let onlyConstantNumberFormula =
@@ -57,17 +57,17 @@ module private CssSelectorParsers =
         choice [
             even
             odd
-            attempt multiplierAndConstantFormula
-            attempt onlyMultiplierNumberFormula
-            attempt onlyConstantNumberFormula
+            multiplierAndConstantFormula
+            onlyMultiplierNumberFormula
+            onlyConstantNumberFormula
         ]
 
     // ** Selectors
 
     let exprChar =
         choice [
-            attempt (skipChar '\\' >>. anyChar)
-            attempt (noneOf " .#:[]()>+~*^$|=")
+            skipChar '\\' >>? anyChar
+            noneOf " .#:[]()>+~*^$|="
         ]
 
     let any = skipChar '*' >>% Any
