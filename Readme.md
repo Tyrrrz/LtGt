@@ -246,3 +246,23 @@ let element = HtmlElement("div",
 
 let html = element |> toHtml // <div id="main">Hello world</div>
 ```
+
+## Benchmarks
+
+This is how LtGt compares to popular HTML libraries when it comes to parsing a document (in this case, a YouTube video watch page).
+The results are not in favor of LtGt so if performance is important for your task, you should probably consider using a different parser.
+
+```ini
+BenchmarkDotNet=v0.12.0, OS=Windows 10.0.14393.3384 (1607/AnniversaryUpdate/Redstone1)
+Intel Core i5-4460 CPU 3.20GHz (Haswell), 1 CPU, 4 logical and 4 physical cores
+Frequency=3125000 Hz, Resolution=320.0000 ns, Timer=TSC
+.NET Core SDK=3.1.100
+[Host]     : .NET Core 3.1.0 (CoreCLR 4.700.19.56402, CoreFX 4.700.19.56404), X64 RyuJIT DEBUG
+DefaultJob : .NET Core 3.1.0 (CoreCLR 4.700.19.56402, CoreFX 4.700.19.56404), X64 RyuJIT
+```
+
+|          Method |     Mean |    Error |   StdDev | Ratio | Rank |
+|---------------- |---------:|---------:|---------:|------:|-----:|
+|      AngleSharp | 12.50 ms | 0.104 ms | 0.098 ms |  0.26 |    1 |
+| HtmlAgilityPack | 21.71 ms | 0.182 ms | 0.170 ms |  0.45 |    2 |
+|            LtGt | 47.78 ms | 0.247 ms | 0.219 ms |  1.00 |    3 |
