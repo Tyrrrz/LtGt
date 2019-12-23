@@ -1,3 +1,7 @@
+### v2.0.1 (23-Dec-2019)
+
+- Fixed an issue where dashes in tag names were not allowed.
+
 ### v2.0 (22-Dec-2019)
 
 - Rewrote the library in F#. It now has separate APIs for F# and C# (see readme).
