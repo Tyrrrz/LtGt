@@ -263,6 +263,6 @@ DefaultJob : .NET Core 3.1.0 (CoreCLR 4.700.19.56402, CoreFX 4.700.19.56404), X6
 
 |          Method |     Mean |    Error |   StdDev | Ratio | Rank |
 |---------------- |---------:|---------:|---------:|------:|-----:|
-|      AngleSharp | 12.50 ms | 0.104 ms | 0.098 ms |  0.26 |    1 |
-| HtmlAgilityPack | 21.71 ms | 0.182 ms | 0.170 ms |  0.45 |    2 |
-|            LtGt | 47.78 ms | 0.247 ms | 0.219 ms |  1.00 |    3 |
+|      AngleSharp | 12.45 ms | 0.141 ms | 0.132 ms |  0.28 |    1 |
+| HtmlAgilityPack | 20.49 ms | 0.176 ms | 0.156 ms |  0.47 |    2 |
+|            LtGt | 43.70 ms | 0.172 ms | 0.161 ms |  1.00 |    3 |

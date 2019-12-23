@@ -110,16 +110,16 @@ and [<AllowNullLiteral>] HtmlElement(tagName : string,
     member self.Attributes = attributes
 
     new(name, attr1, attr2, attr3, attr4, [<ParamArray>] children : HtmlNode[]) =
-        HtmlElement(name, [| attr1; attr2; attr3; attr4 |], children)
+        HtmlElement(name, [ attr1; attr2; attr3; attr4 ], children)
 
     new(name, attr1, attr2, attr3, [<ParamArray>] children : HtmlNode[]) =
-        HtmlElement(name, [| attr1; attr2; attr3 |], children)
+        HtmlElement(name, [ attr1; attr2; attr3 ], children)
 
     new(name, attr1, attr2, [<ParamArray>] children : HtmlNode[]) =
-        HtmlElement(name, [| attr1; attr2 |], children)
+        HtmlElement(name, [ attr1; attr2 ], children)
 
     new(name, attribute : HtmlAttribute, [<ParamArray>] children : HtmlNode[]) =
-        HtmlElement(name, [| attribute |], children)
+        HtmlElement(name, [ attribute ], children)
 
     new(name, [<ParamArray>] children : HtmlNode[]) =
         HtmlElement(name, Array.empty, children)

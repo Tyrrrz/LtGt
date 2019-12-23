@@ -6,7 +6,7 @@ module internal ParsingUtils =
 
     let isSpace = FParsec.Text.IsWhitespace
 
-    let isNotSpace = isSpace >> not
+    let isNotSpace = not << isSpace
 
     let letterOrDigit : Parser<char, unit> =
         choice [
@@ -19,11 +19,6 @@ module internal ParsingUtils =
 
     let inline many1CharsBetween popen pchar pclose =
         popen >>. many1CharsTill pchar pclose
-
-    let inline anyStringOfCI strings =
-        strings
-        |> Seq.map pstringCI
-        |> choice
 
     /// Runs parser on source and produces a result union.
     let inline runWithResult parser source =

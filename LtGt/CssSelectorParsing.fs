@@ -72,7 +72,7 @@ module private CssSelectorParsers =
 
     let any = skipChar '*' >>% Any
 
-    let byTagName = many1Chars letterOrDigit |>> ByTagName
+    let byTagName = many1Chars exprChar |>> ByTagName
 
     let byId = skipChar '#' >>. many1Chars exprChar |>> ById
 

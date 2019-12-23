@@ -160,6 +160,14 @@ namespace LtGt.Tests
                 new HtmlElement("div",
                     new HtmlText("test"))
             );
+
+            yield return new TestCaseData(
+                // language=html
+                "<x-star-rating data-attribute=\"data-value\">5</x-star-rating>",
+                new HtmlElement("x-star-rating",
+                    new HtmlAttribute("data-attribute", "data-value"),
+                    new HtmlText("5"))
+            );
         }
 
         [Test]

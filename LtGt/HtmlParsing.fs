@@ -38,9 +38,9 @@ module private HtmlParsers =
         attributeName .>>? skipChar '=' .>>? spaces .>>. attributeName .>> spaces
         |>> HtmlAttribute
 
-    // Void attribute
+    // Empty attribute
     // id
-    let voidAttribute =
+    let emptyAttribute =
         attributeName
         |>> HtmlAttribute
 
@@ -49,13 +49,13 @@ module private HtmlParsers =
             doublyQuotedAttribute
             singlyQuotedAttribute
             unquotedAttribute
-            voidAttribute
+            emptyAttribute
         ]
 
     // ** Text
 
     let text =
-        many1Chars (noneOf "<")
+        many1Chars <| noneOf "<"
         |>> htmlDecode
         |>> String.trim
         |>> HtmlText
@@ -99,9 +99,19 @@ module private HtmlParsers =
 
     // ** Element
 
-    let elementTagName = many1Chars letterOrDigit .>> spaces
-    let rawTextElementTagName = anyStringOfCI rawTextElementTagNames .>> spaces
-    let voidElementTagName = anyStringOfCI voidElementTagNames .>> spaces
+    let elementTagName = many1Chars <| choice [ letterOrDigit; pchar '-' ] .>> spaces
+
+    let rawTextElementTagName =
+        rawTextElementTagNames
+        |> List.map pstringCI
+        |> choiceL <| "Raw text element tag"
+        .>> spaces
+
+    let voidElementTagName =
+        voidElementTagNames
+        |> List.map pstringCI
+        |> choiceL <| "Void element tag"
+        .>> spaces
 
     // Raw text element
     // <script>foo = bar();</script>
@@ -115,11 +125,13 @@ module private HtmlParsers =
             do! spaces
 
             // ...</script>
-            let! children = (manyCharsTill anyChar (skipString (sprintf "</%s>" tagName)))
+            let! children = manyCharsTill anyChar (skipString <| sprintf "</%s" tagName)
                             |>> String.trim
                             |>> HtmlText
                             |>> upcastNode
                             |>> Array.create 1
+            do! spaces
+            do! skipChar '>'
             do! spaces
 
             return HtmlElement(tagName, attributes, children)
@@ -128,7 +140,7 @@ module private HtmlParsers =
     // Void element
     // <meta name="foo" content="bar">
     let voidElement =
-        skipChar '<' >>. voidElementTagName .>>. many attribute .>> spaces .>> optional (skipChar '/') .>> skipChar '>' .>> spaces
+        skipChar '<' >>. voidElementTagName .>>. many attribute .>> spaces .>> (optional <| skipChar '/') .>> skipChar '>' .>> spaces
         |>> fun (tagName, attributes) -> (tagName, attributes, Array.empty)
         |>> HtmlElement
 
@@ -140,7 +152,7 @@ module private HtmlParsers =
         |>> HtmlElement
 
     // Element child parser is recursive as it can also contain other elements
-    let elementChild, elementChildRef = createParserForwardedToRef<HtmlNode, unit>()
+    let elementChild, elementChildRef = createParserForwardedToRef()
 
     // Normal element
     // <div><p>foo</p></div>
@@ -157,7 +169,9 @@ module private HtmlParsers =
             let! children = many elementChild
 
             // </div>
-            do! skipString (sprintf "</%s>" tagName)
+            do! skipString <| sprintf "</%s" tagName
+            do! spaces
+            do! skipChar '>'
             do! spaces
 
             return HtmlElement(tagName, attributes, children)
