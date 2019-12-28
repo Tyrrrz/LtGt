@@ -22,6 +22,7 @@ _Note: This project mostly serves an educational purpose. For real-life performa
 - Use CSS selectors via `QueryElements()`
 - Convert any HTML node to its equivalent Linq2Xml representation
 - Render any HTML entity to code
+- Targets .NET Framework 4.5+ and .NET Standard 1.6+
 
 ## Screenshots
 
@@ -250,7 +251,7 @@ let html = element |> toHtml // <div id="main">Hello world</div>
 
 This is how LtGt compares to popular HTML libraries when it comes to parsing a document (in this case, a YouTube video watch page).
 The results are not in favor of LtGt so if performance is important for your task, you should probably consider using a different parser.
-That said, these results are still pretty impressive for a parser built with parser combinators as opposed to a traditional manual approach. 
+That said, these results are still pretty impressive for a parser built with parser combinators as opposed to a traditional manual approach.
 
 ```ini
 BenchmarkDotNet=v0.12.0, OS=Windows 10.0.14393.3384 (1607/AnniversaryUpdate/Redstone1)
