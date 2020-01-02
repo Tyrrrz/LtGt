@@ -43,9 +43,8 @@ module HtmlLogic =
     let classNames element =
         element
         |> tryClassName
-        |> Option.map (String.split ' ')
-        |> Option.defaultValue Array.empty
-        |> List.ofArray
+        |> Option.map (String.split ' ' >> List.ofArray)
+        |> Option.defaultValue List.empty
 
     /// Checks whether an element has specified tag name.
     let tagNameMatches name (element : HtmlElement) =

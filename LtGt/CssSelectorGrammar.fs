@@ -12,24 +12,24 @@ module private CssSelectorGrammar =
 
     let attributeValueOperator =
         choice [
-            skipString "^=" >>% StartsWith
-            skipString "$=" >>% EndsWith
-            skipString "*=" >>% Contains
-            skipString "~=" >>% WhiteSpaceSeparatedContains
-            skipString "|=" >>% HyphenSeparatedStartsWith
-            skipChar '=' >>% Equals
+            stringReturn "^=" StartsWith
+            stringReturn "$=" EndsWith
+            stringReturn "*=" Contains
+            stringReturn "~=" WhiteSpaceSeparatedContains
+            stringReturn "|=" HyphenSeparatedStartsWith
+            charReturn '=' Equals
         ]
 
     // ** Number formula
 
-    let even = skipString "even" >>% MultiplierAndConstant (2, 0)
+    let even = stringReturn "even" <| MultiplierAndConstant (2, 0)
 
-    let odd = skipString "odd" >>% MultiplierAndConstant (2, 1)
+    let odd = stringReturn "odd" <| MultiplierAndConstant (2, 1)
 
     let formulaSign =
         choice [
-            skipChar '-' >>% -1
-            skipChar '+' >>% +1
+            charReturn '-' -1
+            charReturn '+' +1
             preturn +1
         ]
 
@@ -70,7 +70,7 @@ module private CssSelectorGrammar =
             noneOf " .#:[]()>+~*^$|="
         ]
 
-    let any = skipChar '*' >>% Any
+    let any = charReturn '*' Any
 
     let byTagName = many1Chars exprChar |>> ByTagName
 
@@ -87,15 +87,15 @@ module private CssSelectorGrammar =
         ]
 
     let byAttribute =
-        many1CharsBetween (skipChar '[') exprChar (skipChar ']')
+        skipChar '[' |> any1StringBetween <| skipChar ']'
         |>> ByAttribute
 
     let byDoublyQuotedAttributeValue =
-        skipChar '[' >>. tuple3 (many1Chars exprChar) attributeValueOperator (manyCharsBetween (skipChar '"') anyChar (skipChar '"')) .>> skipChar ']'
+        skipChar '[' >>. tuple3 (many1Chars exprChar) (attributeValueOperator) (anyDoublyQuotedString) .>> skipChar ']'
         |>> ByAttributeValue
 
     let bySinglyQuotedAttributeValue =
-        skipChar '[' >>. tuple3 (many1Chars exprChar) attributeValueOperator (manyCharsBetween (skipChar ''') anyChar (skipChar ''')) .>> skipChar ']'
+        skipChar '[' >>. tuple3 (many1Chars exprChar) (attributeValueOperator) (anySinglyQuotedString) .>> skipChar ']'
         |>> ByAttributeValue
 
     let attribute =
@@ -105,15 +105,15 @@ module private CssSelectorGrammar =
             attempt byAttribute
         ]
 
-    let root = skipStringCI ":root" >>% Root
+    let root = stringCIReturn ":root" Root
 
-    let empty = skipStringCI ":empty" >>% Empty
+    let empty = stringCIReturn ":empty" Empty
 
-    let onlyChild = skipStringCI ":only-child" >>% OnlyChild
+    let onlyChild = stringCIReturn ":only-child" OnlyChild
 
-    let firstChild = skipStringCI ":first-child" >>% FirstChild
+    let firstChild = stringCIReturn ":first-child" FirstChild
 
-    let lastChild = skipStringCI ":last-child" >>% LastChild
+    let lastChild = stringCIReturn ":last-child" LastChild
 
     let nthChild =
         skipStringCI ":nth-child(" >>. numberFormula .>> skipChar ')'
@@ -123,11 +123,11 @@ module private CssSelectorGrammar =
         skipStringCI ":nth-last-child(" >>. numberFormula .>> skipChar ')'
         |>> NthLastChild
 
-    let onlyOfType = skipStringCI ":only-of-type" >>% OnlyOfType
+    let onlyOfType = stringCIReturn ":only-of-type" OnlyOfType
 
-    let firstOfType = skipStringCI ":first-of-type" >>% FirstOfType
+    let firstOfType = stringCIReturn ":first-of-type" FirstOfType
 
-    let lastOfType = skipStringCI ":last-of-type" >>% LastOfType
+    let lastOfType = stringCIReturn ":last-of-type" LastOfType
 
     let nthOfType =
         skipStringCI ":nth-of-type(" >>. numberFormula .>> skipChar ')'
@@ -231,6 +231,6 @@ module private CssSelectorGrammar =
 
 module internal CssSelector =
 
-    let private fullSelector = CssSelectorGrammar.selector .>> eof
+    let private selectorFull = CssSelectorGrammar.selector .>> eof
 
-    let tryParse source = runWithResult fullSelector source
+    let tryParse source = runWithResult selectorFull source

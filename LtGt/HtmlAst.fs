@@ -122,7 +122,7 @@ and [<AllowNullLiteral>] HtmlElement(tagName : string,
         HtmlElement(name, [ attribute ], children)
 
     new(name, [<ParamArray>] children : HtmlNode[]) =
-        HtmlElement(name, Array.empty, children)
+        HtmlElement(name, List.empty, children)
 
 and [<AllowNullLiteral>] HtmlDocument(declaration : HtmlDeclaration,
                                       children : IReadOnlyList<HtmlNode>) =

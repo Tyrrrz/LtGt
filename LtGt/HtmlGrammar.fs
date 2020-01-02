@@ -11,7 +11,7 @@ module private HtmlGrammar =
 
     // <!doctype html>
     let declaration =
-        manyCharsBetween (skipString "<!") anyChar (skipChar '>') .>> spaces
+        skipString "<!" |> anyStringBetween <| skipChar '>' .>> spaces
         |>> HtmlDeclaration
 
     // ** Attribute
@@ -21,14 +21,14 @@ module private HtmlGrammar =
     // Doubly-quoted attribute
     // id="main"
     let doublyQuotedAttribute =
-        attributeName .>>? skipChar '=' .>>? spaces .>>.? manyCharsBetween (skipChar '"') anyChar (skipChar '"') .>> spaces
+        attributeName .>>? skipChar '=' .>>? spaces .>>.? anyDoublyQuotedString .>> spaces
         |>> fun (name, value) -> (name, htmlDecode value)
         |>> HtmlAttribute
 
     // Singly-quoted attribute
     // id="main"
     let singlyQuotedAttribute =
-        attributeName .>>? skipChar '=' .>>? spaces .>>.? manyCharsBetween (skipChar ''') anyChar (skipChar ''') .>> spaces
+        attributeName .>>? skipChar '=' .>>? spaces .>>.? anySinglyQuotedString .>> spaces
         |>> fun (name, value) -> (name, htmlDecode value)
         |>> HtmlAttribute
 
@@ -65,21 +65,21 @@ module private HtmlGrammar =
     // Normal comment
     // <!-- content -->
     let normalComment =
-        manyCharsBetween (skipString "<!--") anyChar (skipString "-->") .>> spaces
+        skipString "<!--" |> anyStringBetween <| skipString "-->" .>> spaces
         |>> String.trim
         |>> HtmlComment
 
     // Unexpected XML directive treated as comment
     // <?xml version="1.0"?>
     let unexpectedDirectiveComment =
-        manyCharsBetween (skipString "<?") anyChar (skipString "?>") .>> spaces
+        skipString "<?" |> anyStringBetween <| skipString "?>" .>> spaces
         |>> String.trim
         |>> HtmlComment
 
     // Unexpected HTML declaration treated as comment
     // <!doctype html>
     let unexpectedDeclarationComment =
-        manyCharsBetween (skipString "<!") anyChar (skipChar '>') .>> spaces
+        skipString "<!" |> anyStringBetween <| skipChar '>' .>> spaces
         |>> String.trim
         |>> HtmlComment
 
@@ -94,12 +94,12 @@ module private HtmlGrammar =
 
     // <![CDATA[content]]>
     let cdata =
-        manyCharsBetween (skipString "<![CDATA[") anyChar (skipString "]]>") .>> spaces
+        skipString "<![CDATA[" |> anyStringBetween <| skipString "]]>" .>> spaces
         |>> HtmlCData
 
     // ** Element
 
-    let elementTagName = many1Chars <| choice [ letterOrDigit; pchar '-' ] .>> spaces
+    let elementTagName = many1Chars <| choice [ letter; digit; pchar '-' ] .>> spaces
 
     let rawTextElementTagName =
         rawTextElementTagNames
@@ -129,7 +129,7 @@ module private HtmlGrammar =
                             |>> String.trim
                             |>> HtmlText
                             |>> upcastNode
-                            |>> Array.create 1
+                            |>> List.singleton
             do! spaces
             do! skipChar '>'
             do! spaces
@@ -141,14 +141,14 @@ module private HtmlGrammar =
     // <meta name="foo" content="bar">
     let voidElement =
         skipChar '<' >>. voidElementTagName .>>. many attribute .>> spaces .>> (optional <| skipChar '/') .>> skipChar '>' .>> spaces
-        |>> fun (tagName, attributes) -> (tagName, attributes, Array.empty)
+        |>> fun (tagName, attributes) -> (tagName, attributes, List.empty)
         |>> HtmlElement
 
     // Self-closing element
     // <div />
     let selfClosingElement =
         skipChar '<' >>. elementTagName .>>. many attribute .>> spaces .>> skipString "/>" .>> spaces
-        |>> fun (tagName, attributes) -> (tagName, attributes, Array.empty)
+        |>> fun (tagName, attributes) -> (tagName, attributes, List.empty)
         |>> HtmlElement
 
     // Element child parser is recursive as it can also contain other elements
@@ -215,23 +215,23 @@ exception ParseException of message : string
 // F# & C# API
 module Html =
 
-    let private fullDocument = spaces >>. HtmlGrammar.document .>> eof
+    let private documentFull = spaces >>. HtmlGrammar.document .>> eof
 
-    let private fullElement = spaces >>. HtmlGrammar.element .>> eof
+    let private elementFull = spaces >>. HtmlGrammar.element .>> eof
 
-    let private fullNode = spaces >>. HtmlGrammar.node .>> eof
+    let private nodeFull = spaces >>. HtmlGrammar.node .>> eof
 
     /// Tries to parse input string as an HTML document.
     [<CompiledName("TryParseDocument")>]
-    let tryParseDocument source = runWithResult fullDocument source
+    let tryParseDocument source = runWithResult documentFull source
 
     /// Tries to parse input string as an HTML element.
     [<CompiledName("TryParseElement")>]
-    let tryParseElement source = runWithResult fullElement source
+    let tryParseElement source = runWithResult elementFull source
 
     /// Tries to parse input string as an HTML node.
     [<CompiledName("TryParseNode")>]
-    let tryParseNode source = runWithResult fullNode source
+    let tryParseNode source = runWithResult nodeFull source
 
     /// Parses input string as an HTML document or raises an exception in case of failure.
     [<CompiledName("ParseDocument")>]

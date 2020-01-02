@@ -8,17 +8,21 @@ module internal ParsingUtils =
 
     let isNotSpace = not << isSpace
 
-    let letterOrDigit : Parser<char, unit> =
-        choice [
-            letter
-            digit
-        ]
-
-    let inline manyCharsBetween popen pchar pclose =
+    let inline manyCharsBetween popen pclose pchar =
         popen >>. manyCharsTill pchar pclose
 
-    let inline many1CharsBetween popen pchar pclose =
+    let inline anyStringBetween popen pclose =
+        manyCharsBetween popen pclose anyChar
+
+    let inline many1CharsBetween popen pclose pchar =
         popen >>. many1CharsTill pchar pclose
+
+    let inline any1StringBetween popen pclose =
+        many1CharsBetween popen pclose anyChar
+
+    let anySinglyQuotedString : Parser<_, unit> = skipChar ''' |> anyStringBetween <| skipChar '''
+
+    let anyDoublyQuotedString : Parser<_, unit> = skipChar '"' |> anyStringBetween <| skipChar '"'
 
     /// Runs parser on source and produces a result union.
     let inline runWithResult parser source =
