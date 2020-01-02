@@ -3,7 +3,7 @@
 open FParsec
 open LtGt.ParsingUtils
 
-module private HtmlParsers =
+module private HtmlGrammar =
 
     let upcastNode x = x :> HtmlNode
 
@@ -215,11 +215,11 @@ exception ParseException of message : string
 // F# & C# API
 module Html =
 
-    let private fullDocument = spaces >>. HtmlParsers.document .>> eof
+    let private fullDocument = spaces >>. HtmlGrammar.document .>> eof
 
-    let private fullElement = spaces >>. HtmlParsers.element .>> eof
+    let private fullElement = spaces >>. HtmlGrammar.element .>> eof
 
-    let private fullNode = spaces >>. HtmlParsers.node .>> eof
+    let private fullNode = spaces >>. HtmlGrammar.node .>> eof
 
     /// Tries to parse input string as an HTML document.
     [<CompiledName("TryParseDocument")>]

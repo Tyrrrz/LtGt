@@ -24,10 +24,10 @@
     <Compile Include="HtmlAst.fs" />
     <Compile Include="HtmlRules.fs" />
     <Compile Include="HtmlEquality.fs" />
-    <Compile Include="HtmlParsing.fs" />
+    <Compile Include="HtmlGrammar.fs" />
     <Compile Include="HtmlLogic.fs" />
     <Compile Include="CssSelectorAst.fs" />
-    <Compile Include="CssSelectorParsing.fs" />
+    <Compile Include="CssSelectorGrammar.fs" />
     <Compile Include="CssSelectorLogic.fs" />
   </ItemGroup>
 

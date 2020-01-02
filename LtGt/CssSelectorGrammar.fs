@@ -3,7 +3,7 @@
 open FParsec
 open LtGt.ParsingUtils
 
-module private CssSelectorParsers =
+module private CssSelectorGrammar =
 
     // Note to self:
     // Spaces are important in CSS selectors, don't skip them.
@@ -231,6 +231,6 @@ module private CssSelectorParsers =
 
 module internal CssSelector =
 
-    let private fullSelector = CssSelectorParsers.selector .>> eof
+    let private fullSelector = CssSelectorGrammar.selector .>> eof
 
     let tryParse source = runWithResult fullSelector source
