@@ -113,6 +113,9 @@ module private HtmlGrammar =
         |> choiceL <| "Void element tag"
         .>> spaces
 
+    // Element child parser is recursive as it can also contain other elements
+    let elementChild, elementChildRef = createParserForwardedToRef()
+
     // Raw text element
     // <script>foo = bar();</script>
     let rawTextElement =
@@ -125,7 +128,7 @@ module private HtmlGrammar =
             do! spaces
 
             // ...</script>
-            let! children = manyCharsTill anyChar (skipString <| sprintf "</%s" tagName)
+            let! children = anyChar |> manyCharsTill <| (skipString <| sprintf "</%s" tagName)
                             |>> String.trim
                             |>> HtmlText
                             |>> upcastNode
@@ -151,9 +154,6 @@ module private HtmlGrammar =
         |>> fun (tagName, attributes) -> (tagName, attributes, List.empty)
         |>> HtmlElement
 
-    // Element child parser is recursive as it can also contain other elements
-    let elementChild, elementChildRef = createParserForwardedToRef()
-
     // Normal element
     // <div><p>foo</p></div>
     let normalElement =
@@ -177,12 +177,30 @@ module private HtmlGrammar =
             return HtmlElement(tagName, attributes, children)
         }
 
+    // Unclosed element
+    // <div><p>foo</p>
+    let unclosedElement =
+        parse {
+            // <div ...>
+            do! skipChar '<'
+            let! tagName = elementTagName
+            let! attributes = many attribute
+            do! skipChar '>'
+            do! spaces
+
+            // ...
+            let! children = many elementChild
+
+            return HtmlElement(tagName, attributes, children)
+        }
+
     let element =
         choice [
             attempt rawTextElement
             attempt voidElement
             attempt selfClosingElement
             attempt normalElement
+            attempt unclosedElement
         ]
 
     do elementChildRef :=

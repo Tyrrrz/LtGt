@@ -136,14 +136,14 @@ namespace LtGt.Tests
                 // language=html
                 "<div>",
                 new HtmlElement("div")
-            ).Ignore("Out of scope for now");
+            );
 
             yield return new TestCaseData(
                 // language=html
-                "<div><div></div>",
+                "<div><p>test</p>",
                 new HtmlElement("div",
-                    new HtmlElement("div"))
-            ).Ignore("Out of scope for now");
+                    new HtmlElement("p", new HtmlText("test")))
+            );
 
             yield return new TestCaseData(
                 // language=html
@@ -168,6 +168,17 @@ namespace LtGt.Tests
                     new HtmlAttribute("data-attribute", "data-value"),
                     new HtmlText("5"))
             );
+
+            yield return new TestCaseData(
+                // language=html
+                "<svg width=\"108px\" height=\"17px\" viewBox=\"0 0 127 20\"><use xlink:href=\"#bandcamp-logo-color-white\"></svg>",
+                new HtmlElement("svg",
+                    new HtmlAttribute("width", "108px"),
+                    new HtmlAttribute("height", "17px"),
+                    new HtmlAttribute("viewBox", "0 0 127 20"),
+                    new HtmlElement("use",
+                        new HtmlAttribute("xlink:href", "#bandcamp-logo-color-white")))
+                );
         }
 
         [Test]
