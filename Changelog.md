@@ -1,3 +1,7 @@
+### v2.0.2 (05-Jan-2020)
+
+- Added handling for non-void unclosed tags.
+
 ### v2.0.1 (23-Dec-2019)
 
 - Fixed an issue where dashes in tag names were not allowed.
