@@ -2,9 +2,7 @@
 
 open System.Runtime.CompilerServices
 
-// F# API
-[<AutoOpen>]
-module CssSelectorLogic =
+module CssSelector =
 
     let private evaluateAttrOp op pattern value =
         match op with
@@ -33,108 +31,108 @@ module CssSelectorLogic =
     let rec private evaluateSelector selector (element : HtmlElement) =
         match selector with
         | Any -> true
-        | ByTagName name -> element |> tagNameMatches name
-        | ById id -> element |> idMatches id
-        | ByClassName className -> element |> classNameMatches className
+        | ByTagName name -> element |> Html.tagNameMatches name
+        | ById id -> element |> Html.idMatches id
+        | ByClassName className -> element |> Html.classNameMatches className
 
         | ByAttribute name ->
             element
-            |> tryAttribute name
+            |> Html.tryAttribute name
             |> Option.isSome
 
         | ByAttributeValue (name, op, pattern) ->
             element
-            |> tryAttributeValue name
+            |> Html.tryAttributeValue name
             |> Option.exists (evaluateAttrOp op pattern)
 
         | Root ->
             element.Parent
             |> Option.ofObj
-            |> Option.bind tryAsElement
+            |> Option.bind Html.tryAsElement
             |> Option.isNone
 
         | Empty -> element.Children |> Seq.isEmpty
-        | OnlyChild -> element |> siblings |> Seq.isEmpty
+        | OnlyChild -> element |> Html.siblings |> Seq.isEmpty
         | FirstChild -> isNull <| element.Previous
         | LastChild -> isNull <| element.Next
 
         | NthChild formula ->
             element
-            |> previousSiblings
+            |> Html.previousSiblings
             |> Seq.length
             |> fun x -> x + 1
             |> evaluateFormula formula
 
         | NthLastChild formula ->
             element
-            |> nextSiblings
+            |> Html.nextSiblings
             |> Seq.length
             |> fun x -> x + 1
             |> evaluateFormula formula
 
         | OnlyOfType ->
             element
-            |> siblings
-            |> filterElements
-            |> Seq.filter (tagNameMatches element.TagName)
+            |> Html.siblings
+            |> Html.filterElements
+            |> Seq.filter (Html.tagNameMatches element.TagName)
             |> Seq.isEmpty
 
         | FirstOfType ->
             element
-            |> previousSiblings
-            |> filterElements
-            |> Seq.filter (tagNameMatches element.TagName)
+            |> Html.previousSiblings
+            |> Html.filterElements
+            |> Seq.filter (Html.tagNameMatches element.TagName)
             |> Seq.isEmpty
 
         | LastOfType ->
             element
-            |> nextSiblings
-            |> filterElements
-            |> Seq.filter (tagNameMatches element.TagName)
+            |> Html.nextSiblings
+            |> Html.filterElements
+            |> Seq.filter (Html.tagNameMatches element.TagName)
             |> Seq.isEmpty
 
         | NthOfType formula ->
             element
-            |> previousSiblings
-            |> filterElements
-            |> Seq.filter (tagNameMatches element.TagName)
+            |> Html.previousSiblings
+            |> Html.filterElements
+            |> Seq.filter (Html.tagNameMatches element.TagName)
             |> Seq.length
             |> fun x -> x + 1
             |> evaluateFormula formula
 
         | NthLastOfType formula ->
             element
-            |> nextSiblings
-            |> filterElements
-            |> Seq.filter (tagNameMatches element.TagName)
+            |> Html.nextSiblings
+            |> Html.filterElements
+            |> Seq.filter (Html.tagNameMatches element.TagName)
             |> Seq.length
             |> fun x -> x + 1
             |> evaluateFormula formula
 
         | Descendant (ancestorSelector, childSelector) ->
             element
-            |> ancestors
+            |> Html.ancestors
             |> Seq.cast
-            |> filterElements
+            |> Html.filterElements
             |> Seq.exists (evaluateSelector ancestorSelector)
             && evaluateSelector childSelector element
 
         | Child (parentSelector, childSelector) ->
             element.Parent
-            |> tryAsElement
+            |> Html.tryAsElement
             |> Option.exists (evaluateSelector parentSelector)
             && evaluateSelector childSelector element
 
         | Sibling (previousSelector, targetSelector) ->
             element.Previous
-            |> tryAsElement
+            |> Html.tryAsElement
             |> Option.exists (evaluateSelector previousSelector)
             && evaluateSelector targetSelector element
 
         | SubsequentSibling (previousSelector, targetSelector) ->
             element
-            |> previousSiblings
-            |> filterElements
+            |> Html.previousSiblings
+            |> Html.filterElements
             |> Seq.exists (evaluateSelector previousSelector)
             && evaluateSelector targetSelector element
 
@@ -144,19 +142,17 @@ module CssSelectorLogic =
     /// Gets all descendant elements that are matched by the specified CSS selector.
     let queryElements query container =
         // This never fails, just returns nothing in case of an error
-        match CssSelector.tryParse query with
+        match ParsingUtils.runWithResult CssSelectorGrammar.selectorFull query with
         | Ok selector ->
             container
-            |> descendantElements
+            |> Html.descendantElements
             |> Seq.filter (evaluateSelector selector)
         | Error _ -> Seq.empty
 
-// C# API
+// Extensions for usage from C#
 [<Extension>]
-module CssSelectorLogicExtensions =
+module CssSelectorExtensions =
 
     /// Gets all descendant elements that are matched by the specified CSS selector.
     [<Extension>]
-    let QueryElements (self, query) =
-        self
-        |> queryElements query
+    let QueryElements (self, query) = self |> CssSelector.queryElements query

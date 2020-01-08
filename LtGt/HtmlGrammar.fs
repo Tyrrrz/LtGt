@@ -3,7 +3,7 @@
 open FParsec
 open LtGt.ParsingUtils
 
-module private HtmlGrammar =
+module internal HtmlGrammar =
 
     let upcastNode x = x :> HtmlNode
 
@@ -225,45 +225,10 @@ module private HtmlGrammar =
             elementChild |>> upcastNode
         ]
 
-/// Exception thrown when parsing fails.
-//  Workaround: https://github.com/dotnet/fsharp/issues/3327#issuecomment-315025498
-exception ParseException of message : string
-    with override this.Message = this.message
+    // ** Entry points
 
-// F# & C# API
-module Html =
+    let documentFull = spaces >>. document .>> eof
 
-    let private documentFull = spaces >>. HtmlGrammar.document .>> eof
+    let elementFull = spaces >>. element .>> eof
 
-    let private elementFull = spaces >>. HtmlGrammar.element .>> eof
-
-    let private nodeFull = spaces >>. HtmlGrammar.node .>> eof
-
-    /// Tries to parse input string as an HTML document.
-    [<CompiledName("TryParseDocument")>]
-    let tryParseDocument source = runWithResult documentFull source
-
-    /// Tries to parse input string as an HTML element.
-    [<CompiledName("TryParseElement")>]
-    let tryParseElement source = runWithResult elementFull source
-
-    /// Tries to parse input string as an HTML node.
-    [<CompiledName("TryParseNode")>]
-    let tryParseNode source = runWithResult nodeFull source
-
-    let private runOrRaise parser source =
-        match runWithResult parser source with
-        | Result.Ok res -> res
-        | Result.Error err -> raise (ParseException err)
-
-    /// Parses input string as an HTML document or raises an exception in case of failure.
-    [<CompiledName("ParseDocument")>]
-    let parseDocument source = runOrRaise documentFull source
-
-    /// Parses input string as an HTML element or raises an exception in case of failure.
-    [<CompiledName("ParseElement")>]
-    let parseElement source = runOrRaise elementFull source
-
-    /// Parses input string as an HTML node or raises an exception in case of failure.
-    [<CompiledName("ParseNode")>]
-    let parseNode source = runOrRaise nodeFull source
+    let nodeFull = spaces >>. node .>> eof

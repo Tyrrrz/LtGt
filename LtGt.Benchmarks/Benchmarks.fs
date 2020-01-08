@@ -58,7 +58,7 @@ type BasicSelectorsBenchmark() =
     }
 
     [<Benchmark(Description = "LtGt", Baseline = true)>]
-    member self.LtGt() = _ltGtDocument |> tryElementById "player"
+    member self.LtGt() = _ltGtDocument |> Html.tryElementById "player"
 
     [<Benchmark(Description = "AngleSharp")>]
     member self.AngleSharp() = _angleSharpDocument.GetElementById("player")
@@ -82,7 +82,7 @@ type CssSelectorsBenchmark() =
     }
 
     [<Benchmark(Description = "LtGt", Baseline = true)>]
-    member self.LtGt() = _ltGtDocument |> queryElements "div#player" |> Seq.toArray
+    member self.LtGt() = _ltGtDocument |> CssSelector.queryElements "div#player" |> Seq.toArray
 
     [<Benchmark(Description = "AngleSharp")>]
     member self.AngleSharp() = _angleSharpDocument.QuerySelectorAll("div#player") |> Seq.toArray

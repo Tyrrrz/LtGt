@@ -90,7 +90,7 @@ let document = Html.parseDocument html
 // -or-
 
 // This returns a wrapped result instead
-match (Html.tryParseDocument html) with
+match Html.tryParseDocument html with
 | Result.Ok document -> // handle result
 | Result.Error error -> // handle error
 ```
@@ -138,13 +138,13 @@ var element3Text = element3.GetInnerText();
 >F#
 
 ```f#
-let element1 = document |> tryElementById "menu-bar"
-let element2 = document |> elementsByTagName "div" |> Seq.tryHead
-let element3 = document |> elementsByClassName "floating-button floating-button--enabled" |> Seq.tryHead
+let element1 = document |> Html.tryElementById "menu-bar"
+let element2 = document |> Html.elementsByTagName "div" |> Seq.tryHead
+let element3 = document |> Html.elementsByClassName "floating-button floating-button--enabled" |> Seq.tryHead
 
-let element1Data = element1 |> Option.bind (tryAttributeValue "data")
-let element2Id = element2 |> Option.bind tryId
-let element3Text = element3 |> Option.map innerText
+let element1Data = element1 |> Option.bind (Html.tryAttributeValue "data")
+let element2Id = element2 |> Option.bind Html.tryId
+let element3Text = element3 |> Option.map Html.innerText
 ```
 
 You can leverage the full power of CSS selectors as well.
@@ -158,7 +158,7 @@ var element = document.QueryElements("div#main > span.container:empty").FirstOrD
 >F#
 
 ```f#
-let element = document |> queryElements "div#main > span.container:empty" |> Seq.tryHead
+let element = document |> CssSelector.queryElements "div#main > span.container:empty" |> Seq.tryHead
 ```
 
 ### Check equality
@@ -199,8 +199,8 @@ let element3 = HtmlElement("span",
     HtmlAttribute("id", "foo"),
     HtmlText("oof"))
 
-let firstTwoEqual = htmlEquals element1 element2 // true
-let lastTwoEqual = htmlEquals element2 element3 // false
+let firstTwoEqual = Html.equal element1 element2 // true
+let lastTwoEqual = Html.equal element2 element3 // false
 ```
 
 ### Convert to Linq2Xml
@@ -219,7 +219,7 @@ var elements = xmlDocument.XPathSelectElements("//input[@type=\"submit\"]");
 
 ```f#
 let htmlDocument = Html.parseDocument html
-let xmlDocument = htmlDocument |> toXObject :?> XDocument
+let xmlDocument = htmlDocument |> Html.toXObject :?> XDocument
 let elements = xmlDocument.XPathSelectElements("//input[@type=\"submit\"]")
 ```
 
@@ -244,7 +244,7 @@ let element = HtmlElement("div",
     HtmlAttribute("id", "main"),
     HtmlText("Hello world"))
 
-let html = element |> toHtml // <div id="main">Hello world</div>
+let html = element |> Html.toHtml // <div id="main">Hello world</div>
 ```
 
 ## Benchmarks
