@@ -12,7 +12,6 @@ module HtmlEquality =
     /// Compares two HTML entities and returns whether they are logically equal.
     let rec htmlEquals (a : HtmlEntity) (b : HtmlEntity) =
         match a, b with
-
         | null, null -> true
 
         | (:? HtmlDeclaration as x1), (:? HtmlDeclaration as x2) ->
@@ -48,15 +47,10 @@ module HtmlEquality =
     /// Calculates hashcode for specified HTML entity.
     let rec htmlHash (e : HtmlEntity) =
         match e with
-
         | :? HtmlDeclaration as x -> String.ordinalHashCI x.Content
-
         | :? HtmlAttribute as x -> String.ordinalHashCI x.Name <*> String.ordinalHash x.Value
-
         | :? HtmlText as x -> String.ordinalHash x.Content
-
         | :? HtmlComment as x -> String.ordinalHash x.Content
-
         | :? HtmlCData as x -> String.ordinalHash x.Content
 
         | :? HtmlElement as x ->

@@ -30,11 +30,7 @@ module internal HtmlRules =
     ]
 
     /// Checks whether the specified element tag name belongs to "raw text elements" category.
-    let isRawTextElementTagName name =
-        rawTextElementTagNames
-        |> Seq.exists (String.ordinalEqualsCI name)
+    let isRawTextElementTagName name = rawTextElementTagNames |> Seq.exists (String.ordinalEqualsCI name)
 
     /// Checks whether the specified element tag name belongs to "void elements" category.
-    let isVoidElementTagName name =
-        voidElementTagNames
-        |> Seq.exists (String.ordinalEqualsCI name)
+    let isVoidElementTagName name = voidElementTagNames |> Seq.exists (String.ordinalEqualsCI name)

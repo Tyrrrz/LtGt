@@ -251,23 +251,19 @@ module Html =
     [<CompiledName("TryParseNode")>]
     let tryParseNode source = runWithResult nodeFull source
 
-    /// Parses input string as an HTML document or raises an exception in case of failure.
-    [<CompiledName("ParseDocument")>]
-    let parseDocument source =
-        match tryParseDocument source with
+    let private runOrRaise parser source =
+        match runWithResult parser source with
         | Result.Ok res -> res
         | Result.Error err -> raise (ParseException err)
+
+    /// Parses input string as an HTML document or raises an exception in case of failure.
+    [<CompiledName("ParseDocument")>]
+    let parseDocument source = runOrRaise documentFull source
 
     /// Parses input string as an HTML element or raises an exception in case of failure.
     [<CompiledName("ParseElement")>]
-    let parseElement source =
-        match tryParseElement source with
-        | Result.Ok res -> res
-        | Result.Error err -> raise (ParseException err)
+    let parseElement source = runOrRaise elementFull source
 
     /// Parses input string as an HTML node or raises an exception in case of failure.
     [<CompiledName("ParseNode")>]
-    let parseNode source =
-        match tryParseNode source with
-        | Result.Ok res -> res
-        | Result.Error err -> raise (ParseException err)
+    let parseNode source = runOrRaise nodeFull source

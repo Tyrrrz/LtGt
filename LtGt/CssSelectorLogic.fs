@@ -12,8 +12,17 @@ module CssSelectorLogic =
         | StartsWith -> String.ordinalStartsWithCI value pattern
         | EndsWith -> String.ordinalEndsWithCI value pattern
         | Contains -> String.ordinalContainsCI value pattern
-        | WhiteSpaceSeparatedContains -> value |> String.split ' ' |> Seq.exists (String.ordinalEqualsCI pattern)
-        | HyphenSeparatedStartsWith -> value |> String.split '-' |> Seq.tryHead |> Option.exists (String.ordinalEqualsCI pattern)
+
+        | WhiteSpaceSeparatedContains ->
+            value
+            |> String.split ' '
+            |> Array.exists (String.ordinalEqualsCI pattern)
+
+        | HyphenSeparatedStartsWith ->
+            value
+            |> String.split '-'
+            |> Array.tryHead
+            |> Option.exists (String.ordinalEqualsCI pattern)
 
     let private evaluateFormula f value =
         match f with
@@ -45,19 +54,9 @@ module CssSelectorLogic =
             |> Option.isNone
 
         | Empty -> element.Children |> Seq.isEmpty
-
-        | OnlyChild ->
-            element
-            |> siblings
-            |> Seq.isEmpty
-
-        | FirstChild ->
-            element.Previous
-            |> isNull
-
-        | LastChild ->
-            element.Next
-            |> isNull
+        | OnlyChild -> element |> siblings |> Seq.isEmpty
+        | FirstChild -> isNull <| element.Previous
+        | LastChild -> isNull <| element.Next
 
         | NthChild formula ->
             element
@@ -118,28 +117,28 @@ module CssSelectorLogic =
             |> Seq.cast
             |> filterElements
             |> Seq.exists (evaluateSelector ancestorSelector)
-            && element |> evaluateSelector childSelector
+            && evaluateSelector childSelector element
 
         | Child (parentSelector, childSelector) ->
             element.Parent
             |> tryAsElement
             |> Option.exists (evaluateSelector parentSelector)
-            && element |> evaluateSelector childSelector
+            && evaluateSelector childSelector element
 
         | Sibling (previousSelector, targetSelector) ->
             element.Previous
             |> tryAsElement
             |> Option.exists (evaluateSelector previousSelector)
-            && element |> evaluateSelector targetSelector
+            && evaluateSelector targetSelector element
 
         | SubsequentSibling (previousSelector, targetSelector) ->
             element
             |> previousSiblings
             |> filterElements
             |> Seq.exists (evaluateSelector previousSelector)
-            && element |> evaluateSelector targetSelector
+            && evaluateSelector targetSelector element
 
-        | Not selector -> element |> evaluateSelector selector |> not
+        | Not selector -> not <| evaluateSelector selector element
         | Group selectors -> selectors |> Seq.forall (fun x -> evaluateSelector x element)
 
     /// Gets all descendant elements that are matched by the specified CSS selector.

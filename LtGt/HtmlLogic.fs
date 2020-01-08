@@ -24,37 +24,26 @@ module HtmlLogic =
         |> Seq.tryFind (fun x -> String.ordinalEqualsCI x.Name name)
 
     /// Tries to find an attribute by name and get its value.
-    let tryAttributeValue name element =
-        element
-        |> tryAttribute name
-        |> Option.map (fun x -> x.Value)
+    let tryAttributeValue name = tryAttribute name >> Option.map (fun x -> x.Value)
 
     /// Tries to get the value of the "id" attribute.
-    let tryId element =
-        element
-        |> tryAttributeValue "id"
+    let tryId = tryAttributeValue "id"
 
     /// Tries to get the value of the "class" attribute.
-    let tryClassName element =
-        element
-        |> tryAttributeValue "class"
+    let tryClassName = tryAttributeValue "class"
 
     /// Gets the value of the "class" attribute as a list of space-separated elements.
-    let classNames element =
-        element
-        |> tryClassName
-        |> Option.map (String.split ' ' >> List.ofArray)
-        |> Option.defaultValue List.empty
+    let classNames =
+        tryClassName
+        >> Option.map (String.split ' ' >> List.ofArray)
+        >> Option.defaultValue List.empty
 
     /// Checks whether an element has specified tag name.
     let tagNameMatches name (element : HtmlElement) =
         String.ordinalEqualsCI element.TagName name
 
     /// Checks whether an element has specified value of "id" attribute.
-    let idMatches id element =
-        element
-        |> tryId
-        |> Option.exists (String.ordinalEquals id)
+    let idMatches id = tryId >> Option.exists (String.ordinalEquals id)
 
     /// Checks whether the class name of an element matches specified class name.
     /// This function works by splitting both class names by space and checking if the element contains all individual
@@ -68,29 +57,29 @@ module HtmlLogic =
 
     /// Gets all of the node's ancestors, from immediate parent to the root node.
     let rec ancestors (node : HtmlNode) = seq {
-        if not (isNull node.Parent) then
+        if not <| isNull node.Parent then
             yield node.Parent
-            yield! node.Parent |> ancestors
+            yield! ancestors node.Parent
     }
 
     /// Gets all of the node's siblings.
     let siblings (node : HtmlNode) = seq {
-        if not (isNull node.Parent) then
+        if not <| isNull node.Parent then
             yield! node.Parent.Children |> Seq.filter (fun x -> x <> node)
     }
 
     /// Gets all of the node's siblings that appear before it in the DOM.
     let rec previousSiblings (node : HtmlNode) = seq {
-        if not (isNull node.Previous) then
+        if not <| isNull node.Previous then
             yield node.Previous
-            yield! node.Previous |> previousSiblings
+            yield! previousSiblings node.Previous
     }
 
     /// Gets all of the node's siblings that appear after it in the DOM.
     let rec nextSiblings (node : HtmlNode) = seq {
-        if not (isNull node.Next) then
+        if not <| isNull node.Next then
             yield node.Next
-            yield! node.Next |> nextSiblings
+            yield! nextSiblings node.Next
     }
 
     /// Filters a sequence of nodes by elements.
@@ -103,11 +92,9 @@ module HtmlLogic =
     let rec descendants (container : HtmlContainer) = seq {
         for child in container.Children do
             match child with
-
             | :? HtmlContainer as x ->
                 yield child
-                yield! x |> descendants
-
+                yield! descendants x
             | _ -> yield child
     }
 
@@ -120,22 +107,13 @@ module HtmlLogic =
     // ** Basic selectors
 
     /// Tries to find the first descendant element by the value of its "id" attribute.
-    let tryElementById id container =
-        container
-        |> descendantElements
-        |> Seq.tryFind (idMatches id)
+    let tryElementById id = descendantElements >> Seq.tryFind (idMatches id)
 
     /// Gets all descendant elements that are matched by the specified tag name.
-    let elementsByTagName name container =
-        container
-        |> descendantElements
-        |> Seq.filter (tagNameMatches name)
+    let elementsByTagName name = descendantElements >> Seq.filter (tagNameMatches name)
 
     /// Gets all descendant elements that are matched by the specified class name.
-    let elementsByClassName className container =
-        container
-        |> descendantElements
-        |> Seq.filter (classNameMatches className)
+    let elementsByClassName className = descendantElements >> Seq.filter (classNameMatches className)
 
     // ** Misc
 
@@ -238,18 +216,21 @@ module HtmlLogic =
         match entity with
         | :? HtmlDeclaration as x -> upcast XComment(x.Content)
 
-        | :? HtmlAttribute as x -> upcast XAttribute(XName.Get(x.Name),
-                                                     x.Value |> Option.ofObj |> Option.defaultValue "")
+        | :? HtmlAttribute as x ->
+            upcast XAttribute(XName.Get(x.Name),
+               x.Value |> Option.ofObj |> Option.defaultValue "")
 
         | :? HtmlText as x -> upcast XText(x.Content)
         | :? HtmlComment as x -> upcast XComment(x.Content)
         | :? HtmlCData as x -> upcast XCData(x.Content)
 
-        | :? HtmlElement as x -> upcast XElement(XName.Get(x.TagName),
-                                                    x.Attributes |> Seq.map toXObject |> Seq.toArray,
-                                                    x.Children |> Seq.map toXObject |> Seq.toArray)
+        | :? HtmlElement as x ->
+            upcast XElement(XName.Get(x.TagName),
+                x.Attributes |> Seq.map toXObject |> Array.ofSeq,
+                x.Children |> Seq.map toXObject |> Array.ofSeq)
 
-        | :? HtmlDocument as x -> upcast XDocument(x.Children |> Seq.map toXObject |> Seq.toArray)
+        | :? HtmlDocument as x ->
+            upcast XDocument(x.Children |> Seq.map toXObject |> Array.ofSeq)
 
         | _ -> failwith "Unmatched entity."
 
@@ -262,12 +243,14 @@ module HtmlLogic =
         | :? HtmlComment as x -> upcast HtmlComment(x.Content)
         | :? HtmlCData as x -> upcast HtmlCData(x.Content)
 
-        | :? HtmlElement as x -> upcast HtmlElement(x.TagName,
-                                                    x.Attributes |> Seq.map clone |> Seq.cast |> Seq.toArray,
-                                                    x.Children |> Seq.map clone |> Seq.cast |> Seq.toArray)
+        | :? HtmlElement as x ->
+            upcast HtmlElement(x.TagName,
+                x.Attributes |> Seq.map clone |> Seq.cast |> Seq.toArray,
+                x.Children |> Seq.map clone |> Seq.cast |> Seq.toArray)
 
-        | :? HtmlDocument as x -> upcast HtmlDocument(x.Declaration |> clone :?> HtmlDeclaration,
-                                                      x.Children |> Seq.map clone |> Seq.cast<HtmlNode> |> Seq.toArray)
+        | :? HtmlDocument as x ->
+            upcast HtmlDocument(x.Declaration |> clone :?> HtmlDeclaration,
+                x.Children |> Seq.map clone |> Seq.cast<HtmlNode> |> Seq.toArray)
 
         | _ -> failwith "Unmatched entity."
 
