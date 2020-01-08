@@ -1,3 +1,7 @@
+### v2.1 (08-Jan-2020)
+
+- Reworked the F# side of the API by moving all functions from global scope to `Html` and `CssSelector` modules. C# API is unchanged.
+
 ### v2.0.2 (05-Jan-2020)
 
 - Added handling for non-void unclosed tags.
