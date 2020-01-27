@@ -2,8 +2,6 @@
     x:Class="LtGt.DemoWpf.App"
     xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-    xmlns:local="clr-namespace:LtGt.DemoWpf"
-    Startup="App_OnStartup"
     StartupUri="Views/MainWindow.xaml">
     <Application.Resources>
         <ResourceDictionary>
@@ -85,9 +83,6 @@
             <Style BasedOn="{StaticResource MaterialDesignTextBox}" TargetType="{x:Type TextBox}">
                 <Setter Property="Foreground" Value="{DynamicResource PrimaryTextBrush}" />
             </Style>
-
-            <!--  Locator  -->
-            <local:Locator x:Key="Locator" />
         </ResourceDictionary>
     </Application.Resources>
 </Application>

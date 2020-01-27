@@ -5,16 +5,19 @@
     xmlns:converters="clr-namespace:LtGt.DemoWpf.Converters"
     xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
     xmlns:ltgt="clr-namespace:LtGt;assembly=LtGt"
+    xmlns:viewModels="clr-namespace:LtGt.DemoWpf.ViewModels"
     Title="LtGt Demo"
     Width="750"
     Height="500"
     Background="{DynamicResource MaterialDesignPaper}"
-    DataContext="{Binding MainViewModel, Source={StaticResource Locator}}"
     FocusManager.FocusedElement="{Binding ElementName=DocumentUrlTextBox}"
     Icon="/LtGt.DemoWpf;component/favicon.ico"
     PreviewKeyDown="MainWindow_OnPreviewKeyDown"
     Style="{DynamicResource MaterialDesignRoot}"
     WindowStartupLocation="CenterScreen">
+    <Window.DataContext>
+        <viewModels:MainViewModel />
+    </Window.DataContext>
     <DockPanel>
         <!--  Toolbar  -->
         <Border

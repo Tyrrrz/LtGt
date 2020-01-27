@@ -2,8 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Net.Http;
-using GalaSoft.MvvmLight;
-using GalaSoft.MvvmLight.CommandWpf;
+using LtGt.DemoWpf.ViewModels.Framework;
 
 namespace LtGt.DemoWpf.ViewModels
 {
@@ -33,7 +32,7 @@ namespace LtGt.DemoWpf.ViewModels
             private set
             {
                 Set(ref _document, value);
-                RaisePropertyChanged(() => IsDataAvailable);
+                RaisePropertyChanged(nameof(IsDataAvailable));
             }
         }
 
@@ -45,7 +44,7 @@ namespace LtGt.DemoWpf.ViewModels
             private set
             {
                 Set(ref _topLevelNodes, value);
-                RaisePropertyChanged(() => IsFiltered);
+                RaisePropertyChanged(nameof(IsFiltered));
             }
         }
 
