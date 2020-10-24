@@ -6,9 +6,11 @@
 [![Downloads](https://img.shields.io/nuget/dt/LtGt.svg)](https://nuget.org/packages/LtGt)
 [![Donate](https://img.shields.io/badge/donate-$$$-purple.svg)](https://tyrrrz.me/donate)
 
+**Project status: maintenance mode** (bug fixes only).
+
 LtGt is a minimalistic library for working with HTML. It can parse any HTML5-compliant code into an object model which you can use to traverse nodes or locate specific elements. The library establishes itself as a foundation that you can build upon, and comes with a lot of extension methods that can help navigate the DOM easily.
 
-_Note: This project mostly serves an educational purpose. For real-life performance-critical applications I recommend using [AngleSharp](https://github.com/AngleSharp/AngleSharp) instead._
+_This project mostly serves an educational purpose. For real-life performance-critical applications I recommend using [AngleSharp](https://github.com/AngleSharp/AngleSharp) instead._
 
 ## Download
 
