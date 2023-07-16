@@ -1,12 +1,16 @@
 # LtGt
 
+[![Status](https://img.shields.io/badge/status-discontinued-e4181c.svg)](https://github.com/Tyrrrz/.github/blob/master/docs/project-status.md)
 [![Build](https://github.com/Tyrrrz/LtGt/workflows/CI/badge.svg?branch=master)](https://github.com/Tyrrrz/LtGt/actions)
 [![Coverage](https://codecov.io/gh/Tyrrrz/LtGt/branch/master/graph/badge.svg)](https://codecov.io/gh/Tyrrrz/LtGt)
 [![Version](https://img.shields.io/nuget/v/LtGt.svg)](https://nuget.org/packages/LtGt)
 [![Downloads](https://img.shields.io/nuget/dt/LtGt.svg)](https://nuget.org/packages/LtGt)
-[![Donate](https://img.shields.io/badge/donate-$$$-purple.svg)](https://tyrrrz.me/donate)
 
-> 🔴 **Project status**: discontinued<sup>[[?]](https://github.com/Tyrrrz/.github/blob/master/docs/project-status.md)</sup>
+<table>
+    <tr>
+        <td width="99999" align="center">Development of this project is entirely funded by the community. <b><a href="https://tyrrrz.me/donate">Consider donating to support!</a></b></td>
+    </tr>
+</table>
 
 > **Note**:
 > As an alternative, consider using [AngleSharp](https://github.com/AngleSharp/AngleSharp), which is a more performant and feature-complete HTML processing library.
